@@ -1,0 +1,371 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "admin123",
+      "nama": "Admin",
+      "email": "admin@example.com"
+    },
+    {
+      "id": 2,
+      "username": "user2",
+      "password": "password456",
+      "nama": "Jane Smith",
+      "email": "jane@example.com"
+    }
+  ],
+  "stokBarang": [
+    {
+      "id": 1,
+      "idBarang" : 11223344,
+      "gambar": "/images/gambar1.png",
+      "namaBarang": "MTB Explorer 500",
+      "kategori": "Sepeda Gunung",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 5500000,
+      "stock": 15,
+      "tanggal": "2025-01-01",
+      "waktu": "10:00:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 2,
+      "idBarang" : 22334455,
+      "gambar": "/images/gambar2.png",
+      "namaBarang": "MTB Trailblazer 800",
+      "kategori": "Sepeda Gunung",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 8200000,
+      "stock": 12,
+      "tanggal": "2025-01-03",
+      "waktu": "14:30:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 3,
+      "idBarang" : 33445566,
+      "gambar": "/images/gambar3.png",
+      "namaBarang": "Road Master Speed BRW",
+      "kategori": "Sepeda Gunung",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 12500000,
+      "stock": 0,
+      "tanggal": "2025-01-02",
+      "waktu": "08:00:00",
+      "status": ""
+    },
+    {
+      "id": 4,
+      "idBarang" : 44556677,
+      "gambar": "/images/gambar4.png",
+      "namaBarang": "RoadRider 3000",
+      "kategori": "Sepeda Gunung",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 7800000,
+      "stock": 12,
+      "tanggal": "2025-01-04",
+      "waktu": "16:45:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 5,
+      "idBarang" : 11332244,
+      "gambar": "/images/gambar1.png",
+      "namaBarang": "E-Mountain Explorer",
+      "kategori": "Sepeda Gunung",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 14500000,
+      "stock": 6,
+      "tanggal": "2025-01-02",
+      "waktu": "08:00:00",
+      "status": "Non-Active"
+    },
+    {
+      "id": 6,
+      "idBarang" : 66771122,
+      "gambar": "/images/gambar2.png",
+      "namaBarang": "City Cruiser 200",
+      "kategori": "Sepeda Lipat",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 3200000,
+      "stock": 20,
+      "tanggal": "2025-01-04",
+      "waktu": "16:45:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 7,
+      "idBarang" : 12997788,
+      "gambar": "/images/gambar3.png",
+      "namaBarang": "UrbanFold Pro",
+      "kategori": "Sepeda Lipat",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 5800000,
+      "stock": 20,
+      "tanggal": "2025-01-02",
+      "waktu": "08:00:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 8,
+      "idBarang" : 44335511,
+      "gambar": "/images/gambar1.png",
+      "namaBarang": "Spark Junior",
+      "kategori": "Sepeda Anak",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 1800000,
+      "stock": 25,
+      "tanggal": "2025-01-04",
+      "waktu": "16:45:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 9,
+      "idBarang" : 11447788,
+      "gambar": "/images/gambar4.png",
+      "namaBarang": "Galaxy Kid Raider",
+      "kategori": "Sepeda Anak",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 2100000,
+      "stock": 16,
+      "tanggal": "2025-01-02",
+      "waktu": "08:00:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 10,
+      "idBarang" : 19123412,
+      "gambar": "/images/gambar1.png",
+      "namaBarang": "E-Bike Urban Glide",
+      "kategori": "Sepeda Gunung",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 9800000,
+      "stock": 10,
+      "tanggal": "2025-01-04",
+      "waktu": "16:45:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 11,
+      "idBarang" : 88771122,
+      "gambar": "/images/gambar3.png",
+      "namaBarang": "BMX Stunt Raider",
+      "kategori": "Sepeda Anak",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 6700000,
+      "stock": 12,
+      "tanggal": "2025-01-02",
+      "waktu": "08:00:00",
+      "status": "Tersedia"
+    },
+    {
+      "id": 12,
+      "idBarang" : 88667711,
+      "gambar": "/images/gambar2.png",
+      "namaBarang": "Freestyle BMX Pro",
+      "kategori": "Sepeda Anak",
+      "deskripsi": "Sepeda gunung dengan frame alloy ringan, dilengkapi rem cakram hidrolik dan suspensi depan.",
+      "harga": 5200000,
+      "stock": 8,
+      "tanggal": "2025-01-04",
+      "waktu": "16:45:00",
+      "status": "Tersedia"
+    }
+  ],
+  "transaksi": [
+    {
+      "idTransaksi": "2024123120",
+      "tanggal": "2024-12-31",
+      "pelanggan": {
+        "id": 1,
+        "username": "wahyu_ansari",
+        "nama": "Wahyu Ansari",
+        "email": "wahyuansari@example.com",
+        "noTelp": "+6281234567759"
+      },
+      "barang": [
+        {
+          "id": 1,
+          "idBarang" : 11223344,
+          "gambar": "/images/gambar1.png",
+          "namaBarang": "MTB Explorer 500",
+          "kategori": "Sepeda Gunung",
+          "harga": 5500000,
+          "jumlah": 1,
+          "total_harga": 5500000
+        },
+        {
+          "id": 3,
+          "idBarang" : 33445566,
+          "gambar": "/images/gambar3.png",
+          "namaBarang": "City Cruiser 200",
+          "kategori": "Sepeda Lipat",
+          "harga": 3200000,
+          "jumlah": 2,
+          "total_harga": 6400000
+        }
+      ],
+      "total_transaksi": 11900000,
+      "status": "Sukses",
+      "jenisPembayaran": "Tunai",
+      "jenis": "Ambil di Tempat",
+      "alamat": "-"
+    },
+    {
+      "idTransaksi": "2025010120",
+      "tanggal": "2025-01-01",
+      "pelanggan": {
+        "id": 2,
+        "username": "iska_jana",
+        "nama": "Iska Sujana",
+        "email": "iskajana@example.com",
+        "noTelp": "+6281234567759"
+      },
+      "barang": [
+        {
+          "id": 2,
+          "idBarang" : 22334455,
+          "gambar": "/images/gambar2.png",
+          "namaBarang": "MTB Trailblazer 800",
+          "kategori": "Sepeda Gunung",
+          "harga": 8200000,
+          "jumlah": 1,
+          "total_harga": 8200000
+        },
+        {
+          "id": 4,
+          "idBarang" : 44556677,
+          "gambar": "/images/gambar4.png",
+          "namaBarang": "Galaxy Kid Raider",
+          "kategori": "Sepeda Anak",
+          "harga": 2100000,
+          "jumlah": 2,
+          "total_harga": 4200000
+        }
+      ],
+      "total_transaksi": 12400000,
+      "status": "Sukses",
+      "jenisPembayaran": "QRIS",
+      "bukti": "/images/qris_image.png",
+      "jenis": "Kirim ke Alamat",
+      "alamat": "Jl. Raya No. 10, Jakarta"
+    },
+    {
+      "idTransaksi": "2025010420",
+      "tanggal": "2025-01-04",
+      "pelanggan": {
+        "id": 1,
+        "username": "maulana",
+        "nama": "Maulana",
+        "email": "maulana@example.com",
+        "noTelp": "+6281234567759"
+      },
+      "barang": [
+        {
+          "id": 5,
+          "idBarang" : 11332244,
+          "gambar": "/images/gambar3.png",
+          "namaBarang": "City Cruiser 200",
+          "kategori": "Sepeda Lipat",
+          "harga": 3200000,
+          "jumlah": 1,
+          "total_harga": 3200000
+        },
+        {
+          "id": 6,
+          "idBarang" : 66771122,
+          "gambar": "/images/gambar4.png",
+          "namaBarang": "Galaxy Kid Raider",
+          "kategori": "Sepeda Anak",
+          "harga": 2100000,
+          "jumlah": 3,
+          "total_harga": 6300000
+        }
+      ],
+      "total_transaksi": 9500000,
+      "status": "Sukses",
+      "jenisPembayaran": "Transfer",
+      "bukti": "/images/transfer_image.jpg",
+      "jenis": "Kirim ke Alamat",
+      "alamat": "Jl. Merdeka No. 5, Bandung"
+    },
+    {
+      "idTransaksi": "2025010920",
+      "tanggal": "2025-01-09",
+      "pelanggan": {
+        "id": 3,
+        "username": "alkausar",
+        "nama": "Alkausar",
+        "email": "alkausar@example.com",
+        "noTelp": "+6281234567760"
+      },
+      "barang": [
+        {
+          "id": 7,
+          "idBarang" : 12997788,
+          "gambar": "/images/gambar5.png",
+          "namaBarang": "MTB Summit Pro",
+          "kategori": "Sepeda Gunung",
+          "harga": 10000000,
+          "jumlah": 1,
+          "total_harga": 10000000
+        },
+        {
+          "id": 8,
+          "idBarang" : 44335511,
+          "gambar": "/images/gambar6.png",
+          "namaBarang": "Folded Rides 300",
+          "kategori": "Sepeda Lipat",
+          "harga": 3800000,
+          "jumlah": 1,
+          "total_harga": 3800000
+        }
+      ],
+      "total_transaksi": 13800000,
+      "status": "Sukses",
+      "jenisPembayaran": "Debit",
+      "bukti": "/images/debit_image.png",
+      "jenis": "Kirim ke Alamat",
+      "alamat": "Jl. Sudirman No. 20, Surabaya"
+    },
+    {
+      "idTransaksi": "2025011020",
+      "tanggal": "2025-01-10",
+      "pelanggan": {
+        "id": 4,
+        "username": "maulana",
+        "nama": "Maulana",
+        "email": "maulana2@example.com",
+        "noTelp": "+6281234567761"
+      },
+      "barang": [
+        {
+          "id": 9,
+          "idBarang" : 11447788,
+          "gambar": "/images/gambar7.png",
+          "namaBarang": "Roadmaster 600",
+          "kategori": "Sepeda Jalan",
+          "harga": 4200000,
+          "jumlah": 2,
+          "total_harga": 8400000
+        },
+        {
+          "id": 10,
+          "idBarang" : 19123412,
+          "gambar": "/images/gambar8.png",
+          "namaBarang": "Galaxy GT 700",
+          "kategori": "Sepeda Gunung",
+          "harga": 5600000,
+          "jumlah": 1,
+          "total_harga": 5600000
+        }
+      ],
+      "total_transaksi": 14000000,
+      "status": "Sukses",
+      "jenisPembayaran": "Tunai",
+      "jenis": "Ambil di Tempat",
+      "alamat": "-"
+    }
+  ]
+}
