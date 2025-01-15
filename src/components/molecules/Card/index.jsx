@@ -3,7 +3,7 @@ import React from "react";
 
 export const Card = ({ title, number, info, percentInfo, icon, colorPercent }) => {
   return (
-    <button className="xl:w-auto 2xl:w-[255px] flex flex-col gap-2 justify-center h-[121px] px-6 py-6 bg-slate-100 text-left rounded-2xl focus:bg-[#222222] focus:text-white">
+    <button className=" w-[255px] flex flex-col gap-2 justify-center h-[121px] px-6 py-6 bg-slate-100 text-left rounded-2xl focus:bg-[#222222] focus:text-white text-nowrap">
       <div className="w-full flex text-nowrap">
         <p className="text-sm">{title}</p>
         <div className="w-full flex justify-end pr-2">

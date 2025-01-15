@@ -3,7 +3,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export const SeacrhField = ({ serachQuery, onSearchChange}) => {
   return (
-    <div className="w-[400px] flex flex-col justify-center">
+    <div className="w-auto flex flex-col justify-center">
       <div className="relative">
         <input
           type="text"

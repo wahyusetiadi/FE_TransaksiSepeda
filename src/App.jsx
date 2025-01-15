@@ -9,12 +9,13 @@ import { ItemsPage } from "./pages/items";
 import { AddItems } from "./pages/items/AddItems";
 import { EditItems } from "./pages/items/EditItems";
 import { AddTransactions } from "./pages/Transactions/addTransactions";
+import { Payment } from "./pages/Transactions/Payment";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="bg-slate-100">
+    <div className="bg-slate-100 w-full">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Auth />} />
@@ -24,6 +25,7 @@ function App() {
           <Route path="/barang/edit-barang/:idBarang" element={<EditItems />} />
           <Route path="/transaksi" element={<Transactions />} />
           <Route path="/transaksi/tambah-transaksi" element={<AddTransactions />} />
+          <Route path="/transaksi/pembayaran" element={<Payment />} />
         </Routes>
       </BrowserRouter>
     </div>

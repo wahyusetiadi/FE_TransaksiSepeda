@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ContentLayout } from "../../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../../components/molecules/ButtonIcon";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 export const AddTransactions = () => {
   const [isOn, setIson] = useState(false);
@@ -135,31 +136,41 @@ export const AddTransactions = () => {
               </div>
             </div>
             <div className="">
-                <label htmlFor="" className="text-base font-bold">Kode Diskon</label>
-                <input type="text" placeholder="Masukkan Kode" className="w-full px-4 py-2 border-2 rounded-lg" />
+              <label htmlFor="" className="text-base font-bold">
+                Kode Diskon
+              </label>
+              <input
+                type="text"
+                placeholder="Masukkan Kode"
+                className="w-full px-4 py-2 border-2 rounded-lg"
+              />
             </div>
 
             <div className="w-full text-sm">
-                <div className="w-full flex justify-between">
-                    <p className="font-normal text-[#334155]">SubTotal</p>
-                    <h1 className="font-semibold text-[#1E293B]">Rp5.500.000</h1>
-                </div>
-                <div className="w-full flex justify-between">
-                    <p className="font-normal text-[#334155]">Pengiriman</p>
-                    <h1 className="font-semibold text-[#1E293B]">Rp50.000</h1>
-                </div>
-                <div className="w-full flex justify-between">
-                    <p className="font-normal text-[#334155]">Diskon (5%)</p>
-                    <h1 className="font-semibold text-[#1E293B]">-Rp100.000</h1>
-                </div>
-                <hr  className="mt-4"/>  
-                <div className="w-full flex justify-between text-lg font-semibold">
-                    <p>Total</p>
-                    <h1>Rp{'5.450.000'}</h1>
-                </div>
+              <div className="w-full flex justify-between">
+                <p className="font-normal text-[#334155]">SubTotal</p>
+                <h1 className="font-semibold text-[#1E293B]">Rp5.500.000</h1>
+              </div>
+              <div className="w-full flex justify-between">
+                <p className="font-normal text-[#334155]">Pengiriman</p>
+                <h1 className="font-semibold text-[#1E293B]">Rp50.000</h1>
+              </div>
+              <div className="w-full flex justify-between">
+                <p className="font-normal text-[#334155]">Diskon (5%)</p>
+                <h1 className="font-semibold text-[#1E293B]">-Rp100.000</h1>
+              </div>
+              <hr className="mt-4" />
+              <div className="w-full flex justify-between text-lg font-semibold">
+                <p>Total</p>
+                <h1>Rp{"5.450.000"}</h1>
+              </div>
             </div>
             <div className="w-full">
-                <button className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">Cetak Struk</button>
+              <Link to="/transaksi/pembayaran">
+                <button className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">
+                  Cetak Struk
+                </button>
+              </Link>
             </div>
           </div>
         </div>

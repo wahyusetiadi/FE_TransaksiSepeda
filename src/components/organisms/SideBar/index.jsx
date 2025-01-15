@@ -27,7 +27,7 @@ export const SideBar = () => {
   };
 
   return (
-    <div className="xl:w-[276px] h-screen bg-white text-slate-400 p-6 text-lg overflow-y-auto no-scrollbar">
+    <div className="xl:w-[276px] static h-screen bg-white text-slate-400 p-6 text-lg overflow-y-auto no-scrollbar">
       <div className="sticky top-0 left-0 bg-white">
         <img
           src={Logo2}

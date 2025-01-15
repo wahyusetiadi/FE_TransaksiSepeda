@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { TableData } from "../../components/organisms/TableData";
 import { getTransaksi } from "../../api/api";
+import './style.css';
 
 export const Dashboard = () => {
   const [transaksi, setTransaksi] = useState([]);
@@ -136,7 +137,7 @@ export const Dashboard = () => {
 
         <hr className="mx-6" />
         {/* CONTENT */}
-        <div className="px-6 py-4 w-full flex gap-4">
+        <div className="px-6 py-4 w-full flex gap-4 xl:gap-2 xl:px-4">
           <Card
             title="Total Pendapatan"
             number="Rp. 15.000.000"
@@ -171,13 +172,13 @@ export const Dashboard = () => {
           />
         </div>
 
-        <div className="w-full flex gap-4 px-6">
+        <div className="w-full flex gap-4 px-6 xl:px-4 xl:gap-2">
           <div className="w-full h-[320px] border-2 rounded-lg"></div>
 
           <div className="w-full h-[320px] border-2 rounded-lg"></div>
         </div>
 
-        <div className="px-6 py-4">
+        <div className="px-6 py-4 xl:px-4">
           {/* Tampilkan transaksi dalam tabel */}
           <TableData
             data={transaksi}

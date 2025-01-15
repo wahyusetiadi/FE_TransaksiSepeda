@@ -157,7 +157,7 @@ export const TableData = ({
           <SearchSet onSearchChange={handleSearchChange} />
         </div>
       )}
-      <div className="mt-4 px-4 rounded-lg overflow-x-auto">
+      <div className="mt-4 rounded-lg overflow-x-auto">
         <table
           border="1"
           cellPadding="8"
