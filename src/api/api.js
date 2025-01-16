@@ -2,6 +2,7 @@ import axios from 'axios';
 
 // Menentukan path relatif menuju file data.json yang ada di folder public
 const API_URL = '/data.json';
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 // Fungsi untuk mendapatkan data login (users)
 export const login = async (username, password) => {
@@ -31,6 +32,36 @@ export const getBarang = async () => {
   } catch (error) {
     console.error("Error fetching barang data: ", error);
     throw error;
+  }
+};
+
+export const getAllProducts = async () =>{
+  try {
+    const response = await axios.get(`${BASE_URL}/products/get-all`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching products data:", error);
+    throw  error;
+  }
+};
+
+export const createProducts = async (productData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/products/create`, productData, {
+      headers: {
+        'Content-Type': 'application/json',  // Pastikan header Content-Type sudah benar
+      },
+    });
+
+    // Response dari API
+    if (response.status === 200) {
+      return response.data;  // Data dari response berhasil
+    } else {
+      throw new Error('Produk gagal dibuat');
+    }
+  } catch (error) {
+    // Tangani error jika terjadi
+    throw new Error(error.response?.data?.meta?.message || error.message || 'Terjadi kesalahan');
   }
 };
 

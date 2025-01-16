@@ -138,7 +138,7 @@ export const TableData = ({
       (item) =>
         item.namaBarang.toLowerCase().includes(lowercasedQuery) ||
         item.deskripsi.toLowerCase().includes(lowercasedQuery) ||
-        item.kategori.toLowerCase().includes(lowercasedQuery) 
+        item.kategori.toLowerCase().includes(lowercasedQuery)
     );
     setFilteredData(filtered);
   };
@@ -278,7 +278,6 @@ export const TableData = ({
                                   <PlusIcon className="size-3" />
                                   Tambah
                                 </button>
-                                
                               </>
                             )}
                           </div>
@@ -309,9 +308,11 @@ export const TableData = ({
                                 ? "bg-red-600"
                                 : item[col] === "Selesai" ||
                                   item[col] === "Sukses" ||
-                                  item[col] === "Tersedia"
+                                  item[col] === "Tersedia" ||
+                                  item[col] === "Available"
                                 ? "bg-green-600"
-                                : item[col] === "Non-Active"
+                                : item[col] === "Non-Active" ||
+                                  item[col] === "Discontinued"
                                 ? "bg-orange-500"
                                 : item[col] === "Gagal"
                                 ? "bg-red-600"

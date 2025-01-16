@@ -8,7 +8,7 @@ import { ButtonIcon } from "../../components/molecules/ButtonIcon";
 import { ContentLayout } from "../../components/organisms/ContentLayout";
 import { SearchSet } from "../../components/organisms/SearchSet";
 import { TableData } from "../../components/organisms/TableData";
-import { getBarang } from "../../api/api";
+import { getAllProducts, getBarang } from "../../api/api";
 import { useNavigate } from "react-router-dom";
 
 export const ItemsPage = () => {
@@ -25,7 +25,7 @@ export const ItemsPage = () => {
   useEffect(() => {
     const fetchDataBarang = async () => {
       try {
-        const data = await getBarang();
+        const data = await getAllProducts();
         setBarang(data);
       } catch (error) {
         console.error("Error fetching barang data:", error);
