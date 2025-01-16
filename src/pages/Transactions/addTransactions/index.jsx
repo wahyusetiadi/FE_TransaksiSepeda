@@ -66,16 +66,20 @@ export const AddTransactions = () => {
                   <div className="w-full p-4 flex gap-2 items-center justify-start border-2 rounded-lg">
                     <input
                       type="radio"
-                      className=" w-4 h-4 focus:ring-orange-600"
-                    />{" "}
+                      name="transaksi"
+                      value={"Ambil Ditempat"}
+                      className="w-4 h-4 focus:ring-orange-600"
+                    />
                     <label htmlFor="">Ambil Ditempat</label>
                   </div>
 
                   <div className="w-full p-4 flex gap-2 items-center justify-start border-2 rounded-lg">
                     <input
                       type="radio"
-                      className=" w-4 h-4 focus:ring-orange-600"
-                    />{" "}
+                      name="transaksi"
+                      value={"Kirim ke Alamat"}
+                      className="w-4 h-4 focus:ring-orange-600"
+                    />
                     <label htmlFor="">Kirim ke Alamat</label>
                   </div>
                 </div>
@@ -86,10 +90,12 @@ export const AddTransactions = () => {
               <h1 className="text-xl font-bold">Informasi Pembayaran</h1>
               <div className="w-full">
                 <h1>Metode Pembayaran</h1>
-                <div className="w-full grid grid-cols-4 gap-4 text-sm font-semibold">
+                <div className="w-full flex gap-4 text-sm font-semibold">
                   <div className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg">
                     <input
                       type="radio"
+                      name="pembayaran"
+                      value={"Tunai"}
                       className=" w-4 h-4 focus:ring-orange-600"
                     />{" "}
                     <label htmlFor="">Tunai</label>
@@ -98,6 +104,8 @@ export const AddTransactions = () => {
                   <div className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg">
                     <input
                       type="radio"
+                      name="pembayaran"
+                      value={"Transafer"}
                       className=" w-4 h-4 focus:ring-orange-600"
                     />{" "}
                     <label htmlFor="">Transfer</label>
@@ -106,6 +114,8 @@ export const AddTransactions = () => {
                   <div className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg">
                     <input
                       type="radio"
+                      name="pembayaran"
+                      value={"Qris"}
                       className=" w-4 h-4 focus:ring-orange-600"
                     />{" "}
                     <label htmlFor="">Qris</label>
@@ -114,6 +124,8 @@ export const AddTransactions = () => {
                   <div className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg">
                     <input
                       type="radio"
+                      name="pembayaran"
+                      value={"Debit"}
                       className=" w-4 h-4 focus:ring-orange-600"
                     />{" "}
                     <label htmlFor="">Debit</label>

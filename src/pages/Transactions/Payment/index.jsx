@@ -2,6 +2,7 @@ import React from "react";
 import { ContentLayout } from "../../../components/organisms/ContentLayout";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { PhotoIcon } from "@heroicons/react/24/solid";
+import { Link } from "react-router-dom";
 
 export const Payment = () => {
   return (
@@ -11,7 +12,10 @@ export const Payment = () => {
           <div className="w-1/2 flex flex-col bg-white rounded-xl p-8 gap-10">
             <div className="w-full flex flex-col gap-4 items-center justify-center">
               <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckIcon className="text-green-600 size-8" style={{ strokeWidth: 3 }} />
+                <CheckIcon
+                  className="text-green-600 size-8"
+                  style={{ strokeWidth: 3 }}
+                />
               </div>
               <h1 className="text-xl font-bold">Pembelian Berhasil</h1>
               <p className="text-base">ID Transaksi #{"12345678"}</p>
@@ -81,7 +85,9 @@ export const Payment = () => {
                   </li>
                   <li>
                     <div className="w-full flex justify-between">
-                      <p className="font-normal text-[#334155]">Diskon {"(5%)"}</p>
+                      <p className="font-normal text-[#334155]">
+                        Diskon {"(5%)"}
+                      </p>
                       <p>-Rp{"100.000"}</p>
                     </div>
                   </li>
@@ -99,9 +105,11 @@ export const Payment = () => {
             </div>
 
             <div className="">
-              <button className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">
-                Kembali Transaksi
-              </button>
+              <Link to="/transaksi">
+                <button className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">
+                  Kembali Transaksi
+                </button>
+              </Link>
             </div>
           </div>
         </div>

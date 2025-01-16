@@ -10,6 +10,7 @@ import { AddItems } from "./pages/items/AddItems";
 import { EditItems } from "./pages/items/EditItems";
 import { AddTransactions } from "./pages/Transactions/addTransactions";
 import { Payment } from "./pages/Transactions/Payment";
+import { CostumerPage } from "./pages/costumer";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -26,6 +27,7 @@ function App() {
           <Route path="/transaksi" element={<Transactions />} />
           <Route path="/transaksi/tambah-transaksi" element={<AddTransactions />} />
           <Route path="/transaksi/pembayaran" element={<Payment />} />
+          <Route path="/pelanggan" element={<CostumerPage />} />
         </Routes>
       </BrowserRouter>
     </div>

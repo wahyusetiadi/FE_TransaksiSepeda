@@ -137,7 +137,8 @@ export const TableData = ({
     const filtered = data.filter(
       (item) =>
         item.namaBarang.toLowerCase().includes(lowercasedQuery) ||
-        item.deskripsi.toLowerCase().includes(lowercasedQuery)
+        item.deskripsi.toLowerCase().includes(lowercasedQuery) ||
+        item.kategori.toLowerCase().includes(lowercasedQuery) 
     );
     setFilteredData(filtered);
   };
