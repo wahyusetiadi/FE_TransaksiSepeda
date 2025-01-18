@@ -4,37 +4,8 @@ import axios from 'axios';
 const API_URL = '/data.json';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-// Fungsi untuk mendapatkan data login (users)
-export const login = async (username, password) => {
-  try {
-    const response = await axios.get(API_URL);
-    const users = response.data.users;
-    
-    // Mencari user berdasarkan username dan password
-    const user = users.find(u => u.username === username && u.password === password);
-    
-    if (user) {
-      return { success: true, user };
-    } else {
-      return { success: false, message: "Invalid credentials" };
-    }
-  } catch (error) {
-    console.error("Login error: ", error);
-    throw error;
-  }
-};
 
-// Fungsi untuk mendapatkan data barang (produk)
-export const getBarang = async () => {
-  try {
-    const response = await axios.get(API_URL);
-    return response.data.stokBarang;
-  } catch (error) {
-    console.error("Error fetching barang data: ", error);
-    throw error;
-  }
-};
-
+//GET ALL PRODUCTS
 export const getAllProducts = async () =>{
   try {
     const response = await axios.get(`${BASE_URL}/products/get-all`);
@@ -44,7 +15,7 @@ export const getAllProducts = async () =>{
     throw  error;
   }
 };
-
+//POST NEW PRODUCT
 export const createProducts = async (productData) => {
   try {
     const response = await axios.post(`${BASE_URL}/products/create`, productData, {
@@ -64,8 +35,91 @@ export const createProducts = async (productData) => {
     throw new Error(error.response?.data?.meta?.message || error.message || 'Terjadi kesalahan');
   }
 };
+//GET PRODUCTS BY ID
+export const getProductData = async(id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/products/${id}`);
 
-// Fungsi untuk mendapatkan data barang berdasarkan idBarang
+    if (response.data.meta.status === 'succes' && response.data.meta.code === 200) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data.meta.message);
+    }
+  }  catch (error) {
+    console.error('Error fetching product data: ', error);
+    throw error;
+  }
+}
+// //UPDATEPRODUCT BY ID
+export const updateProductData = async(id, data) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/products/update/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating product:", error);
+    throw error;    
+  }
+};
+// POST DELETE PRODUCT DATA
+export const deleteProductData = async (id) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/products/delete/${id}`, {       
+      isDeleted: true
+    });
+
+    console.log('Response Deleted:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting product:', error.response ? error.response.data : error.message);
+    throw error; 
+  }
+};
+// POST RECOVERY PRODUCT DATA
+export const recoveryProductData = async (id) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/products/recovery/${id}`, {       
+      isDeleted: false
+    });
+
+    console.log('Response Deleted:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting product:', error.response ? error.response.data : error.message);
+    throw error; 
+  }
+};
+
+// Json Data Dummy
+// Fungsi untuk mendapatkan data login (users)
+export const login = async (username, password) => {
+  try {
+    const response = await axios.get(API_URL);
+    const users = response.data.users;
+    
+    // Mencari user berdasarkan username dan password
+    const user = users.find(u => u.username === username && u.password === password);
+    
+    if (user) {
+      return { success: true, user };
+    } else {
+      return { success: false, message: "Invalid credentials" };
+    }
+  } catch (error) {
+    console.error("Login error: ", error);
+    throw error;
+  }
+};
+// Fungsi untuk mendapatkan data barang (produk)
+export const getBarang = async () => {
+  try {
+    const response = await axios.get(API_URL);
+    return response.data.stokBarang;
+  } catch (error) {
+    console.error("Error fetching barang data: ", error);
+    throw error;
+  }
+};
+//
 export const getBarangById = async (idBarang) => {
   try {
     const response = await axios.get(API_URL); // Mengambil data dari API atau file JSON
@@ -84,8 +138,7 @@ export const getBarangById = async (idBarang) => {
     throw error;
   }
 };
-
-
+//
 export const getTransaksi = async () => {
   try {
     const response = await axios.get(API_URL);
@@ -100,4 +153,5 @@ export const getTransaksi = async () => {
     throw error;    
   }
 };
+
 

@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ContentLayout } from "../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../components/molecules/ButtonIcon";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { SearchSet } from "../../components/organisms/SearchSet";
-import { getBarang } from "../../api/api";
-import ProductCard from "../../components/molecules/ProductCard";
+import { getAllProducts, getBarang } from "../../api/api";
 import { TableData } from "../../components/organisms/TableData";
 
 export const Transactions = () => {
@@ -14,7 +12,7 @@ export const Transactions = () => {
   useEffect(() => {
     const fetchDataBarang = async () => {
       try {
-        const data = await getBarang();
+        const data = await getAllProducts();
         setBarang(data);
       } catch (error) {
         console.error("Error fetching data barang:", error);
@@ -37,12 +35,10 @@ export const Transactions = () => {
     <div>
       <ContentLayout>
         <div className="w-full py-4 px-6 flex">
-          {/* Heading Text */}
           <div className="text-nowrap w-fit">
             <h1 className="text-2xl font-bold">Transaksi</h1>
             <p className="text-sm text-slate-700">Buat Transaksi disini!</p>
           </div>
-          {/* Button */}
           <div className="w-full flex items-center justify-end gap-2">
             <ButtonIcon
               icon={<ArrowPathIcon className="size-5 text-white" />}
@@ -55,8 +51,6 @@ export const Transactions = () => {
           </div>
         </div>
         <hr className="mx-4" />
-        {/* <SearchSet /> */}
-        {/* Menampilkan produk per kategori */}
         <div className="px-6 mb-12">
           <TableData
             itemsPerPage={10}
@@ -64,17 +58,13 @@ export const Transactions = () => {
             showSearchSet={true}
             showAksi={true}
             showTambahBtn={true}
-            // showEditBtn={true}
-            // showDeleteBtn={true}
-            // onEdit={handleEdit}
-            // onDelete={handleDelete}
             onAdd={handleClickCheckout}
             showAddBtn={true}
           />
         </div>
         {showCheckout && (
           <div className="w-fit flex justify-end">
-            <div className="w-[1000px] h-[100px] border bg-white rounded-lg fixed bottom-0 right-12 flex flex-grow items-center px-12">
+            <div className="w-[1000px] h-[100px] border bg-white rounded-lg fixed bottom-0 right-6 flex flex-grow items-center px-12">
               <div className="w-full flex text-nowrap gap-2 items-center justify-start">
                 <p>Total Pesanan</p>
                 <p> ({"1"} barang)</p>

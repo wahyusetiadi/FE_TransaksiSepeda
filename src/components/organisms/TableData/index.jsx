@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { SearchSet } from "../SearchSet"; // Import SearchSet untuk pencarian
+import { SearchSet } from "../SearchSet"; 
 import {
-  ExclamationCircleIcon,
+  ArrowPathIcon,
   ExclamationTriangleIcon,
   EyeIcon,
-  MinusIcon,
   PencilSquareIcon,
   PlusIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { ModalButton } from "../ModalButton";
+import { ModalEdit } from "../ModalEdit";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
 function toTitleCaseWithSpace(str) {
@@ -26,31 +25,31 @@ export const TableData = ({
   showEditBtn = false,
   showDeleteBtn = false,
   showDetailBtn = false,
+  showRecoveryBtn = false,
   showAddBtn = false,
   onEdit = () => {},
   onDelete = () => {},
   onDetail = () => {},
   onAdd = () => {},
+  onRecovery = () => {},
+  onSubmitEdit,
   showSearchSet = false,
   showPagination = true,
+  onUpdate,
 }) => {
   const [currentItems, setCurrentItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState(data);
-  const [searchQuery, setSearchQuery] = useState(""); // Menambahkan state untuk query pencarian
-  const [quantity, setQuantity] = useState(0);
-  const [showButtons, setShowButtons] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState(""); 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState({
-    gambarBarang: "",
-    kategoriBarang: "",
-    namaBarang: "",
-    captionBarang: "",
-    hargaBarang: "",
-    stockBarang: "",
-    idBarang: "",
+    name: "",
+    price: "",
+    stock: "",
+    type: "",
+    status: "",
   });
 
   const openEditModal = () => {
@@ -68,6 +67,16 @@ export const TableData = ({
 
   const closeDeleteModal = (item) => {
     setIsDeleteOpen(false);
+    setSelectedItem(null);
+  };
+
+  const openRecoveryModal = (item) => {
+    setSelectedItem(item);
+    setIsRecoveryOpen(true);
+  };
+
+  const closeRecoveryModal = () => {
+    setIsRecoveryOpen(false);
     setSelectedItem(null);
   };
 
@@ -94,6 +103,7 @@ export const TableData = ({
   const columns = Object.keys(data[0] || {}).filter((key) => {
     if (key === "id" && !showId) return false;
     if ((key === "tanggal" || key === "waktu") && !showDateTime) return false;
+    if (key === "createdAt" || key === "updatedAt") return false;
     if (key === "deskripsi" && !showDeskripsi) return false;
     return key !== "id";
   });
@@ -116,29 +126,23 @@ export const TableData = ({
   const handleEditClick = (item) => {
     // Set the selected item data when the edit button is clicked
     setSelectedItem({
-      gambarBarang: item.gambar,
-      kategoriBarang: item.kategori,
-      namaBarang: item.namaBarang,
-      captionBarang: item.deskripsi,
-      hargaBarang: item.harga,
-      stockBarang: item.stock,
-      idBarang: item.id,
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      stock: item.stock,
+      type: item.type,
+      status: item.status,
     });
     openEditModal();
   };
 
-  const handleAddClick = () => {
-    setShowButtons(!showButtons); // Toggle state untuk menampilkan tombol + dan -
-  };
-  // Fungsi untuk menangani perubahan pencarian
   const handleSearchChange = (query) => {
     setSearchQuery(query);
     const lowercasedQuery = query.toLowerCase();
     const filtered = data.filter(
-      (item) =>
-        item.namaBarang.toLowerCase().includes(lowercasedQuery) ||
-        item.deskripsi.toLowerCase().includes(lowercasedQuery) ||
-        item.kategori.toLowerCase().includes(lowercasedQuery)
+      (item) => item.name.toLowerCase().includes(lowercasedQuery)
+      // item.deskripsi.toLowerCase().includes(lowercasedQuery) ||
+      // item.kategori.toLowerCase().includes(lowercasedQuery)
     );
     setFilteredData(filtered);
   };
@@ -150,11 +154,17 @@ export const TableData = ({
     }
   };
 
+  const recoveryItem = () => {
+    if (selectedItem) {
+      onRecovery(selectedItem.id);
+      closeRecoveryModal();
+    }
+  };
+
   return (
     <div className="text-nowrap">
       {showSearchSet && (
         <div className="flex flex-col w-full">
-          {/* Panggil SearchSet dengan props handleSearchChange */}
           <SearchSet onSearchChange={handleSearchChange} />
         </div>
       )}
@@ -222,10 +232,15 @@ export const TableData = ({
                           className="py-2 px-6 font-semibold flex justify-center items-center"
                         >
                           <div className="flex flex-col justify-center gap-2 items-center">
-                            {showEditBtn && (
+                            {showEditBtn && item.isDeleted === 0 && (
                               <>
                                 <button
-                                  onClick={() => handleEditClick(item)}
+                                  onClick={() => {
+                                    console.log(
+                                      `Edit button clicked for item: ${item.id}`
+                                    );
+                                    handleEditClick(item);
+                                  }}
                                   className="w-full px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-600 rounded flex gap-2 items-center justify-center"
                                 >
                                   <PencilSquareIcon className="size-3" />
@@ -235,34 +250,57 @@ export const TableData = ({
                                 {isEditOpen && (
                                   <div className="w-full fixed inset-0 flex items-center justify-center">
                                     <div className="w-full h-dvh bg-black absolute opacity-10"></div>
-                                    <ModalButton
+                                    <ModalEdit
                                       onClick={closeEditModal}
-                                      gambarBarang={selectedItem.gambarBarang}
-                                      kategoriBarang={
-                                        selectedItem.kategoriBarang
-                                      }
-                                      namaBarang={selectedItem.namaBarang}
-                                      captionBarang={selectedItem.captionBarang}
-                                      hargaBarang={selectedItem.hargaBarang}
-                                      stcokBarang={selectedItem.stockBarang}
-                                      idBarang={selectedItem.idBarang}
+                                      idBarang={selectedItem.id}
+                                      namaBarang={selectedItem.name}
+                                      hargaBarang={selectedItem.price}
+                                      stcokBarang={selectedItem.stock}
+                                      statusBarang={selectedItem.status}
+                                      typeBarang={selectedItem.type}
+                                      handleSubmit={onSubmitEdit}
+                                      onUpdate={onUpdate}
                                     />
                                   </div>
                                 )}
                               </>
                             )}
-                            {showDeleteBtn && (
+                            {showDeleteBtn && item.isDeleted === 0 && (
                               <button
-                                onClick={() => openDeleteModal(item)}
+                                onClick={() => {
+                                  console.log(
+                                    `Delete button clicked for item: ${item.id}`
+                                  );
+                                  openDeleteModal(item);
+                                }}
                                 className="w-full px-2 py-1 font-semibold text-xs bg-red-100 text-red-600 rounded flex gap-2 items-center justify-center"
                               >
                                 <TrashIcon className="size-3" />
                                 Hapus
                               </button>
                             )}
+                            {showRecoveryBtn && item.isDeleted === 1 && (
+                              <button
+                                onClick={() => {
+                                  console.log(
+                                    `Recovery button clicked for item: ${item.id}`
+                                  );
+                                  openRecoveryModal(item);
+                                }}
+                                className="w-full px-2 py-1 font-semibold text-xs bg-green-100 text-green-600 rounded flex gap-2 items-center justify-center"
+                              >
+                                <ArrowPathIcon className="size-3" />
+                                Recovery
+                              </button>
+                            )}
                             {showDetailBtn && (
                               <button
-                                onClick={() => onDetail(item.id)}
+                                onClick={() => {
+                                  console.log(
+                                    `Detail button clicked for item: ${item.id}`
+                                  );
+                                  onDetail(item.id);
+                                }}
                                 className="w-full px-2 py-1 font-semibold text-xs bg-blue-100 text-blue-600 rounded flex gap-2 items-center justify-center"
                               >
                                 <EyeIcon className="size-3" />
@@ -272,8 +310,18 @@ export const TableData = ({
                             {showAddBtn && (
                               <>
                                 <button
-                                  onClick={() => onAdd(item.id)} // Ketika tombol "Tambah" diklik, toggle tombol +/-
-                                  className="w-fit px-5 py-2 font-semibold text-xs bg-orange-600 text-white rounded-full flex gap-2 items-center justify-center"
+                                  onClick={() => {
+                                    console.log(
+                                      `Add button clicked for item: ${item.id}`
+                                    );
+                                    onAdd(item.id); // Ketika tombol "Tambah" diklik, toggle tombol +/-
+                                  }}
+                                  className={`w-fit px-5 py-2 font-semibold  text-white text-xs rounded-full flex gap-2 items-center justify-center ${
+                                    item.isDeleted === 1
+                                      ? "bg-slate-400  cursor-not-allowed"
+                                      : "bg-orange-600"
+                                  }`}
+                                  disabled={item.isDeleted === 1}
                                 >
                                   <PlusIcon className="size-3" />
                                   Tambah
@@ -281,6 +329,13 @@ export const TableData = ({
                               </>
                             )}
                           </div>
+                        </td>
+                      );
+                    }
+                    if (col === "price") {
+                      return (
+                        <td key={col} className="py-2 px-6 text-left">
+                          {item[col].toLocaleString("id-ID")}
                         </td>
                       );
                     }
@@ -312,7 +367,7 @@ export const TableData = ({
                                   item[col] === "Available"
                                 ? "bg-green-600"
                                 : item[col] === "Non-Active" ||
-                                  item[col] === "Discontinued"
+                                  item[col] === "Tidak Tersedia"
                                 ? "bg-orange-500"
                                 : item[col] === "Gagal"
                                 ? "bg-red-600"
@@ -324,7 +379,6 @@ export const TableData = ({
                         </td>
                       );
                     }
-
                     return (
                       <td key={col} className="py-2 px-6 text-left">
                         {col === "Harga"
@@ -379,9 +433,44 @@ export const TableData = ({
           </div>
         </div>
       )}
+
+      {isRecoveryOpen && (
+        <div className="w-full fixed inset-0 flex items-center justify-center">
+          <div className="w-full h-screen bg-black absolute opacity-50"></div>
+          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] flex items-center justify-center flex-col gap-8">
+            <div className="w-full flex flex-col items-center justify-center gap-5">
+              <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                  <ExclamationTriangleIcon className="text-yellow-600 size-7" />
+                </div>
+              </div>
+              <div className="w-full flex flex-col items-center justify-center">
+                <h3 className="text-xl font-semibold">Recovery Data?</h3>
+                <p className="text-base text-[#64748B]">
+                  Apakah Anda ingin mengembalikan data ini?
+                </p>
+              </div>
+            </div>
+            <div className="w-full flex gap-4 items-center justify-between">
+              <button
+                onClick={closeRecoveryModal}
+                className="w-full px-10 py-3 border text-slate-600 text-base font-semibold border-slate-600 rounded-full"
+              >
+                Batal
+              </button>
+              <button
+                onClick={recoveryItem}
+                className="w-full px-10 py-3 text-white text-base font-semibold bg-green-600 rounded-full"
+              >
+                Recovery
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showPagination && (
         <div className="flex justify-center mt-4 px-4 py-2">
-          {/* Pagination Controls */}
         </div>
       )}
     </div>

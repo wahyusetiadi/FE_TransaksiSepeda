@@ -44,7 +44,7 @@ export const SideBar = () => {
               title="Dashboard"
               showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
-              linkTo="/dashboard"
+              linkTo="/"
             />
             <ButtonIcon
               icon={<ArchiveBoxIcon className="w-6 h-6" />}

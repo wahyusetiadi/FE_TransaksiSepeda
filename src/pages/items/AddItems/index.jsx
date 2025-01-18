@@ -15,8 +15,8 @@ export const AddItems = () => {
   const [status, setStatus] = useState("");  // Tambahkan state untuk status
   const [message, setMessage] = useState("");
 
-  const productTypes = ["SPAREPART", "ELECTRONICS", "FURNITURE", "CLOTHING"];
-  const productStatus = ['Tersedia', 'Stock Habis', 'Discontinued'];
+  const productTypes = ["SPAREPART", "SEPEDA"];
+  const productStatus = ['Tersedia', 'Tidak Tersedia'];
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -50,13 +50,13 @@ export const AddItems = () => {
   
     // Pastikan semua field sudah terisi dengan data yang benar
     const productData = {
-      product_code: productCode,
+      productCode: productCode,
       name: name,  // Pastikan 'name' sudah ada dan terisi
       type: type,
-      price: parseFloat(price),
+      price: price,
       stock: parseInt(stock),
       status: status,  // Status sudah diperbarui dengan benar
-      isDeleted: false,
+      // isDeleted: false,
     };
   
     try {
