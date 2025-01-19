@@ -24,7 +24,7 @@ function App() {
           <Route path="/barang" element={<ItemsPage />} />
           <Route path="/barang/tambah-barang" element={<AddItems />} />
           <Route path="/barang/edit-barang/:idBarang" element={<EditItems />} />
-          <Route path="/transaksi" element={<Transactions />} />z
+          <Route path="/transaksi" element={<Transactions />} />
           <Route path="/transaksi/tambah-transaksi" element={<AddTransactions />} />
           <Route path="/transaksi/pembayaran" element={<Payment />} />
           <Route path="/pelanggan" element={<CostumerPage />} />

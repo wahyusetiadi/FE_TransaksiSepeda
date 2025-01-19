@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";  // Import useNavigate
 
 export const ButtonIcon = ({
   icon,
@@ -12,35 +12,41 @@ export const ButtonIcon = ({
   showArrow = true,
   endIcon,
   linkTo,
+  state, // Accept state prop to pass with navigation
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();  // Initialize useNavigate
 
   const handleClick = () => {
     setIsOpen(!isOpen);
     if (onClick) onClick();
+    
+    // Use navigate to navigate with state
+    if (linkTo) {
+      navigate(linkTo, { state });  // Passing state with navigation
+    }
   };
+
   return (
     <div className="w-auto">
-      <Link to={linkTo}>
-        <button
-          className={`w-full text-nowrap flex items-center rounded gap-2 ${classNameBtn}`}
-          onClick={handleClick}
-        >
-          <div className={className}>{icon}</div>
-          <div className={`flex items-start text-sm ${titleColor}`}>
-            {title}
-          </div>
-          <div className="w-full flex justify-end">
-            {showArrow &&
-              (isOpen ? (
-                <ChevronUpIcon className="size-4" />
-              ) : (
-                <ChevronDownIcon className="size-4" />
-              ))}
-            {endIcon}
-          </div>
-        </button>
-      </Link>
+      <button
+        className={`w-full text-nowrap flex items-center rounded gap-2 ${classNameBtn}`}
+        onClick={handleClick}
+      >
+        <div className={className}>{icon}</div>
+        <div className={`flex items-start text-sm ${titleColor}`}>
+          {title}
+        </div>
+        <div className="w-full flex justify-end">
+          {showArrow &&
+            (isOpen ? (
+              <ChevronUpIcon className="size-4" />
+            ) : (
+              <ChevronDownIcon className="size-4" />
+            ))}
+          {endIcon}
+        </div>
+      </button>
     </div>
   );
 };

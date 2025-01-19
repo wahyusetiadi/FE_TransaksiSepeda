@@ -140,7 +140,8 @@ export const TableData = ({
     setSearchQuery(query);
     const lowercasedQuery = query.toLowerCase();
     const filtered = data.filter(
-      (item) => item.name.toLowerCase().includes(lowercasedQuery)
+      (item) => item.name.toLowerCase().includes(lowercasedQuery) ||
+      item.telp.toLowerCase().includes(lowercasedQuery)
       // item.deskripsi.toLowerCase().includes(lowercasedQuery) ||
       // item.kategori.toLowerCase().includes(lowercasedQuery)
     );
@@ -314,7 +315,7 @@ export const TableData = ({
                                     console.log(
                                       `Add button clicked for item: ${item.id}`
                                     );
-                                    onAdd(item.id); // Ketika tombol "Tambah" diklik, toggle tombol +/-
+                                    onAdd(item); // Ketika tombol "Tambah" diklik, toggle tombol +/-
                                   }}
                                   className={`w-fit px-5 py-2 font-semibold  text-white text-xs rounded-full flex gap-2 items-center justify-center ${
                                     item.isDeleted === 1

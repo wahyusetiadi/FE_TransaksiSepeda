@@ -89,6 +89,63 @@ export const recoveryProductData = async (id) => {
   }
 };
 
+// POST TRANSAKSI PRODUCT
+export const addTransaction = async (payload) => {
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return { success: true, data: result };
+    } else {
+      const errorData = await response.json();
+      return { success: false, error: errorData };
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// GET ALL CUSTOMER DATA
+export const getAllCustomerData = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/customers/get-all`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching products data:", error);
+    throw  error;
+  }
+}
+
+// CREATE CUSTOMER DATA
+
+export const createCustomer = async (customersData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/customers/create`, customersData, {
+      headers: {
+        'Content-Type': 'application/json',  // Pastikan header Content-Type sudah benar
+      },
+    });
+
+    // Response dari API
+    if (response.status === 201) {
+      return response.data;  // Data dari response berhasil
+    } else {
+      throw new Error('Customer gagal dibuat');
+    }
+  } catch (error) {
+    // Tangani error jika terjadi
+    throw new Error(error.response?.data?.meta?.message || error.message || 'Terjadi kesalahan');
+  }
+}
+
 // Json Data Dummy
 // Fungsi untuk mendapatkan data login (users)
 export const login = async (username, password) => {
