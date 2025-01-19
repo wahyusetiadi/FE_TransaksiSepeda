@@ -12,54 +12,64 @@ import {
 export const ItemsPage = () => {
   const [barang, setBarang] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [alert, setAlert] = useState(false);
+  const [alert, setAlert] = useState({ show: false, message: "" });
+
+  const showAlert = (message) => {
+    setAlert({ show: true, message });
+    setTimeout(() => setAlert({ show: false, message: "" }), 3000);
+  };
 
   const fetchDataBarang = async () => {
     try {
       const data = await getAllProducts();
       setBarang(data);
+      return data; // Return data to be used in handleUpdate
     } catch (error) {
       console.error("Error fetching barang data:", error);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchDataBarang();
   }, []);
 
   const handleUpdate = async () => {
     try {
-      setLoading(true); // Set loading true sebelum mengambil data
-      const data = await fetchDataBarang(); // Ambil data terbaru
-      setBarang(data); // Perbarui state barang dengan data yang terbaru
+      setLoading(true);
+      const data = await fetchDataBarang(); 
+      setBarang(data); 
     } catch (error) {
       console.error("Error updating data:", error);
     } finally {
-      setLoading(false); // Set loading false setelah data selesai diambil
+      setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
+    setLoading(true); 
     try {
       const response = await deleteProductData(id);
+      const data = await fetchDataBarang();
+      setBarang(data);
       if (response.meta.status === "success") {
-        await handleUpdate(); // Perbarui data setelah penghapusan
-        setAlert(true); // Tampilkan alert sukses
-        setTimeout(() => setAlert(false), 3000); // Hapus alert setelah 3 detik
+        showAlert("Barang berhasil dihapus");
       }
     } catch (error) {
       console.error("Error deleting product:", error);
+    } finally {
+      setLoading(false); 
     }
   };
 
   const handleRecovery = async (id) => {
     try {
       const response = await recoveryProductData(id);
+      const data = await fetchDataBarang();
+      setBarang(data);
       if (response.meta.status === "success") {
-        await handleUpdate(); // Perbarui data setelah pemulihan
-        setAlert(true); // Tampilkan alert sukses
-        setTimeout(() => setAlert(false), 3000); // Hapus alert setelah 3 detik
+        showAlert("Barang berhasil dipulihkan");
       }
     } catch (error) {
       console.error("Error recovering product:", error);
