@@ -8,16 +8,27 @@ import { addTransaction, getAllCustomerData } from "../../../api/api";
 export const AddTransactions = () => {
   const location = useLocation();
   const { addedItems } = location.state || {};
-  const [isOn, setIson] = useState(false);
+  const [isOn, setIson] = useState(true);
   const [loading, setLoading] = useState(false);
   const [pelanggan, setPelanggan] = useState("");
   const [customers, setCustomers] = useState([]);
+  const [message, setMessage] = useState("");
+
+  const [transactionCode, setTransactionCode] = useState("");
+  const [customerId, setCustomerId] = useState(''); //ubah jadi number
+  const [total, setTotal] = useState(0);
+  const [item, setItem] = useState("");
+  const [descriptions, setDescriptions] = useState("");
+
+  const handlePayment = (e) => {
+    setDescriptions(e.target.value);
+  };
 
   const handleToggle = () => {
     setIson(!isOn);
   };
 
-  const handleChange = () => {
+  const handleCustomer = (e) => {
     setPelanggan(e.target.value);
   };
 
@@ -28,31 +39,29 @@ export const AddTransactions = () => {
     }).format(amount);
   };
 
-  const handleSubmit = async () => {
-    setLoading(true);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     const payload = {
-      transaction_code: "TRX-001",
-      customer_id: selectedCustomer || 2,
-      total: calculateTotal() + 50000 - 100000,
+      transactionCode: transactionCode,
+      customerId: customerId,
+      total: calculateTotal(),
       items: addedItems?.map((item) => ({
         product_id: item.id,
         price: item.price,
         amount: item.quantity,
         total: item.price * item.quantity,
       })),
-      description: paymentMethod,
+      description: descriptions,
       hutang: 0,
     };
+    console.log(JSON.stringify(payload, null, 2));
 
-    const result = await addTransaction(payload);
-
-    setLoading(false);
-
-    if (result.success) {
-      console.log("Transaction created successfully:", result.data);
-    } else {
-      console.error("Error creating transaction:", result.error);
+    try {
+      const result = await addTransaction(payload);
+      setMessage(`Transaksi Berhasil dibuat: ${result.data.transaction_code}`);
+    } catch (error) {
+      setMessage(`Error: ${error.message}`);
     }
   };
 
@@ -63,13 +72,19 @@ export const AddTransactions = () => {
     }, 0);
   };
 
+  const generateTransactionCode = () => {
+    const date = new Date();
+    const randomNumber = Math.floor(Math.random() * 1000000); 
+    return `GMJ-${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}-${randomNumber}`;
+  };
+
   useEffect(() => {
     if (isOn) {
       const fetchCustomers = async () => {
         setLoading(true);
         try {
           const response = await getAllCustomerData();
-          setCustomers(response); 
+          setCustomers(response);
         } catch (error) {
           console.error("Error fetching customers:", error);
         } finally {
@@ -79,6 +94,7 @@ export const AddTransactions = () => {
 
       fetchCustomers();
     }
+    setTransactionCode(generateTransactionCode);
   }, [isOn]);
 
   return (
@@ -127,8 +143,8 @@ export const AddTransactions = () => {
 
                   {isOn ? (
                     <select
-                      value={pelanggan}
-                      onChange={handleChange}
+                      value={customerId}
+                      onChange={(e) => setCustomerId(e.target.value)}
                       className="px-4 py-2 border-2 rounded"
                     >
                       <option value="" disabled>
@@ -150,7 +166,7 @@ export const AddTransactions = () => {
                     <input
                       type="text"
                       value={pelanggan}
-                      onChange={handleChange}
+                      onChange={handleCustomer}
                       className="px-4 py-2 border-2 rounded"
                       placeholder="Masukkan Nama Pelanggan"
                     />
@@ -158,7 +174,19 @@ export const AddTransactions = () => {
                 </div>
               </div>
 
-              <div className="w-full flex flex-col gap-6">
+              <div className="w-gull flex flex-col gap-1">
+                <label htmlFor="" className=" font-bold">Kode Transaksi</label>
+                <input
+                  type="text"
+                  className="px-4 py-2 border-2 rounded"
+                  placeholder="Masukkan Kode Transaksi"
+                  value={transactionCode}
+                  onChange={(e) => setTransactionCode(e.target.value)}
+                  disabled
+                />
+              </div>
+
+              {/* <div className="w-full flex flex-col gap-6">
                 <h1 className="text-xl font-bold">Informasi Transaksi</h1>
                 <div className="w-full">
                   <h1>Jenis Transaksi</h1>
@@ -184,51 +212,77 @@ export const AddTransactions = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="w-full flex flex-col gap-6">
                 <h1 className="text-xl font-bold">Informasi Pembayaran</h1>
                 <div className="w-full">
                   <h1>Metode Pembayaran</h1>
                   <div className="w-full flex gap-4 text-sm font-semibold">
-                    <div className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg">
+                    <div
+                      className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg"
+                      onClick={() => document.getElementById("tunai").click()} // Menambahkan handler klik
+                    >
                       <input
+                        id="tunai"
                         type="radio"
                         name="pembayaran"
-                        value={"Tunai"}
-                        className=" w-4 h-4 focus:ring-orange-600"
-                      />{" "}
-                      <label htmlFor="">Tunai</label>
+                        value="Tunai"
+                        checked={descriptions === "Tunai"} // Cek jika ini yang dipilih
+                        onChange={handlePayment} // Update state ketika dipilih
+                        className="w-4 h-4 focus:ring-orange-600"
+                      />
+                      <label htmlFor="tunai">Tunai</label>
                     </div>
 
-                    <div className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg">
+                    <div
+                      className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg"
+                      onClick={() =>
+                        document.getElementById("transfer").click()
+                      }
+                    >
                       <input
+                        id="transfer"
                         type="radio"
                         name="pembayaran"
-                        value={"Transfer"}
-                        className=" w-4 h-4 focus:ring-orange-600"
-                      />{" "}
-                      <label htmlFor="">Transfer</label>
+                        value="Transfer"
+                        checked={descriptions === "Transfer"}
+                        onChange={handlePayment}
+                        className="w-4 h-4 focus:ring-orange-600"
+                      />
+                      <label htmlFor="transfer">Transfer</label>
                     </div>
 
-                    <div className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg">
+                    <div
+                      className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg"
+                      onClick={() => document.getElementById("qris").click()}
+                    >
                       <input
+                        id="qris"
                         type="radio"
                         name="pembayaran"
-                        value={"Qris"}
-                        className=" w-4 h-4 focus:ring-orange-600"
-                      />{" "}
-                      <label htmlFor="">Qris</label>
+                        value="Qris"
+                        checked={descriptions === "Qris"}
+                        onChange={handlePayment}
+                        className="w-4 h-4 focus:ring-orange-600"
+                      />
+                      <label htmlFor="qris">Qris</label>
                     </div>
 
-                    <div className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg">
+                    <div
+                      className="w-full px-2 py-4 flex gap-2 items-center justify-start border-2 rounded-lg"
+                      onClick={() => document.getElementById("debit").click()}
+                    >
                       <input
+                        id="debit"
                         type="radio"
                         name="pembayaran"
-                        value={"Debit"}
-                        className=" w-4 h-4 focus:ring-orange-600"
-                      />{" "}
-                      <label htmlFor="">Debit</label>
+                        value="Debit"
+                        checked={descriptions === "Debit"}
+                        onChange={handlePayment}
+                        className="w-4 h-4 focus:ring-orange-600"
+                      />
+                      <label htmlFor="debit">Debit</label>
                     </div>
                   </div>
                 </div>
@@ -269,33 +323,33 @@ export const AddTransactions = () => {
                     {formatCurrency(calculateTotal())}
                   </h1>
                 </div>
-                <div className="w-full flex justify-between">
+                {/* <div className="w-full flex justify-between">
                   <p className="font-normal text-[#334155]">Pengiriman</p>
                   <h1 className="font-semibold text-[#1E293B]">
                     {formatCurrency(50000)}
                   </h1>
-                </div>
-                <div className="w-full flex justify-between">
+                </div> */}
+                {/* <div className="w-full flex justify-between">
                   <p className="font-normal text-[#334155]">Diskon (5%)</p>
                   <h1 className="font-semibold text-[#1E293B]">
                     {formatCurrency(-100000)}
                   </h1>
-                </div>
+                </div> */}
                 <hr className="mt-4" />
                 <div className="w-full flex justify-between text-lg font-semibold">
                   <p>Total</p>
                   <h1>
-                    {formatCurrency(calculateTotal() - 100000 + 50000)}
+                    {formatCurrency(calculateTotal())}
                   </h1>{" "}
                   {/* Total setelah diskon dan pengiriman */}
                 </div>
               </div>
               <div className="w-full">
-                <Link to="/transaksi/pembayaran">
-                  <button className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">
-                    Cetak Struk
-                  </button>
-                </Link>
+                {/* <Link to="/transaksi/pembayaran"> */}
+                <button className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">
+                  Cetak Struk
+                </button>
+                {/* </Link> */}
               </div>
             </div>
           </div>

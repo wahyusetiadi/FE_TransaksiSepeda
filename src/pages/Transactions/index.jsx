@@ -29,33 +29,32 @@ export const Transactions = () => {
 
   // Show checkout if there are items in the cart
   useEffect(() => {
-    if (addedItems.length > 0) {
-      setShowCheckout(true);
-    } else {
-      setShowCheckout(false);
-    }
+    // Show checkout only if there are items with quantity > 0
+    const hasItems = addedItems.some((item) => item.quantity > 0);
+    setShowCheckout(hasItems);
   }, [addedItems]);
 
   const handleAddItem = (item) => {
-    console.log("Item yang ditambahkan:", item);
-    if (!item.quantity) {
-      item.quantity = 1;
-    }
-
-    // Periksa harga setiap item
-    console.log(`Harga item: ${item.price}`);
-
     setAddedItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
-        (prevItem) => prevItem.name === item.name
+        (prevItem) => prevItem.id === item.id
       );
+
       if (existingItemIndex >= 0) {
         const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex].quantity += 1;
+        if (item.quantity === 0) {
+          // Remove item if quantity is 0
+          updatedItems.splice(existingItemIndex, 1);
+        } else {
+          // Update quantity
+          updatedItems[existingItemIndex] = item;
+        }
         return updatedItems;
-      } else {
+      } else if (item.quantity > 0) {
+        // Add new item only if quantity > 0
         return [...prevItems, item];
       }
+      return prevItems;
     });
   };
 
@@ -69,11 +68,12 @@ export const Transactions = () => {
   const calculateTotalPrice = () => {
     return addedItems.reduce((total, item) => {
       const harga = item.price && !isNaN(item.price) ? Number(item.price) : 0;
-      console.log(
-        `Item: ${item.name}, Harga: ${harga}, Quantity: ${item.quantity}`
-      );
       return total + harga * item.quantity;
     }, 0);
+  };
+
+  const calculateTotalItems = () => {
+    return addedItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   // Format the price to currency format
@@ -140,16 +140,9 @@ export const Transactions = () => {
             <div className="w-[1000px] h-[100px] border bg-white rounded-lg fixed bottom-0 right-6 flex flex-grow items-center px-12">
               <div className="w-full flex text-nowrap gap-2 items-center justify-start">
                 <p>Total Pesanan</p>
-                <p>
-                  {" "}
-                  ({addedItems.reduce(
-                    (sum, item) => sum + item.quantity,
-                    0
-                  )}{" "}
-                  barang)
-                </p>
+                <p>({calculateTotalItems()} barang)</p>
                 <h1 className="text-2xl font-bold text-orange-600">
-                  {formatCurrency(calculateTotalPrice())}{" "}
+                  {formatCurrency(calculateTotalPrice())}
                 </h1>
               </div>
 

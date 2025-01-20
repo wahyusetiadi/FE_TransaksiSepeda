@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { SearchSet } from "../SearchSet"; 
+import { SearchSet } from "../SearchSet";
 import {
   ArrowPathIcon,
   ExclamationTriangleIcon,
   EyeIcon,
+  MinusIcon,
   PencilSquareIcon,
   PlusIcon,
   TrashIcon,
@@ -40,10 +41,12 @@ export const TableData = ({
   const [currentItems, setCurrentItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState(data);
-  const [searchQuery, setSearchQuery] = useState(""); 
+  const [searchQuery, setSearchQuery] = useState("");
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
+  const [addQuantity, setAddQuantity] = useState(0);
+  const [itemQuantities, setItemQuantities] = useState({});
   const [selectedItem, setSelectedItem] = useState({
     name: "",
     price: "",
@@ -51,6 +54,39 @@ export const TableData = ({
     type: "",
     status: "",
   });
+
+  const handleAddClick = (item) => {
+    // Initialize quantity for this item if not exists
+    if (!itemQuantities[item.id]) {
+      setItemQuantities((prev) => ({
+        ...prev,
+        [item.id]: 1,
+      }));
+      onAdd({ ...item, quantity: 1 });
+    }
+  };
+
+  const handleQuantityChange = (item, change) => {
+    const currentQty = itemQuantities[item.id] || 0;
+    const newQty = Math.max(0, currentQty + change);
+
+    setItemQuantities((prev) => ({
+      ...prev,
+      [item.id]: newQty,
+    }));
+
+    if (newQty === 0) {
+      // Remove quantity tracking for this item
+      setItemQuantities((prev) => {
+        const newState = { ...prev };
+        delete newState[item.id];
+        return newState;
+      });
+    }
+
+    // Call onAdd with updated quantity
+    onAdd({ ...item, quantity: newQty });
+  };
 
   const openEditModal = () => {
     setIsEditOpen(true);
@@ -140,8 +176,9 @@ export const TableData = ({
     setSearchQuery(query);
     const lowercasedQuery = query.toLowerCase();
     const filtered = data.filter(
-      (item) => item.name.toLowerCase().includes(lowercasedQuery) ||
-      item.telp.toLowerCase().includes(lowercasedQuery)
+      (item) =>
+        item.name.toLowerCase().includes(lowercasedQuery) ||
+        item.telp.toLowerCase().includes(lowercasedQuery)
       // item.deskripsi.toLowerCase().includes(lowercasedQuery) ||
       // item.kategori.toLowerCase().includes(lowercasedQuery)
     );
@@ -159,6 +196,12 @@ export const TableData = ({
     if (selectedItem) {
       onRecovery(selectedItem.id);
       closeRecoveryModal();
+    }
+  };
+
+  const addItem = () => {
+    if (selectedItem) {
+      onAdd(selectedItem.id);
     }
   };
 
@@ -310,23 +353,42 @@ export const TableData = ({
                             )}
                             {showAddBtn && (
                               <>
-                                <button
-                                  onClick={() => {
-                                    console.log(
-                                      `Add button clicked for item: ${item.id}`
-                                    );
-                                    onAdd(item); // Ketika tombol "Tambah" diklik, toggle tombol +/-
-                                  }}
-                                  className={`w-fit px-5 py-2 font-semibold  text-white text-xs rounded-full flex gap-2 items-center justify-center ${
-                                    item.isDeleted === 1
-                                      ? "bg-slate-400  cursor-not-allowed"
-                                      : "bg-orange-600"
-                                  }`}
-                                  disabled={item.isDeleted === 1}
-                                >
-                                  <PlusIcon className="size-3" />
-                                  Tambah
-                                </button>
+                                {!itemQuantities[item.id] ? (
+                                  <button
+                                    onClick={() => handleAddClick(item)}
+                                    className={`w-fit px-5 py-2 font-semibold text-white text-xs rounded-full flex gap-2 items-center justify-center ${
+                                      item.isDeleted === 1
+                                        ? "bg-slate-400 cursor-not-allowed"
+                                        : "bg-orange-600"
+                                    }`}
+                                    disabled={item.isDeleted === 1}
+                                  >
+                                    <PlusIcon className="size-3" />
+                                    Tambah
+                                  </button>
+                                ) : (
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() =>
+                                        handleQuantityChange(item, -1)
+                                      }
+                                      className="w-fit p-2 font-semibold text-white text-xs rounded-full bg-red-600"
+                                    >
+                                      <MinusIcon className="size-3" />
+                                    </button>
+
+                                    <span>{itemQuantities[item.id]}</span>
+
+                                    <button
+                                      onClick={() =>
+                                        handleQuantityChange(item, 1)
+                                      }
+                                      className="w-fit p-2 font-semibold text-white text-xs rounded-full bg-orange-600"
+                                    >
+                                      <PlusIcon className="size-3" />
+                                    </button>
+                                  </div>
+                                )}
                               </>
                             )}
                           </div>
@@ -471,8 +533,7 @@ export const TableData = ({
       )}
 
       {showPagination && (
-        <div className="flex justify-center mt-4 px-4 py-2">
-        </div>
+        <div className="flex justify-center mt-4 px-4 py-2"></div>
       )}
     </div>
   );

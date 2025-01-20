@@ -92,12 +92,10 @@ export const recoveryProductData = async (id) => {
 // POST TRANSAKSI PRODUCT
 export const addTransaction = async (payload) => {
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
+    const response = await axios.post(`${BASE_URL}/transactions/create`, payload, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
     });
 
     if (response.ok) {
