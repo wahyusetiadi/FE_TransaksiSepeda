@@ -36,11 +36,12 @@ export const Auth = () => {
   };
 
   return (
-    <div className="w-full flex">
-      <div className="w-[40%] bg-cyan-600 h-dvh">
+    <div className="w-full bg-white h-dvh flex items-center justify-center">
+      {/* <div className="w-[40%] bg-cyan-600 h-dvh">
         <img src={ImageSide} />
-      </div>
-      <div className="w-[60%] flex flex-col items-center justify-center">
+      </div> */}
+
+      <div className="w-[600px] py-20 border bg-slate-100 rounded-lg flex flex-col items-center justify-center">
         <div className="mb-6">
           <img src={Logo1} className="w-72" />
         </div>
@@ -80,24 +81,24 @@ export const Auth = () => {
             />
           </div>
 
-          <div className="w-full flex justify-end text-xs mt-1">
+          {/* <div className="w-full flex justify-end text-xs mt-1">
             <a href="">Lupa Passord?</a>
-          </div>
+          </div> */}
 
           {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
-          <div className="w-full flex justify-center text-base text-white mt-4">
+          <div className="w-full flex justify-center text-base text-white mt-8">
             <button type="submit" className="p-2 w-full bg-orange-600 hover:bg-orange-700 rounded-full">
               Login
             </button>
           </div>
 
-          <div className="w-full flex justify-center text-base mt-2">
+          {/* <div className="w-full flex justify-center text-base mt-2">
             <p>Belum Punya Akun?</p>
             <a href="" className="font-bold">
               Hubungi Admin
             </a>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>

@@ -1,22 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ContentLayout } from "../../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../../components/molecules/ButtonIcon";
-import { ArrowUpTrayIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { createProducts } from "../../../api/api";
+import { Link, replace, useNavigate } from "react-router-dom";
+
+const generateItemCode = () => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  const length = 10; // Panjang kode acak
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
 
 export const AddItems = () => {
   const [fileName, setFileName] = useState("");
   const [isDragOver, setIsDragOver] = useState(false);
-  const [productCode, setProductCOde] = useState("");
+  const [productCode, setProductCode] = useState("");
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
-  const [status, setStatus] = useState("");  // Tambahkan state untuk status
+  const [status, setStatus] = useState(""); // Tambahkan state untuk status
   const [message, setMessage] = useState("");
 
+  const navigate = useNavigate();
+
   const productTypes = ["SPAREPART", "SEPEDA"];
-  const productStatus = ['Tersedia', 'Tidak Tersedia'];
+  const productStatus = ["Tersedia", "Tidak Tersedia"];
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -47,26 +60,36 @@ export const AddItems = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    // Pastikan semua field sudah terisi dengan data yang benar
+    if (!name) {
+      alert("Nama Barang Harus di input!");
+      return;
+    }
+    if (!price) {
+      alert("Biaya Harus di input!");
+    }
+
     const productData = {
       productCode: productCode,
-      name: name,  // Pastikan 'name' sudah ada dan terisi
+      name: name,
       type: type,
       price: price,
       stock: parseInt(stock),
-      status: status,  // Status sudah diperbarui dengan benar
+      status: status,
       // isDeleted: false,
     };
-  
+
     try {
       const result = await createProducts(productData);
-      setMessage(`Produk Berhasil dibuat: ${result.data.name}`);
+      console.log(`Produk Berhasil dibuat: ${result.data.name}`);
+      navigate("/barang", { replace: true });
     } catch (error) {
       setMessage(`Error: ${error.message}`);
     }
   };
-  
+
+  useEffect(() => {
+    setProductCode(generateItemCode());
+  }, []);
 
   return (
     <div>
@@ -86,7 +109,7 @@ export const AddItems = () => {
           <h1 className="text-2xl font-bold">Tambah Barang</h1>
         </div>
         <div className="px-4 mt-8">
-          <form action="" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <div className="flex gap-4">
               <div className="w-full flex flex-col">
                 <label
@@ -101,6 +124,7 @@ export const AddItems = () => {
                   onChange={(e) => setName(e.target.value)} // Ensure value is updated
                   className="w-full px-4 py-2 border rounded"
                   placeholder="Masukkan Nama Barang"
+                  required
                 />
               </div>
 
@@ -115,6 +139,7 @@ export const AddItems = () => {
                   value={type}
                   onChange={(e) => setType(e.target.value)} // Ensure value is updated
                   className="w-full px-4 py-2 border rounded"
+                  required
                 >
                   <option value="" disabled>
                     Pilih Tipe
@@ -138,10 +163,10 @@ export const AddItems = () => {
                 </label>
                 <input
                   type="text"
-                  value={productCode}
-                  onChange={(e) => setProductCOde(e.target.value)} // Ensure value is updated
                   className="w-full px-4 py-2 border rounded"
-                  placeholder="contoh: 1231418"
+                  value={productCode}
+                  onChange={(e) => setProductCode(e.target.value)} // Ensure value is updated
+                  disabled
                 />
               </div>
 
@@ -156,6 +181,7 @@ export const AddItems = () => {
                   value={status}
                   onChange={(e) => setStatus(e.target.value)} // Use setStatus to update the status
                   className="w-full px-4 py-2 border rounded"
+                  required
                 >
                   <option value="" disabled>
                     Pilih Status
@@ -182,11 +208,12 @@ export const AddItems = () => {
                     Rp
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)} // Ensure value is updated
                     className="w-full px-4 py-2 border rounded"
                     placeholder="Masukkan Harga Barang"
+                    required
                   />
                 </div>
               </div>
@@ -199,17 +226,18 @@ export const AddItems = () => {
                   Stok Barang
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   value={stock}
                   onChange={(e) => setStock(e.target.value)} // Ensure value is updated
                   className="w-full px-4 py-2 border rounded"
                   placeholder="Masukkan Jumlah Stok"
+                  required
                 />
               </div>
             </div>
 
             <div className="w-full mt-6">
-              <button className="w-full px-4 py-2 text-center bg-orange-500 hover:bg-orange-600 rounded-full text-white font-semibold">
+              <button type="submit" className="w-full px-4 py-2 text-center bg-orange-500 hover:bg-orange-600 rounded-full text-white font-semibold">
                 Simpan
               </button>
             </div>

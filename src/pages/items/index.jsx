@@ -101,13 +101,13 @@ export const ItemsPage = () => {
               title="Export"
               classNameBtn="border-2 rounded-lg px-2 py-1"
             /> */}
-            <ButtonIcon
+            {/* <ButtonIcon
               icon={<PlusIcon className="size-5 text-white" />}
               showArrow={false}
               title="Buat Kategori"
               classNameBtn="border-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-2 py-1"
               titleColor="text-white"
-            />
+            /> */}
             <ButtonIcon
               icon={<PlusIcon className="size-5 text-white" />}
               showArrow={false}

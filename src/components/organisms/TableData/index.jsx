@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { ModalEdit } from "../ModalEdit";
 import { PhotoIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 
 function toTitleCaseWithSpace(str) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");
@@ -40,14 +41,14 @@ export const TableData = ({
 }) => {
   const [currentItems, setCurrentItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState(Array.isArray(data) ? data : []);
   const [searchQuery, setSearchQuery] = useState("");
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
-  const [addQuantity, setAddQuantity] = useState(0);
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedItem, setSelectedItem] = useState({
+    id: "",
     name: "",
     price: "",
     stock: "",
@@ -55,8 +56,9 @@ export const TableData = ({
     status: "",
   });
 
+  const navigate = useNavigate();
+
   const handleAddClick = (item) => {
-    // Initialize quantity for this item if not exists
     if (!itemQuantities[item.id]) {
       setItemQuantities((prev) => ({
         ...prev,
@@ -76,15 +78,12 @@ export const TableData = ({
     }));
 
     if (newQty === 0) {
-      // Remove quantity tracking for this item
       setItemQuantities((prev) => {
         const newState = { ...prev };
         delete newState[item.id];
         return newState;
       });
     }
-
-    // Call onAdd with updated quantity
     onAdd({ ...item, quantity: newQty });
   };
 
@@ -133,16 +132,24 @@ export const TableData = ({
   };
 
   useEffect(() => {
-    setFilteredData(data);
+    if (Array.isArray(data)) {
+      setFilteredData(data);
+    } else {
+      setFilteredData([]); 
+    }
   }, [data]);
+  
+  
 
   const columns = Object.keys(data[0] || {}).filter((key) => {
     if (key === "id" && !showId) return false;
     if ((key === "tanggal" || key === "waktu") && !showDateTime) return false;
-    if (key === "createdAt" || key === "updatedAt") return false;
+    if ( key === "isDeleted" || key === "updatedAt") return false;
+    if (key === "bukti" || key === "items") return false;
     if (key === "deskripsi" && !showDeskripsi) return false;
     return key !== "id";
   });
+  
 
   if (showAksi) {
     columns.push("aksi");
@@ -150,7 +157,8 @@ export const TableData = ({
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const totalPage = Math.ceil(filteredData.length / itemsPerPage);
+  const currentItemsToShow = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  
 
   useEffect(() => {
     const updateData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
@@ -160,7 +168,6 @@ export const TableData = ({
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleEditClick = (item) => {
-    // Set the selected item data when the edit button is clicked
     setSelectedItem({
       id: item.id,
       name: item.name,
@@ -178,9 +185,7 @@ export const TableData = ({
     const filtered = data.filter(
       (item) =>
         item.name.toLowerCase().includes(lowercasedQuery) ||
-        item.telp.toLowerCase().includes(lowercasedQuery)
-      // item.deskripsi.toLowerCase().includes(lowercasedQuery) ||
-      // item.kategori.toLowerCase().includes(lowercasedQuery)
+        item.type.toLowerCase().includes(lowercasedQuery)
     );
     setFilteredData(filtered);
   };
@@ -198,12 +203,12 @@ export const TableData = ({
       closeRecoveryModal();
     }
   };
-
-  const addItem = () => {
+  const detailItem = () => {
     if (selectedItem) {
-      onAdd(selectedItem.id);
+      onRecovery(selectedItem.id);
     }
   };
+
 
   return (
     <div className="text-nowrap">
@@ -342,8 +347,8 @@ export const TableData = ({
                                 onClick={() => {
                                   console.log(
                                     `Detail button clicked for item: ${item.id}`
-                                  );
-                                  onDetail(item.id);
+                                  ); // Debug log for the ID
+                                  onDetail(item.id); // Pass only the `id` to the onDetail function
                                 }}
                                 className="w-full px-2 py-1 font-semibold text-xs bg-blue-100 text-blue-600 rounded flex gap-2 items-center justify-center"
                               >
@@ -351,6 +356,7 @@ export const TableData = ({
                                 Detail
                               </button>
                             )}
+
                             {showAddBtn && (
                               <>
                                 {!itemQuantities[item.id] ? (

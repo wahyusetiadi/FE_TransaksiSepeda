@@ -11,6 +11,9 @@ import { EditItems } from "./pages/items/EditItems";
 import { AddTransactions } from "./pages/Transactions/addTransactions";
 import { Payment } from "./pages/Transactions/Payment";
 import { CostumerPage } from "./pages/costumer";
+import { HistoryTransactions } from "./pages/historyTransactions";
+import { DetailHistoryTransactions } from "./pages/historyTransactions/DetailHistoryTransactions";
+import { ReportOutbond } from "./pages/ReportOutbond";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -28,6 +31,9 @@ function App() {
           <Route path="/transaksi/tambah-transaksi" element={<AddTransactions />} />
           <Route path="/transaksi/pembayaran" element={<Payment />} />
           <Route path="/pelanggan" element={<CostumerPage />} />
+          <Route path="/riwayat-transaksi" element={<HistoryTransactions />} />
+          <Route path="/riwayat-transaksi/detail/:id" element={<DetailHistoryTransactions />} />
+          <Route path="/laporan-barang-keluar" element={<ReportOutbond />} />
         </Routes>
       </BrowserRouter>
     </div>

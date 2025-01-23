@@ -13,9 +13,9 @@ export const ContentLayout = ({ children }) => {
       </div>
 
       <div className="flex flex-col w-full overflow-hidden">
-        <div className="w-full">
+        {/* <div className="w-full">
           <TopBar />
-        </div>
+        </div> */}
         <div className="h-full overflow-y-auto p-8 xl:p-6">
           <div className="w-full h-auto rounded-lg bg-white">
             {/* Menambahkan key berdasarkan path rute saat ini */}

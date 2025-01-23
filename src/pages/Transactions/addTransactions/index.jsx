@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { ContentLayout } from "../../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../../components/molecules/ButtonIcon";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
-import { Link, useLocation } from "react-router-dom";
-import { addTransaction, getAllCustomerData } from "../../../api/api";
+import { useLocation, useNavigate } from "react-router-dom";
+import { addOutbond, addTransaction, getAllCustomerTransactions } from "../../../api/api";
 
 export const AddTransactions = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { addedItems } = location.state || {};
   const [isOn, setIson] = useState(true);
@@ -15,10 +16,14 @@ export const AddTransactions = () => {
   const [message, setMessage] = useState("");
 
   const [transactionCode, setTransactionCode] = useState("");
-  const [customerId, setCustomerId] = useState(''); //ubah jadi number
+  const [customerId, setCustomerId] = useState(null); //ubah jadi number
   const [total, setTotal] = useState(0);
   const [item, setItem] = useState("");
   const [descriptions, setDescriptions] = useState("");
+
+  const filteredItems = addedItems?.filter(item => item.id && item.quantity > 0) || [];
+
+// console.log("filter data addItems",filteredItems);
 
   const handlePayment = (e) => {
     setDescriptions(e.target.value);
@@ -48,7 +53,7 @@ export const AddTransactions = () => {
       total: calculateTotal(),
       items: addedItems?.map((item) => ({
         product_id: item.id,
-        price: item.price,
+        // price: item.price,
         amount: item.quantity,
         total: item.price * item.quantity,
       })),
@@ -57,11 +62,47 @@ export const AddTransactions = () => {
     };
     console.log(JSON.stringify(payload, null, 2));
 
+    const payloadOutbond = {
+      customerId: customerId,
+      items: addedItems?.map((item) => ({
+        product_id: item.id,
+        // price: item.price, 
+        amount: item.quantity,
+        total: item.price * item.quantity,
+        hutang: 0, 
+        keterangan: descriptions, 
+      })),
+    };
+
+    console.log(JSON.stringify(payloadOutbond, null, 2));
+
     try {
       const result = await addTransaction(payload);
-      setMessage(`Transaksi Berhasil dibuat: ${result.data.transaction_code}`);
+      if (result.data.meta.code === 201 && result.data.meta.status === "success") {
+        setMessage(
+          `Transaksi Berhasil dibuat: ${result.data.transaction_code}`
+        );
+        navigate("/transaksi/pembayaran");
+      } else {
+        setMessage("Transaksi gagal dibuat");
+      }
     } catch (error) {
       setMessage(`Error: ${error.message}`);
+    }
+
+    try {
+      const result = await addOutbond(payloadOutbond);
+      if (result.data.meta.code === 201 && result.data.meta.status === "success") {
+        setMessage(
+          `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
+        );
+        // navigate("/transaksi/pembayaran");
+      } else {
+        setMessage("Transaksi gagal dibuat");
+      }
+    } catch (error) {
+      setMessage(`Error: ${error.message}`);
+      console.error("Error during transaction process:", error);
     }
   };
 
@@ -74,8 +115,10 @@ export const AddTransactions = () => {
 
   const generateTransactionCode = () => {
     const date = new Date();
-    const randomNumber = Math.floor(Math.random() * 1000000); 
-    return `GMJ-${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}-${randomNumber}`;
+    const randomNumber = Math.floor(Math.random() * 1000000);
+    return `GMJ-${date.getFullYear()}${
+      date.getMonth() + 1
+    }${date.getDate()}-${randomNumber}`;
   };
 
   useEffect(() => {
@@ -83,7 +126,7 @@ export const AddTransactions = () => {
       const fetchCustomers = async () => {
         setLoading(true);
         try {
-          const response = await getAllCustomerData();
+          const response = await getAllCustomerTransactions();
           setCustomers(response);
         } catch (error) {
           console.error("Error fetching customers:", error);
@@ -106,7 +149,7 @@ export const AddTransactions = () => {
             title="Kembali"
             titleColor="text-orange-600 font-semibold text-base"
             showArrow={false}
-            linkTo="/transaksi"
+            linkTo="/riwayat-transaksi"
           />
         </div>
         <hr className="mx-3" />
@@ -175,7 +218,9 @@ export const AddTransactions = () => {
               </div>
 
               <div className="w-gull flex flex-col gap-1">
-                <label htmlFor="" className=" font-bold">Kode Transaksi</label>
+                <label htmlFor="" className=" font-bold">
+                  Kode Transaksi
+                </label>
                 <input
                   type="text"
                   className="px-4 py-2 border-2 rounded"
@@ -338,15 +383,13 @@ export const AddTransactions = () => {
                 <hr className="mt-4" />
                 <div className="w-full flex justify-between text-lg font-semibold">
                   <p>Total</p>
-                  <h1>
-                    {formatCurrency(calculateTotal())}
-                  </h1>{" "}
+                  <h1>{formatCurrency(calculateTotal())}</h1>{" "}
                   {/* Total setelah diskon dan pengiriman */}
                 </div>
               </div>
               <div className="w-full">
                 {/* <Link to="/transaksi/pembayaran"> */}
-                <button className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">
+                <button type="submit" className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">
                   Cetak Struk
                 </button>
                 {/* </Link> */}

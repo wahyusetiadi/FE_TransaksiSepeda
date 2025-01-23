@@ -49,8 +49,9 @@ export const SideBar = () => {
             <ButtonIcon
               icon={<ArchiveBoxIcon className="w-6 h-6" />}
               title="Barang"
+              showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
-              onClick={toggleDropdown}
+              // onClick={toggleDropdown}
               linkTo="/barang"
             />
             {openDropdown && (
@@ -79,9 +80,23 @@ export const SideBar = () => {
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
               linkTo="/pelanggan"
             />
+            <ButtonIcon
+              icon={<ReceiptPercentIcon className="size-6" />}
+              title="Riwayat Transaksi"
+              showArrow={false}
+              classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
+              linkTo='/riwayat-transaksi'
+            />
+            <ButtonIcon
+              icon={<ChartBarIcon className="size-6" />}
+              title="Laporan Barang Keluar"
+              showArrow={false}
+              classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
+              linkTo='/laporan-barang-keluar'
+            />
           </div>
         </div>
-        <div className="">
+        {/* <div className="">
           <h1 className="text-base mb-4">Tools</h1>
           <div className="w-full flex flex-col gap-4">
             <ButtonIcon
@@ -89,12 +104,14 @@ export const SideBar = () => {
               title="Riwayat Transaksi"
               showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
+              linkTo='/riwayat-transaksi'
             />
             <ButtonIcon
               icon={<ChartBarIcon className="size-6" />}
-              title="Laporan"
+              title="Laporan Barang Keluar"
               showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
+              linkTo='/laporan-barang-keluar'
             />
           </div>
         </div>
@@ -118,7 +135,7 @@ export const SideBar = () => {
               linkTo="/"
             />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

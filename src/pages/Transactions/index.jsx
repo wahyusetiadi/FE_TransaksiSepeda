@@ -10,6 +10,7 @@ export const Transactions = () => {
   const [barang, setBarang] = useState([]);
   const [showCheckout, setShowCheckout] = useState(false);
   const [addedItems, setAddedItems] = useState([]);
+  const [reloadKey, setReloadKey] = useState(0); // State untuk memaksa re-render
   const navigate = useNavigate();
 
   // Fetch all products
@@ -25,11 +26,10 @@ export const Transactions = () => {
     };
 
     fetchDataBarang();
-  }, []);
+  }, [reloadKey]); // Fetch ulang produk saat reloadKey berubah
 
   // Show checkout if there are items in the cart
   useEffect(() => {
-    // Show checkout only if there are items with quantity > 0
     const hasItems = addedItems.some((item) => item.quantity > 0);
     setShowCheckout(hasItems);
   }, [addedItems]);
@@ -43,15 +43,12 @@ export const Transactions = () => {
       if (existingItemIndex >= 0) {
         const updatedItems = [...prevItems];
         if (item.quantity === 0) {
-          // Remove item if quantity is 0
           updatedItems.splice(existingItemIndex, 1);
         } else {
-          // Update quantity
           updatedItems[existingItemIndex] = item;
         }
         return updatedItems;
       } else if (item.quantity > 0) {
-        // Add new item only if quantity > 0
         return [...prevItems, item];
       }
       return prevItems;
@@ -60,11 +57,11 @@ export const Transactions = () => {
 
   // Reset cart and hide checkout
   const handleReset = () => {
-    setAddedItems([]);
-    setShowCheckout(false);
+    setAddedItems([]); // Reset added items
+    setShowCheckout(false); // Hide checkout
+    setReloadKey((prevKey) => prevKey + 1); // Trigger re-render of ContentLayout by updating reloadKey
   };
 
-  // Calculate total price of the added items
   const calculateTotalPrice = () => {
     return addedItems.reduce((total, item) => {
       const harga = item.price && !isNaN(item.price) ? Number(item.price) : 0;
@@ -76,7 +73,6 @@ export const Transactions = () => {
     return addedItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  // Format the price to currency format
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -84,22 +80,15 @@ export const Transactions = () => {
     }).format(amount);
   };
 
-  // Handle checkout button click and navigate to addTransaction
   const handleCheckout = () => {
-    console.log(
-      "Navigating to /transaksi/tambah-transaksi with addedItems:",
-      addedItems
-    );
-
-    // Navigate to /transaksi/tambah-transaksi with addedItems state
     navigate("/transaksi/tambah-transaksi", {
-      state: { addedItems }, // Passing addedItems to the destination page
+      state: { addedItems },
     });
   };
 
   return (
     <div>
-      <ContentLayout>
+      <ContentLayout key={reloadKey}> {/* Add key prop here to force re-render */}
         <div className="w-full py-4 px-6 flex">
           <div className="text-nowrap w-fit">
             <h1 className="text-2xl font-bold">Transaksi</h1>
@@ -113,7 +102,7 @@ export const Transactions = () => {
               title="Transaksi Baru"
               classNameBtn="border-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-2 py-1"
               titleColor="text-white"
-              onClick={handleReset} // Reset added items
+              onClick={handleReset} // Reset added items and trigger re-render
             />
           </div>
         </div>

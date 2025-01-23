@@ -1,0 +1,106 @@
+import React, { useEffect, useState } from "react";
+import { ContentLayout } from "../../components/organisms/ContentLayout";
+import { ButtonIcon } from "../../components/molecules/ButtonIcon";
+import { DocumentTextIcon } from "@heroicons/react/24/outline";
+import { exportOutbond, getAllHistoryTransactions } from "../../api/api";
+
+export const ReportOutbond = () => {
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [outbond, setOutbond] = useState([]);
+
+  useEffect(() => {
+    const fetchOutbond = async () => {
+      try {
+        const data = await getAllHistoryTransactions();
+        if (!data || data.length === 0) {
+          setError("Tidak Ada data tersedia");
+          return;
+        }
+        setOutbond(data);
+      } catch (err) {
+        setError("Gagal memuat data transaksi atau cabang.");
+        console.error("Error fetching transactions:", err);
+      }
+    };
+    fetchOutbond();
+  }, []);
+
+  const handleExport = async (e) => {
+    e.preventDefault();
+
+    const filteredTransactions = outbond.filter(
+      (outbond) => outbond.createdAt >= fromDate && outbond.createdAt <= toDate
+    );
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await exportOutbond(fromDate, toDate);
+    } catch (err) {
+      setError("Terjadi kesalahan saat mengekspor data.");
+      console.error("Error exporting data:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <ContentLayout>
+        <div className="">
+          <div className="w-full py-4 px-6 flex">
+            <div className="text-nowrap w-fit">
+              <h1 className="text-2xl font-bold">Laporan Barang Keluar</h1>
+              <p className="text-sm text-slate-700">
+                Cetak Laporan Barang keluar disini!
+              </p>
+            </div>
+          </div>
+          <hr className="mx-4" />
+          <div className="px-6 mt-12 w-full flex items-center justify-center">
+            <form onSubmit={handleExport}>
+              {/* Tanggal */}
+              <div className="flex gap-4">
+                <div className="mb-4 flex flex-col items-start">
+                  <label htmlFor="fromDate" className="font-semibold mb-2">
+                    Dari Tanggal
+                  </label>
+                  <input
+                    required
+                    name="fromDate"
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    className="w-full px-4 py-2 border bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="mb-4 flex flex-col items-start">
+                  <label htmlFor="toDate" className="font-semibold mb-2">
+                    Sampai Tanggal
+                  </label>
+                  <input
+                    required
+                    name="toDate"
+                    type="date"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className="w-full px-4 py-2 border bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="mb-12">
+                <button className="w-full py-2 px-6 border-2 rounded-full bg-orange-600 text-white hover:bg-orange-700">
+                  Export
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </ContentLayout>
+    </div>
+  );
+};
