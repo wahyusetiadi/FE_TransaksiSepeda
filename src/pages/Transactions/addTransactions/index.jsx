@@ -149,7 +149,7 @@ export const AddTransactions = () => {
             title="Kembali"
             titleColor="text-orange-600 font-semibold text-base"
             showArrow={false}
-            linkTo="/riwayat-transaksi"
+            linkTo="/transaksi"
           />
         </div>
         <hr className="mx-3" />

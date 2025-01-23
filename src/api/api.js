@@ -129,6 +129,16 @@ export const addTransaction = async (payload) => {
   }
 };
 
+// GET ALL TRANSACTIONS
+export const getAllTransactions = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/transactions/get-all`);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching transactions data', error);
+    throw error;    
+  }
+}
 
 // GET ALL CUSTOMER DATA
 export const getAllCustomerData = async () => {
@@ -246,6 +256,17 @@ export const addOutbond = async (payloadOutbond) => {
     return { success: false, error: error.message };
   }
 };
+
+// GET ALL BARANG KELUAR
+export const getAllOutbond = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/barang-keluar/get-all`);
+    return response.data.data;
+  } catch(error) {
+    console.error("Error fetching all outbond", error);
+    throw error;
+  }
+}
 
 
 // EXPORT BARANG KELUAR
