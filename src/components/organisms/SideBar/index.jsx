@@ -10,9 +10,9 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { ButtonIcon } from "../../molecules/ButtonIcon";
-import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import './style.css'
+import "./style.css";
+import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export const SideBar = () => {
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -22,8 +22,9 @@ export const SideBar = () => {
   };
 
   const navigate = useNavigate();
-  const logout = () => {
-    navigate("/");
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Hapus token dari localStorage
+    navigate("/"); // Arahkan pengguna ke halaman login
   };
 
   return (
@@ -44,7 +45,7 @@ export const SideBar = () => {
               title="Dashboard"
               showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
-              linkTo="/"
+              linkTo="/dashboard"
             />
             <ButtonIcon
               icon={<ArchiveBoxIcon className="w-6 h-6" />}
@@ -85,14 +86,24 @@ export const SideBar = () => {
               title="Riwayat Transaksi"
               showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
-              linkTo='/riwayat-transaksi'
+              linkTo="/riwayat-transaksi"
             />
             <ButtonIcon
               icon={<ChartBarIcon className="size-6" />}
               title="Laporan Barang Keluar"
               showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
-              linkTo='/laporan-barang-keluar'
+              linkTo="/laporan-barang-keluar"
+            />
+            <ButtonIcon
+              icon={
+                <ArrowLeftOnRectangleIcon className="size-6 text-red-500" />
+              }
+              titleColor={"text-red-500"}
+              title="Log Out"
+              showArrow={false}
+              classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
+              onClick={handleLogout}
             />
           </div>
         </div>

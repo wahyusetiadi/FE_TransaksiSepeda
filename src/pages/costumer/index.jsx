@@ -75,12 +75,12 @@ export const CostumerPage = () => {
               </p>
             </div>
             <div className="w-full flex items-center justify-end gap-2">
-              <ButtonIcon
+              {/* <ButtonIcon
                 icon={<DocumentTextIcon className="size-5 text-slate-400" />}
                 showArrow={false}
                 title="Export"
                 classNameBtn="border-2 rounded-lg px-2 py-1"
-              />
+              /> */}
               <ButtonIcon
                 icon={<PlusIcon className="size-5 text-white" />}
                 showArrow={false}

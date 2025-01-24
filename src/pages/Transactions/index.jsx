@@ -121,6 +121,8 @@ export const Transactions = () => {
             showTambahBtn={true}
             onAdd={handleAddItem}
             showAddBtn={true}
+            kategoriFilter={true}
+            statusFilter={true}
           />
         </div>
 

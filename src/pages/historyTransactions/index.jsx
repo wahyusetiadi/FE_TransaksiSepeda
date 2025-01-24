@@ -40,7 +40,7 @@ export const HistoryTransactions = () => {
               </p>
             </div>
 
-            <div className="w-full flex items-center justify-end gap-2">
+            {/* <div className="w-full flex items-center justify-end gap-2">
               <ButtonIcon
                 icon={<DocumentTextIcon className="size-5 text-slate-600" />}
                 showArrow={false}
@@ -48,7 +48,7 @@ export const HistoryTransactions = () => {
                 classNameBtn="border-2 border-slate-400 rounded-lg px-2 py-1"
                 titleColor="text-slate-600"
               />
-            </div>
+            </div> */}
           </div>
           <hr className="mx-4" />
           <div className="px-4">

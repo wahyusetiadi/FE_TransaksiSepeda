@@ -11,7 +11,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { ModalEdit } from "../ModalEdit";
 import { PhotoIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
 
 function toTitleCaseWithSpace(str) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");
@@ -38,6 +37,8 @@ export const TableData = ({
   showSearchSet = false,
   showPagination = true,
   onUpdate,
+  kategoriFilter = false,
+  statusFilter = false,
 }) => {
   const [currentItems, setCurrentItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -55,8 +56,6 @@ export const TableData = ({
     type: "",
     status: "",
   });
-
-  const navigate = useNavigate();
 
   const handleAddClick = (item) => {
     if (!itemQuantities[item.id]) {
@@ -157,7 +156,7 @@ export const TableData = ({
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItemsToShow = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPage =  Math.ceil(filteredData.length / itemsPerPage);
   
 
   useEffect(() => {
@@ -190,6 +189,8 @@ export const TableData = ({
     setFilteredData(filtered);
   };
 
+ 
+
   const deleteItem = () => {
     if (selectedItem) {
       onDelete(selectedItem.id);
@@ -203,18 +204,14 @@ export const TableData = ({
       closeRecoveryModal();
     }
   };
-  const detailItem = () => {
-    if (selectedItem) {
-      onRecovery(selectedItem.id);
-    }
-  };
 
+  
 
   return (
     <div className="text-nowrap">
       {showSearchSet && (
         <div className="flex flex-col w-full">
-          <SearchSet onSearchChange={handleSearchChange} />
+          <SearchSet onSearchChange={handleSearchChange} filterStatus={statusFilter} filterKategori={kategoriFilter} />
         </div>
       )}
       <div className="mt-4 rounded-lg overflow-x-auto">
@@ -539,7 +536,82 @@ export const TableData = ({
       )}
 
       {showPagination && (
-        <div className="flex justify-center mt-4 px-4 py-2"></div>
+        <div className="flex justify-center mt-4 px-4 py-2">
+          <button
+          onClick={() => paginate(1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === 1
+              ? "bg-orange-600 text-white cursor-not-allowed"
+              : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+          }`}
+        >
+          &lt;&lt;
+        </button>
+
+        {/* Tombol Prev */}
+        <button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === 1
+              ? "bg-orange-600 text-white cursor-not-allowed"
+              : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+          }`}
+        >
+          &lt;
+        </button>
+
+        {/* Tombol halaman */}
+        {Array.from({ length: totalPage }, (_, index) => {
+          const pageNumber = index + 1;
+          if (
+            pageNumber >= currentPage - 1 && // Show previous 2 pages
+            pageNumber <= currentPage + 1 // Show next 2 pages
+          ) {
+            return (
+              <button
+                key={pageNumber}
+                onClick={() => paginate(pageNumber)}
+                className={`px-3 py-1 mx-1 rounded ${
+                  currentPage === pageNumber
+                    ? "bg-orange-600 text-white"
+                    : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+                }`}
+              >
+                {pageNumber}
+              </button>
+            );
+          }
+          return null;
+        })}
+
+        {/* Tombol Next */}
+        <button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPage}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === totalPage
+              ? "bg-orange-600 text-white cursor-not-allowed"
+              : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+          }`}
+        >
+          &gt;
+        </button>
+
+        {/* Tombol Last */}
+        <button
+          onClick={() => paginate(totalPage)}
+          disabled={currentPage === totalPage}
+          className={`px-3 py-1 mx-1 rounded ${
+            currentPage === totalPage
+              ? "bg-orange-600 text-white cursor-not-allowed"
+              : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+          }`}
+        >
+          &gt;&gt;
+        </button>
+        </div>
       )}
     </div>
   );

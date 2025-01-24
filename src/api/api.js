@@ -4,6 +4,32 @@ import axios from "axios";
 const API_URL = "/data.json";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+const getAuthHeader = async () => {
+  const token = localStorage.getItem("jwtToken");
+  if (token) {
+    return {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+  }
+  return {};
+};
+
+// POST LOGIN
+export const loginUser = async (username, password) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/auth/login`, {
+      username: username,
+      password: password,
+    });
+    localStorage.setItem("jwtToken", response.data.data);
+    return response.data;
+  } catch (error) {
+    console.error("Login Error:", error);
+    throw error;
+  }
+};
+
 //GET ALL PRODUCTS
 export const getAllProducts = async () => {
   try {
@@ -135,10 +161,10 @@ export const getAllTransactions = async () => {
     const response = await axios.get(`${BASE_URL}/transactions/get-all`);
     return response.data.data;
   } catch (error) {
-    console.error('Error fetching transactions data', error);
-    throw error;    
+    console.error("Error fetching transactions data", error);
+    throw error;
   }
-}
+};
 
 // GET ALL CUSTOMER DATA
 export const getAllCustomerData = async () => {
@@ -197,7 +223,9 @@ export const createCustomer = async (customersData) => {
 // GET ALL TRANSACTIONS HISTORY
 export const getAllHistoryTransactions = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/transactions/history/get-all`);
+    const response = await axios.get(
+      `${BASE_URL}/transactions/history/get-all`
+    );
     return response.data.data;
   } catch (error) {
     console.error("Error fetching products data:", error);
@@ -208,25 +236,28 @@ export const getAllHistoryTransactions = async () => {
 // GET DETAIL TRANSACTIONS HISTORI
 export const getHistoryTransactionDetail = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/transactions/get-detail/${id}`, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
-        'Expires': '0',
+    const response = await axios.get(
+      `${BASE_URL}/transactions/get-detail/${id}`,
+      {
+        headers: {
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
       }
-    });
-    
+    );
+
     // Check if we have data in the response
     if (response.status === 304) {
       // If we get a 304, the cached data should still be available in response.data
       return response.data;
     }
-    
+
     if (response.data) {
       return response.data;
     }
-    
-    throw new Error('No data received from server');
+
+    throw new Error("No data received from server");
   } catch (error) {
     console.error("Error fetching history transaction details:", error);
     throw error;
@@ -262,12 +293,11 @@ export const getAllOutbond = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/barang-keluar/get-all`);
     return response.data.data;
-  } catch(error) {
+  } catch (error) {
     console.error("Error fetching all outbond", error);
     throw error;
   }
-}
-
+};
 
 // EXPORT BARANG KELUAR
 export const exportOutbond = async (fromDate, toDate) => {
@@ -282,7 +312,7 @@ export const exportOutbond = async (fromDate, toDate) => {
     }
 
     // Ensure the response type is 'blob' to handle binary data
-    const response = await axios.get(url, { responseType: 'blob' });
+    const response = await axios.get(url, { responseType: "blob" });
 
     // Create a Blob from the response data
     const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
@@ -292,11 +322,12 @@ export const exportOutbond = async (fromDate, toDate) => {
     link.href = fileUrl;
 
     // Set the download file name
-    link.download = fromDate && toDate
-      ? `barang_keluar_${fromDate}_${toDate}.xlsx`
-      : fromDate
-      ? `barang_keluar_${fromDate}.xlsx`
-      : `barang_keluar.xlsx`;
+    link.download =
+      fromDate && toDate
+        ? `barang_keluar_${fromDate}_${toDate}.xlsx`
+        : fromDate
+        ? `barang_keluar_${fromDate}.xlsx`
+        : `barang_keluar.xlsx`;
 
     // Append the link to the body and trigger a click to start download
     document.body.appendChild(link);

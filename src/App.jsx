@@ -14,26 +14,39 @@ import { CostumerPage } from "./pages/costumer";
 import { HistoryTransactions } from "./pages/historyTransactions";
 import { DetailHistoryTransactions } from "./pages/historyTransactions/DetailHistoryTransactions";
 import { ReportOutbond } from "./pages/ReportOutbond";
+import ProtectedLayout from "./layout/ProtectedLayout";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <div className="bg-slate-100 w-full">
       <BrowserRouter>
         <Routes>
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/barang" element={<ItemsPage />} />
-          <Route path="/barang/tambah-barang" element={<AddItems />} />
-          <Route path="/barang/edit-barang/:idBarang" element={<EditItems />} />
-          <Route path="/transaksi" element={<Transactions />} />
-          <Route path="/transaksi/tambah-transaksi" element={<AddTransactions />} />
-          <Route path="/transaksi/pembayaran" element={<Payment />} />
-          <Route path="/pelanggan" element={<CostumerPage />} />
-          <Route path="/riwayat-transaksi" element={<HistoryTransactions />} />
-          <Route path="/riwayat-transaksi/detail/:id" element={<DetailHistoryTransactions />} />
-          <Route path="/laporan-barang-keluar" element={<ReportOutbond />} />
+          <Route path="/" element={<Auth />} />
+          <Route element={<ProtectedLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/barang" element={<ItemsPage />} />
+            <Route path="/barang/tambah-barang" element={<AddItems />} />
+            <Route
+              path="/barang/edit-barang/:idBarang"
+              element={<EditItems />}
+            />
+            <Route path="/transaksi" element={<Transactions />} />
+            <Route
+              path="/transaksi/tambah-transaksi"
+              element={<AddTransactions />}
+            />
+            <Route path="/transaksi/pembayaran" element={<Payment />} />
+            <Route path="/pelanggan" element={<CostumerPage />} />
+            <Route
+              path="/riwayat-transaksi"
+              element={<HistoryTransactions />}
+            />
+            <Route
+              path="/riwayat-transaksi/detail/:id"
+              element={<DetailHistoryTransactions />}
+            />
+            <Route path="/laporan-barang-keluar" element={<ReportOutbond />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

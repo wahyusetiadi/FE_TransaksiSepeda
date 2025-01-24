@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import ImageSide from "../../assets/image/1213.png";
 import Logo1 from "../../assets/logo1.svg";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../api/api";
+import { loginUser } from "../../api/api";
+// import { login } from "../../api/api";
 
 export const Auth = () => {
   const [username, setUsername] = useState("");
@@ -19,16 +20,19 @@ export const Auth = () => {
     setError(null);
 
     try {
-      const response = await login(username, password);
+      const response = await loginUser(username, password);
 
-      if (response.success) {
+      if (response && response.data) {
+        localStorage.setItem('token', response.data)
         navigate("/dashboard");
+        console.log('response', response.data);
       }
+      
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
       } else {
-        setError("Terjadi kesalahan, silahkan coba lagi!");
+        setError("Username atau password salah");
       }
     } finally {
       setLoading(false);

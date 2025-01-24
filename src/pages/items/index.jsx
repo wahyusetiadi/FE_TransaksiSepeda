@@ -132,6 +132,8 @@ export const ItemsPage = () => {
             onDelete={handleDelete}
             onUpdate={handleUpdate}
             showRecoveryBtn={true}
+            kategoriFilter={true}
+            statusFilter={true}
           />
         </div>
       </ContentLayout>
