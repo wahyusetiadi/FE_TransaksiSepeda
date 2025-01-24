@@ -13,9 +13,9 @@ export const CostumerPage = () => {
   const [customer, setCustomer] = useState([]);
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false);
   const [message, setMessage] = useState("");
-  const [name, setName] = useState('');
-  const [telp, setTelp] = useState('');
-  const [type, setType] = useState('');
+  const [name, setName] = useState("");
+  const [telp, setTelp] = useState("");
+  const [type, setType] = useState("");
 
   const handleOpenModalAddCustomer = () => {
     setIsShowAddCustomer(true);
@@ -25,15 +25,16 @@ export const CostumerPage = () => {
     setIsShowAddCustomer(false);
   };
 
+  const fetchDataCustomer = async () => {
+    try {
+      const data = await getAllCustomerData();
+      setCustomer(data);
+    } catch (error) {
+      console.error("Error fetching data customer", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchDataCustomer = async () => {
-      try {
-        const data = await getAllCustomerData();
-        setCustomer(data);
-      } catch (error) {
-        console.error("Error fetching data customer", error);
-      }
-    };
     fetchDataCustomer();
   }, []);
 
@@ -57,6 +58,10 @@ export const CostumerPage = () => {
       const result = await createCustomer(customerData);
       setMessage(`Customer Berhasil tambahkan: ${result.data.name}`);
       handleCloseAddCustomer();
+      fetchDataCustomer();
+      setName("");
+      setTelp("");
+      setType("");
     } catch (error) {
       setMessage(`Error: ${error.message}`);
     }
@@ -94,7 +99,12 @@ export const CostumerPage = () => {
           <hr className="my-4" />
 
           <div className="">
-            <TableData data={customer} itemsPerPage={10} showSearchSet={true} />
+            <TableData
+              data={customer}
+              itemsPerPage={10}
+              showSearchSet={true}
+              sortedData={true}
+            />
           </div>
         </div>
 
@@ -132,7 +142,7 @@ export const CostumerPage = () => {
                         No. Telp Pelanggan
                       </label>
                       <input
-                        type="tel"
+                        type="number"
                         value={telp}
                         onChange={(e) => setTelp(e.target.value)}
                         placeholder="08XXXX"

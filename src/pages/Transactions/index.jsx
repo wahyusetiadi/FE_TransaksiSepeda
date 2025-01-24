@@ -123,6 +123,7 @@ export const Transactions = () => {
             showAddBtn={true}
             kategoriFilter={true}
             statusFilter={true}
+            sortedData={true}
           />
         </div>
 

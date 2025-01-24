@@ -94,7 +94,7 @@ export const AddItems = () => {
   return (
     <div>
       <ContentLayout>
-        <div className="p-6">
+        <div className="p-6 w-fit">
           <ButtonIcon
             icon={<ChevronLeftIcon className="h-6 text-orange-500" />}
             title="Kembali"

@@ -60,6 +60,7 @@ export const ModalEdit = ({
       if (onUpdate) {
         onUpdate();
       }
+      
     } catch (error) {
       console.error("Error updating product", error);
     }

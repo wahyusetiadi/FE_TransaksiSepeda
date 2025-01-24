@@ -17,8 +17,9 @@ function toTitleCaseWithSpace(str) {
 }
 
 export const TableData = ({
-  itemsPerPage = 10,
   data,
+  itemsPerPage = 10,
+  showPagination = true,
   showId = false,
   showDateTime = false,
   showAksi = false,
@@ -34,20 +35,24 @@ export const TableData = ({
   onAdd = () => {},
   onRecovery = () => {},
   onSubmitEdit,
-  showSearchSet = false,
-  showPagination = true,
   onUpdate,
+  showSearchSet = false,
   kategoriFilter = false,
   statusFilter = false,
+  sortedData = false,
 }) => {
   const [currentItems, setCurrentItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredData, setFilteredData] = useState(Array.isArray(data) ? data : []);
+  const [filteredData, setFilteredData] = useState(
+    Array.isArray(data) ? data : []
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
   const [itemQuantities, setItemQuantities] = useState({});
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedKategori, setSelectedKategori] = useState("");
   const [selectedItem, setSelectedItem] = useState({
     id: "",
     name: "",
@@ -130,25 +135,78 @@ export const TableData = ({
     });
   };
 
-  useEffect(() => {
-    if (Array.isArray(data)) {
-      setFilteredData(data);
-    } else {
-      setFilteredData([]); 
+  // useEffect(() => {
+  //   if (Array.isArray(data)) {
+  //     setFilteredData(data);
+  //   } else {
+  //     setFilteredData([]);
+  //   }
+  // }, [data]);
+  const handleFilterChange = (filterType, value) => {
+    if (filterType === "status") {
+      setSelectedStatus(value);
+    } else if (filterType === "kategori") {
+      setSelectedKategori(value);
     }
-  }, [data]);
+  };
+
+  const handleSortChange = (order) => {
+    const sorted = [...filteredData].sort((a, b) => {
+      // Pertama, cek apakah `name` ada, jika tidak, pakai `tanggal`
+      const keyA = a.name || a.date;  // jika `name` tidak ada, gunakan `tanggal`
+      const keyB = b.name || b.date;  // jika `name` tidak ada, gunakan `tanggal`
   
+      // Cek jika `keyA` dan `keyB` adalah tanggal, maka sort berdasarkan tanggal
+      if (keyA instanceof Date && keyB instanceof Date) {
+        const comparison = keyA - keyB;
+        return order === "asc" ? comparison : -comparison;
+      }
   
+      // Jika bukan tanggal, lakukan pengurutan berdasarkan string (localeCompare)
+      const comparison = String(keyA).localeCompare(String(keyB));
+      return order === "asc" ? comparison : -comparison;
+    });
+    setFilteredData(sorted);
+  };
+  
+
+
+  useEffect(() => {
+    let filtered = data;
+
+    if (selectedStatus) {
+      filtered = filtered.filter((item) => item.status === selectedStatus);
+    }
+
+    if (selectedKategori) {
+      filtered = filtered.filter((item) => item.type === selectedKategori);
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter((item) => {
+        const name = item.name ? item.name.toLowerCase() : "";
+        const type = item.type ? item.type.toLowerCase() : "";
+        const customer = item.customer ? item.customer.toLowerCase() : "";
+
+        return (
+          name.includes(searchQuery.toLowerCase()) ||
+          type.includes(searchQuery.toLowerCase()) ||
+          customer.includes(searchQuery.toLowerCase())
+        );
+      });
+    }
+
+    setFilteredData(filtered);
+  }, [selectedStatus, selectedKategori, searchQuery, data]); // Reapply filters when they change
 
   const columns = Object.keys(data[0] || {}).filter((key) => {
     if (key === "id" && !showId) return false;
     if ((key === "tanggal" || key === "waktu") && !showDateTime) return false;
-    if ( key === "isDeleted" || key === "updatedAt") return false;
+    if (key === "isDeleted" || key === "updatedAt") return false;
     if (key === "bukti" || key === "items") return false;
     if (key === "deskripsi" && !showDeskripsi) return false;
     return key !== "id";
   });
-  
 
   if (showAksi) {
     columns.push("aksi");
@@ -156,8 +214,7 @@ export const TableData = ({
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const totalPage =  Math.ceil(filteredData.length / itemsPerPage);
-  
+  const totalPage = Math.ceil(filteredData.length / itemsPerPage);
 
   useEffect(() => {
     const updateData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
@@ -181,15 +238,22 @@ export const TableData = ({
   const handleSearchChange = (query) => {
     setSearchQuery(query);
     const lowercasedQuery = query.toLowerCase();
-    const filtered = data.filter(
-      (item) =>
-        item.name.toLowerCase().includes(lowercasedQuery) ||
-        item.type.toLowerCase().includes(lowercasedQuery)
-    );
+
+    const filtered = data.filter((item) => {
+      // Check for undefined or null values before calling .toLowerCase()
+      const name = item.name ? item.name.toLowerCase() : "";
+      const type = item.type ? item.type.toLowerCase() : "";
+      const customer = item.customer ? item.customer.toLowerCase() : "";
+
+      return (
+        name.includes(lowercasedQuery) ||
+        type.includes(lowercasedQuery) ||
+        customer.includes(lowercasedQuery)
+      );
+    });
+
     setFilteredData(filtered);
   };
-
- 
 
   const deleteItem = () => {
     if (selectedItem) {
@@ -205,13 +269,18 @@ export const TableData = ({
     }
   };
 
-  
-
   return (
     <div className="text-nowrap">
       {showSearchSet && (
         <div className="flex flex-col w-full">
-          <SearchSet onSearchChange={handleSearchChange} filterStatus={statusFilter} filterKategori={kategoriFilter} />
+          <SearchSet
+            onSearchChange={handleSearchChange}
+            onFilterChange={handleFilterChange}
+            filterStatus={statusFilter}
+            filterKategori={kategoriFilter}
+            sortedData={sortedData}
+            onSortChange={handleSortChange}
+          />
         </div>
       )}
       <div className="mt-4 rounded-lg overflow-x-auto">
@@ -538,79 +607,79 @@ export const TableData = ({
       {showPagination && (
         <div className="flex justify-center mt-4 px-4 py-2">
           <button
-          onClick={() => paginate(1)}
-          disabled={currentPage === 1}
-          className={`px-3 py-1 mx-1 rounded ${
-            currentPage === 1
-              ? "bg-orange-600 text-white cursor-not-allowed"
-              : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-          }`}
-        >
-          &lt;&lt;
-        </button>
+            onClick={() => paginate(1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 mx-1 rounded ${
+              currentPage === 1
+                ? "bg-orange-600 text-white cursor-not-allowed"
+                : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+            }`}
+          >
+            &lt;&lt;
+          </button>
 
-        {/* Tombol Prev */}
-        <button
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-3 py-1 mx-1 rounded ${
-            currentPage === 1
-              ? "bg-orange-600 text-white cursor-not-allowed"
-              : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-          }`}
-        >
-          &lt;
-        </button>
+          {/* Tombol Prev */}
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 mx-1 rounded ${
+              currentPage === 1
+                ? "bg-orange-600 text-white cursor-not-allowed"
+                : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+            }`}
+          >
+            &lt;
+          </button>
 
-        {/* Tombol halaman */}
-        {Array.from({ length: totalPage }, (_, index) => {
-          const pageNumber = index + 1;
-          if (
-            pageNumber >= currentPage - 1 && // Show previous 2 pages
-            pageNumber <= currentPage + 1 // Show next 2 pages
-          ) {
-            return (
-              <button
-                key={pageNumber}
-                onClick={() => paginate(pageNumber)}
-                className={`px-3 py-1 mx-1 rounded ${
-                  currentPage === pageNumber
-                    ? "bg-orange-600 text-white"
-                    : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-                }`}
-              >
-                {pageNumber}
-              </button>
-            );
-          }
-          return null;
-        })}
+          {/* Tombol halaman */}
+          {Array.from({ length: totalPage }, (_, index) => {
+            const pageNumber = index + 1;
+            if (
+              pageNumber >= currentPage - 1 && // Show previous 2 pages
+              pageNumber <= currentPage + 1 // Show next 2 pages
+            ) {
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => paginate(pageNumber)}
+                  className={`px-3 py-1 mx-1 rounded ${
+                    currentPage === pageNumber
+                      ? "bg-orange-600 text-white"
+                      : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            }
+            return null;
+          })}
 
-        {/* Tombol Next */}
-        <button
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPage}
-          className={`px-3 py-1 mx-1 rounded ${
-            currentPage === totalPage
-              ? "bg-orange-600 text-white cursor-not-allowed"
-              : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-          }`}
-        >
-          &gt;
-        </button>
+          {/* Tombol Next */}
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPage}
+            className={`px-3 py-1 mx-1 rounded ${
+              currentPage === totalPage
+                ? "bg-orange-600 text-white cursor-not-allowed"
+                : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+            }`}
+          >
+            &gt;
+          </button>
 
-        {/* Tombol Last */}
-        <button
-          onClick={() => paginate(totalPage)}
-          disabled={currentPage === totalPage}
-          className={`px-3 py-1 mx-1 rounded ${
-            currentPage === totalPage
-              ? "bg-orange-600 text-white cursor-not-allowed"
-              : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-          }`}
-        >
-          &gt;&gt;
-        </button>
+          {/* Tombol Last */}
+          <button
+            onClick={() => paginate(totalPage)}
+            disabled={currentPage === totalPage}
+            className={`px-3 py-1 mx-1 rounded ${
+              currentPage === totalPage
+                ? "bg-orange-600 text-white cursor-not-allowed"
+                : "bg-orange-100 text-orange-700 hover:bg-orange-300"
+            }`}
+          >
+            &gt;&gt;
+          </button>
         </div>
       )}
     </div>

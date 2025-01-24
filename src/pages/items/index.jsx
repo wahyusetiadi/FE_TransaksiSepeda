@@ -134,6 +134,7 @@ export const ItemsPage = () => {
             showRecoveryBtn={true}
             kategoriFilter={true}
             statusFilter={true}
+            sortedData={true}
           />
         </div>
       </ContentLayout>

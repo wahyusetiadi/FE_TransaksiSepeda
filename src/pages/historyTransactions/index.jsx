@@ -59,6 +59,7 @@ export const HistoryTransactions = () => {
               showAksi={true}
               showDetailBtn={true}
               onDetail={handleDetailClick} // Pass handleDetailClick here
+              sortedData={true}
             />
           </div>
         </div>
