@@ -1,119 +1,111 @@
 import React from "react";
 import { ContentLayout } from "../../../components/organisms/ContentLayout";
-import { CheckIcon } from "@heroicons/react/24/outline";
-import { PhotoIcon } from "@heroicons/react/24/solid";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export const Payment = () => {
+  const location = useLocation();
+  const { transactionCode } = location.state || {};
+  const { description } = location.state || {};
+  const addItems = location.state?.items || [];
+  const total = location.state?.total || 0;
+  const date = new Date();
+
+  const handlePrint = () => {
+    const printContents = document.getElementById("print-content").innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+  };
+
   return (
     <div>
       <ContentLayout>
-        <div className="w-full flex items-center justify-center bg-slate-100">
-          <div className="w-1/2 flex flex-col bg-white rounded-xl p-8 gap-10">
-            <div className="w-full flex flex-col gap-4 items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckIcon
-                  className="text-green-600 size-8"
-                  style={{ strokeWidth: 3 }}
-                />
+        <div className="w-full flex justify-center">
+          <div
+            id="print-content"
+            className="w-[375px] my-4 flex flex-col bg-white rounded-lg p-4 text-xs font-mono border border-gray-300"
+          >
+            {/* Header */}
+            <div className="text-center">
+              <h1 className="font-bold">GMJ Bike Shop</h1>
+              <p>Jl. Veteran No. 123</p>
+              <p>Telp: 0812-3456-7890</p>
+            </div>
+
+            <div className="mt-2 text-sm">
+              <div className="text-center">
+                <p className="font-semibold">Struk Pembelian</p>
+                <p>
+                  ID Transaksi: <br /> {transactionCode}
+                </p>
               </div>
-              <h1 className="text-xl font-bold">Pembelian Berhasil</h1>
-              <p className="text-base">ID Transaksi #{"12345678"}</p>
+              <hr className="my-2" />
+              <div className="text-start">
+                <p className="text-xs">{date.toISOString().split("T")[0]}</p>
+                <p className="text-xs">{date.toTimeString().split(" ")[0]}</p>
+              </div>
             </div>
 
-            <div className="text-base">
-              <ul className="w-full flex flex-col gap-6">
-                <li className="flex flex-col gap-2">
-                  <h1 className="font-bold">Tanggal Transaksi</h1>
-                  <p className="text-sm">
-                    {"Sabtu"}, {"04 Januari 2025"} | {"15:42"}
-                  </p>
-                </li>
-                <li className="flex flex-col gap-2">
-                  <h1 className="font-bold">Jenis Transaksi</h1>
-                  <p className="text-sm">{"Ambil Ditempat"}</p>
-                </li>
-                <li className="flex flex-col gap-2">
-                  <h1 className="font-bold">Pelanggan</h1>
-                  <p className="text-sm">
-                    {"Maulana"} {"+6289765431201"}
-                  </p>
-                </li>
-                <li className="flex flex-col gap-2">
-                  <h1 className="font-bold">Metode Pembayaran</h1>
-                  <div className="flex gap-2">
-                    <p className="text-sm">{"Transfer"}</p>
-                    <div className="w-full flex gap-2 font-semibold text-orange-600 items-center justify-start">
-                      <PhotoIcon className="size-4" />
-                      <p className="text-sm">Bukti Pembayaran</p>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
+            <hr className="my-2" />
 
-            <div className="w-full flex flex-col gap-6">
-              <h1 className="font-bold text-xl">Daftar Pesanan</h1>
-
-              <div className="w-full flex items-center justify-start gap-2">
-                <img
-                  src=""
-                  alt=""
-                  className="w-28 h-28 rounded-lg bg-slate-200"
-                />
-
-                <div className="text-base text-start">
-                  <h1 className="font-bold">{"MTB Explorer 500"}</h1>
-                  <p className="text-sm font-medium">{"x1"}</p>
-                  <p className="font-semibold">{"Rp5.500.000"}</p>
+            {/* Rincian Pembelian */}
+            <div className="w-full flex flex-col gap-2">
+              {addItems.map((item, index) => (
+                <div key={index} className="flex justify-between text-sm">
+                  <span>
+                    {item.name} <br /> (x{item.quantity})
+                  </span>
+                  <span>{formatCurrency(item.price * item.quantity)}</span>
                 </div>
-              </div>
-
-              <div className="">
-                <ul className="w-full flex flex-col gap-3 font-semibold text-sm">
-                  <li>
-                    <div className="w-full flex justify-between">
-                      <p className="font-normal text-[#334155]">Subtotal</p>
-                      <p>Rp{"5.500.000"}</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="w-full flex justify-between">
-                      <p className="font-normal text-[#334155]">Pengiriman</p>
-                      <p>Rp{"50.000"}</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="w-full flex justify-between">
-                      <p className="font-normal text-[#334155]">
-                        Diskon {"(5%)"}
-                      </p>
-                      <p>-Rp{"100.000"}</p>
-                    </div>
-                  </li>
-                  <li>
-                    <hr />
-                  </li>
-                  <li>
-                    <div className="w-full flex justify-between">
-                      <h1 className="text-lg">{"Total"}</h1>
-                      <h1 className="text-lg">Rp{"5.450.000"}</h1>
-                    </div>
-                  </li>
-                </ul>
-              </div>
+              ))}
             </div>
 
-            <div className="">
-              <Link to="/transaksi">
-                <button className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base text-white">
-                  Kembali Transaksi
-                </button>
-              </Link>
+            <hr className="my-2" />
+
+            <div className="flex justify-between text-sm font-semibold">
+              <p>Total</p>
+              <p>{formatCurrency(total)}</p>
+            </div>
+
+            <hr className="my-2" />
+
+            {/* Metode Pembayaran */}
+            <div className="text-start text-sm">
+              <p>
+                Metode Pembayaran: <b>{description}</b>
+              </p>
+            </div>
+
+            <hr className="my-2" />
+
+            {/* Footer */}
+            <div className="text-center text-xs text-gray-600">
+              <p>
+                Terima kasih telah berbelanja di <br /> GMJ Bike Shop
+              </p>
+              <p>www.gmjbikeshop.com</p>
+              <p>Pastikan untuk menyimpan struk ini sebagai bukti transaksi.</p>
             </div>
           </div>
+        </div>
+
+        <div className="pb-4 flex justify-center">
+          <button
+            onClick={handlePrint}
+            className="bg-orange-600 text-white px-4 py-2 rounded-full text-sm"
+          >
+            Cetak Struk
+          </button>
         </div>
       </ContentLayout>
     </div>
   );
+};
+
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  }).format(amount);
 };

@@ -160,7 +160,7 @@ export const Dashboard = () => {
         setCustomer(data);
         setCountCustomer(data.length);
         // console.log('setCustomer', data);
-        console.log('setCountCustomer', data.length);
+        console.log("setCountCustomer", data.length);
       } catch (error) {
         console.error("Error fetching all customer data", error);
         throw error;
@@ -172,8 +172,8 @@ export const Dashboard = () => {
         const data = await getAllHistoryTransactions();
         setHistory(data);
         setCounthistory(data.length);
-        console.log('setHistory', data);
-        console.log('setCountHistory', data.length);
+        console.log("setHistory", data);
+        console.log("setCountHistory", data.length);
       } catch (error) {
         console.error("Error fetching all transactions history", error);
         throw error;
@@ -185,8 +185,8 @@ export const Dashboard = () => {
         const data = await getAllOutbond();
         setOutbond(data);
         setCountOutbond(data.length);
-        console.log('barang keluar', data);
-        console.log('setCountOutBond', data.length);
+        console.log("barang keluar", data);
+        console.log("setCountOutBond", data.length);
       } catch (error) {
         console.error("Error fetching all outbond", error);
         throw error;
@@ -203,14 +203,15 @@ export const Dashboard = () => {
   return (
     <div>
       <ContentLayout>
-        <div className="w-full flex px-6 py-4">
-          <div className="text-nowrap w-fit">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-sm text-slate-700">
-              Cek ringkasan penjualan kamu disini!
-            </p>
-          </div>
-          {/* <div className="w-full flex items-center justify-end gap-2">
+        <div className="mb-12">
+          <div className="w-full flex px-6 py-4">
+            <div className="text-nowrap max-md:text-wrap w-fit">
+              <h1 className="text-2xl max-md:text-lg font-bold ">Dashboard</h1>
+              <p className="text-sm max-md:text-xs text-slate-700">
+                Cek ringkasan penjualan kamu disini!
+              </p>
+            </div>
+            {/* <div className="w-full flex items-center justify-end gap-2">
             <ButtonIcon
               showArrow={false}
               title="Sehari"
@@ -232,46 +233,47 @@ export const Dashboard = () => {
               classNameBtn="border-2 rounded-lg focus:bg-orange-500 focus:text-white focus:border-orange-500 px-2 py-1"
             />
           </div> */}
-        </div>
+          </div>
 
-        <hr className="mx-6" />
-        {/* CONTENT */}
-        <div className="px-6 py-2 w-full grid grid-cols-2 gap-4 text-nowarp text-slate-700">
-          <Link to="/barang">
-            <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
-              <h1 className="text-base font-bold">Data Barang</h1>
-              <ArchiveBoxIcon className="text-orange-600 size-8" />
-              <h1 className="text-sm font-bold">{`${countBarang} item`}</h1>
-            </div>
-          </Link>
-          <Link to="/transaksi">
-            <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
-              <h1 className="text-base font-bold">Transaksi</h1>
-              <ShoppingBagIcon className="text-orange-600 size-8" />
-              <h1 className="text-sm font-bold">{`${countTransactions} Transaksi`}</h1>
-            </div>
-          </Link>
-          <Link to="/pelanggan">
-            <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
-              <h1 className="text-base font-bold">Pelanggan</h1>
-              <UserGroupIcon className="text-orange-600 size-8" />
-              <h1 className="text-sm font-bold">{`${countCustomer} Pelanggan`}</h1>
-            </div>
-          </Link>
-          <Link to="/riwayat-transaksi">
-            <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
-              <h1 className="text-base font-bold">Riwayat Transaksi</h1>
-              <ReceiptPercentIcon className="text-orange-600 size-8" />
-              <h1 className="text-sm font-bold">{`${countHistory} Riwayat Transaksi`}</h1>
-            </div>
-          </Link>
-          <Link to="/laporan-barang-keluar">
-            <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
-              <h1 className="text-base font-bold">Laporan Barang Keluar</h1>
-              <ChartBarIcon className="text-orange-600 size-8" />
-              <h1 className="text-sm font-bold">{`${countOutbond} Laporan Barang Keluar`}</h1>
-            </div>
-          </Link>
+          <hr className="mx-6" />
+          {/* CONTENT */}
+          <div className="px-6 py-2 w-full grid grid-cols-2 max-md:grid-cols-1 gap-4 text-nowarp text-slate-700">
+            <Link to="/barang">
+              <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
+                <h1 className="text-base font-bold">Data Barang</h1>
+                <ArchiveBoxIcon className="text-orange-600 size-8" />
+                <h1 className="text-sm font-bold">{`${countBarang} item`}</h1>
+              </div>
+            </Link>
+            <Link to="/transaksi">
+              <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
+                <h1 className="text-base font-bold">Transaksi</h1>
+                <ShoppingBagIcon className="text-orange-600 size-8" />
+                <h1 className="text-sm font-bold">{`${countTransactions} Transaksi`}</h1>
+              </div>
+            </Link>
+            <Link to="/pelanggan">
+              <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
+                <h1 className="text-base font-bold">Pelanggan</h1>
+                <UserGroupIcon className="text-orange-600 size-8" />
+                <h1 className="text-sm font-bold">{`${countCustomer} Pelanggan`}</h1>
+              </div>
+            </Link>
+            <Link to="/riwayat-transaksi">
+              <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
+                <h1 className="text-base font-bold">Riwayat Transaksi</h1>
+                <ReceiptPercentIcon className="text-orange-600 size-8" />
+                <h1 className="text-sm font-bold">{`${countHistory} Riwayat Transaksi`}</h1>
+              </div>
+            </Link>
+            <Link to="/laporan-barang-keluar">
+              <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
+                <h1 className="text-base font-bold">Laporan Barang Keluar</h1>
+                <ChartBarIcon className="text-orange-600 size-8" />
+                <h1 className="text-sm font-bold">{`${countOutbond} Laporan Barang Keluar`}</h1>
+              </div>
+            </Link>
+          </div>
         </div>
       </ContentLayout>
     </div>

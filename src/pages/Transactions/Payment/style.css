@@ -1,0 +1,18 @@
+@media print {
+    /* Sembunyikan elemen selain content yang dicetak */
+    body * {
+      visibility: hidden;
+    }
+  
+    #print-content, #print-content * {
+      visibility: visible;
+    }
+  
+    /* Atur posisi dari elemen yang akan dicetak agar tampil di halaman */
+    #print-content {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+  

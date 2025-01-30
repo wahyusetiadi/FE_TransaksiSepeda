@@ -7,7 +7,7 @@ export const ContentLayout = ({ children }) => {
   const location = useLocation(); // Mengambil lokasi atau rute saat ini
 
   return (
-    <div className="w-full flex h-screen">
+    <div className="w-full flex h-screen ">
       <div className="w-auto">
         <SideBar />
       </div>
@@ -16,9 +16,8 @@ export const ContentLayout = ({ children }) => {
         {/* <div className="w-full">
           <TopBar />
         </div> */}
-        <div className="h-full overflow-y-auto p-8 xl:p-6">
+        <div className="h-full overflow-y-auto max-xl:p-6 md:p-4 max-sm:ml-20">
           <div className="w-full h-auto rounded-lg bg-white">
-            {/* Menambahkan key berdasarkan path rute saat ini */}
             <div key={location.pathname}>
               {children}
             </div>

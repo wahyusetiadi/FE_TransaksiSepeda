@@ -15,15 +15,16 @@ import { HistoryTransactions } from "./pages/historyTransactions";
 import { DetailHistoryTransactions } from "./pages/historyTransactions/DetailHistoryTransactions";
 import { ReportOutbond } from "./pages/ReportOutbond";
 import ProtectedLayout from "./layout/ProtectedLayout";
+import { StruckTransactions } from "./components/organisms/StruckTransactions";
 
 function App() {
   return (
     <div className="bg-slate-100 w-full">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Auth />} />
-          <Route element={<ProtectedLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/auth" element={<Auth />} />
+          {/* <Route element={<ProtectedLayout />}> */}
+            <Route path="/" element={<Dashboard />} />
             <Route path="/barang" element={<ItemsPage />} />
             <Route path="/barang/tambah-barang" element={<AddItems />} />
             <Route
@@ -36,6 +37,7 @@ function App() {
               element={<AddTransactions />}
             />
             <Route path="/transaksi/pembayaran" element={<Payment />} />
+            <Route path="/cetak-struk" element={<StruckTransactions />} />
             <Route path="/pelanggan" element={<CostumerPage />} />
             <Route
               path="/riwayat-transaksi"
@@ -46,7 +48,7 @@ function App() {
               element={<DetailHistoryTransactions />}
             />
             <Route path="/laporan-barang-keluar" element={<ReportOutbond />} />
-          </Route>
+          {/* </Route> */}
         </Routes>
       </BrowserRouter>
     </div>

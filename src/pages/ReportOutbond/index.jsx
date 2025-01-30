@@ -40,6 +40,8 @@ export const ReportOutbond = () => {
 
     try {
       await exportOutbond(fromDate, toDate);
+      setFromDate("");
+      setToDate("");
     } catch (err) {
       setError("Terjadi kesalahan saat mengekspor data.");
       console.error("Error exporting data:", err);
@@ -53,9 +55,11 @@ export const ReportOutbond = () => {
       <ContentLayout>
         <div className="">
           <div className="w-full py-4 px-6 flex">
-            <div className="text-nowrap w-fit">
-              <h1 className="text-2xl font-bold">Laporan Barang Keluar</h1>
-              <p className="text-sm text-slate-700">
+            <div className="text-nowrap max-md:text-wrap w-fit">
+              <h1 className="text-2xl max-md:text-lg font-bold">
+                Laporan Barang Keluar
+              </h1>
+              <p className="text-sm max-md:text-xs text-slate-700">
                 Cetak Laporan Barang keluar disini!
               </p>
             </div>

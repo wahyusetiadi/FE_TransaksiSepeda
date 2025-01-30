@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";  // Import useNavigate
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 export const ButtonIcon = ({
   icon,
@@ -15,15 +15,14 @@ export const ButtonIcon = ({
   state, // Accept state prop to pass with navigation
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();  // Initialize useNavigate
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleClick = () => {
     setIsOpen(!isOpen);
     if (onClick) onClick();
-    
-    // Use navigate to navigate with state
+
     if (linkTo) {
-      navigate(linkTo, { state });  // Passing state with navigation
+      navigate(linkTo, { state }); // Passing state with navigation
     }
   };
 
@@ -34,16 +33,17 @@ export const ButtonIcon = ({
         onClick={handleClick}
       >
         <div className={className}>{icon}</div>
-        <div className={`flex items-start text-sm ${titleColor}`}>
-          {title}
-        </div>
+        <div className={`flex items-start text-sm ${titleColor}`}>{title}</div>
         <div className="w-full flex justify-end">
-          {showArrow &&
+          {showArrow && <ChevronDownIcon className="size-4" />}
+          {/* {showArrow &&
             (isOpen ? (
-              <ChevronUpIcon className="size-4" />
+              <></>
             ) : (
-              <ChevronDownIcon className="size-4" />
-            ))}
+              // <ChevronUpIcon className="size-4" />
+              // <ChevronDownIcon className="size-4" />
+              <></>
+            ))} */}
           {endIcon}
         </div>
       </button>

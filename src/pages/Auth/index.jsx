@@ -23,11 +23,11 @@ export const Auth = () => {
       const response = await loginUser(username, password);
 
       if (response && response.data) {
-        localStorage.setItem('token', response.data)
-        navigate("/dashboard");
-        console.log('response', response.data);
+        localStorage.setItem("token", response.data);
+        // navigate("/dashboard");
+        navigate("/");
+        console.log("response", response.data);
       }
-      
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         setError(err.response.data.message);
@@ -45,19 +45,21 @@ export const Auth = () => {
         <img src={ImageSide} />
       </div> */}
 
-      <div className="w-[600px] py-20 border bg-slate-100 rounded-lg flex flex-col items-center justify-center">
+      <div className="md:w-[600px] max-md:w-[300px] py-20 max-md:py-8 max-  md:px-4 border bg-slate-100 rounded-lg flex flex-col items-center justify-center">
         <div className="mb-6">
-          <img src={Logo1} className="w-72" />
+          <img src={Logo1} className="w-72 max-md:w-40" />
         </div>
         <form action="" onSubmit={handleSubmit}>
           <div className="text-center w-full">
-            <h1 className="font-bold text-2xl">Masuk ke Akun Anda</h1>
-            <p className="text-gray-600 text-base">
+            <h1 className="font-bold text-2xl max-md:text-lg">
+              Masuk ke Akun Anda
+            </h1>
+            <p className="text-gray-600 text-base max-md:text-sm">
               Masukkan Username dan Password untuk login!
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 mt-6 text-base">
+          <div className="flex flex-col gap-2 mt-6 text-base max-md:text-sm">
             <label htmlFor="username" className="font-semibold">
               Username
             </label>
@@ -71,12 +73,12 @@ export const Auth = () => {
             />
           </div>
 
-          <div className="flex flex-col gap-2 mt-4 text-base">
+          <div className="flex flex-col gap-2 mt-4 text-base max-md:text-sm">
             <label htmlFor="password" className="font-semibold">
               Password
             </label>
             <input
-            required
+              required
               type="password"
               placeholder="Masukkan Password"
               value={password}
@@ -91,8 +93,11 @@ export const Auth = () => {
 
           {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
-          <div className="w-full flex justify-center text-base text-white mt-8">
-            <button type="submit" className="p-2 w-full bg-orange-600 hover:bg-orange-700 rounded-full">
+          <div className="w-full flex justify-center text-base max-md:text-sm text-white mt-8">
+            <button
+              type="submit"
+              className="p-2 w-full bg-orange-600 hover:bg-orange-700 rounded-full"
+            >
               Login
             </button>
           </div>

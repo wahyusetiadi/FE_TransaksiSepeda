@@ -153,23 +153,21 @@ export const TableData = ({
   const handleSortChange = (order) => {
     const sorted = [...filteredData].sort((a, b) => {
       // Pertama, cek apakah `name` ada, jika tidak, pakai `tanggal`
-      const keyA = a.name || a.date;  // jika `name` tidak ada, gunakan `tanggal`
-      const keyB = b.name || b.date;  // jika `name` tidak ada, gunakan `tanggal`
-  
+      const keyA = a.name || a.date; // jika `name` tidak ada, gunakan `tanggal`
+      const keyB = b.name || b.date; // jika `name` tidak ada, gunakan `tanggal`
+
       // Cek jika `keyA` dan `keyB` adalah tanggal, maka sort berdasarkan tanggal
       if (keyA instanceof Date && keyB instanceof Date) {
         const comparison = keyA - keyB;
         return order === "asc" ? comparison : -comparison;
       }
-  
+
       // Jika bukan tanggal, lakukan pengurutan berdasarkan string (localeCompare)
       const comparison = String(keyA).localeCompare(String(keyB));
       return order === "asc" ? comparison : -comparison;
     });
     setFilteredData(sorted);
   };
-  
-
 
   useEffect(() => {
     let filtered = data;
@@ -270,7 +268,7 @@ export const TableData = ({
   };
 
   return (
-    <div className="text-nowrap">
+    <div className="text-nowrap max-md:text-wrap">
       {showSearchSet && (
         <div className="flex flex-col w-full">
           <SearchSet
@@ -290,7 +288,7 @@ export const TableData = ({
           cellSpacing="0"
           className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg"
         >
-          <thead className="bg-orange-50 text-black text-sm font-bold rounded">
+          <thead className="bg-orange-50 text-black text-sm max-md:text-xs font-bold rounded">
             <tr>
               {columns.map((col) => (
                 <th key={col} className="px-6 py-4 text-left">
@@ -301,7 +299,8 @@ export const TableData = ({
               ))}
             </tr>
           </thead>
-          <tbody className="text-black text-xs">
+
+          <tbody className="text-black text-xs max-md:text-[10px]">
             {currentItems.length > 0 ? (
               currentItems.map((item, index) => (
                 <tr key={item.id} className="border-b">
@@ -356,10 +355,16 @@ export const TableData = ({
                                     );
                                     handleEditClick(item);
                                   }}
-                                  className="w-full px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-600 rounded flex gap-2 items-center justify-center"
+                                  className="w-full max-md:w-fit px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-600 rounded flex gap-2 items-center justify-center"
                                 >
-                                  <PencilSquareIcon className="size-3" />
-                                  Edit
+                                  <PencilSquareIcon className="size-3 hidden md:block" />{" "}
+                                  {/* Ini akan sembunyi pada layar kecil */}
+                                  <span className="hidden md:block">
+                                    Edit
+                                  </span>{" "}
+                                  {/* Ini akan sembunyi pada layar kecil */}
+                                  <PencilSquareIcon className="size-3 md:hidden" />{" "}
+                                  {/* Ini akan tampil pada layar kecil */}
                                 </button>
 
                                 {isEditOpen && (
@@ -388,10 +393,13 @@ export const TableData = ({
                                   );
                                   openDeleteModal(item);
                                 }}
-                                className="w-full px-2 py-1 font-semibold text-xs bg-red-100 text-red-600 rounded flex gap-2 items-center justify-center"
+                                className="w-full max-md:w-fit px-2 py-1 font-semibold text-xs bg-red-100 text-red-600 rounded flex gap-2 items-center justify-center"
                               >
-                                <TrashIcon className="size-3" />
-                                Hapus
+                                <TrashIcon className="size-3 hidden md:block" />
+                                <span className="hidden md:block">
+                                  Hapus
+                                </span>{" "}
+                                <TrashIcon className="size-3 md:hidden" />
                               </button>
                             )}
                             {showRecoveryBtn && item.isDeleted === 1 && (
@@ -402,10 +410,11 @@ export const TableData = ({
                                   );
                                   openRecoveryModal(item);
                                 }}
-                                className="w-full px-2 py-1 font-semibold text-xs bg-green-100 text-green-600 rounded flex gap-2 items-center justify-center"
+                                className="w-full max-md:w-fit px-2 py-1 font-semibold text-xs bg-green-100 text-green-600 rounded flex gap-2 items-center justify-center"
                               >
-                                <ArrowPathIcon className="size-3" />
-                                Recovery
+                                <ArrowPathIcon className="size-3 hidden md:block" />
+                                <span className="hidden md:block">Recovery</span>{" "}
+                                <ArrowPathIcon className="size-3 md:hidden" />
                               </button>
                             )}
                             {showDetailBtn && (
@@ -429,11 +438,15 @@ export const TableData = ({
                                   <button
                                     onClick={() => handleAddClick(item)}
                                     className={`w-fit px-5 py-2 font-semibold text-white text-xs rounded-full flex gap-2 items-center justify-center ${
-                                      item.isDeleted === 1
+                                      item.isDeleted === 1 ||
+                                      item.status === "Tidak Tersedia"
                                         ? "bg-slate-400 cursor-not-allowed"
                                         : "bg-orange-600"
                                     }`}
-                                    disabled={item.isDeleted === 1}
+                                    disabled={
+                                      item.isDeleted === 1 ||
+                                      item.status === "Tidak Tersedia"
+                                    }
                                   >
                                     <PlusIcon className="size-3" />
                                     Tambah
@@ -490,7 +503,7 @@ export const TableData = ({
                       return (
                         <td
                           key={col}
-                          className="text-center text-white font-semibold rounded-full"
+                          className="text-center text-white font-semibold rounded-full max-sm:text-nowrap"
                         >
                           <span
                             className={`${
@@ -537,16 +550,18 @@ export const TableData = ({
       {isDeleteOpen && (
         <div className="w-full fixed inset-0 flex items-center justify-center">
           <div className="w-full h-screen bg-black absolute opacity-50"></div>
-          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] flex items-center justify-center flex-col gap-8">
+          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] max-md:w-[300px] flex items-center justify-center flex-col gap-8">
             <div className="w-full flex flex-col items-center justify-center gap-5">
-              <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                  <ExclamationTriangleIcon className="text-red-600 size-7" />
+              <div className="w-20 h-20 max-md:w-14 max-md:h-14 bg-red-50 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 max-md:w-11 max-md:h-11 bg-red-100 rounded-full flex items-center justify-center">
+                  <ExclamationTriangleIcon className="text-red-600 size-7 max-md:size-5" />
                 </div>
               </div>
-              <div className="w-full flex flex-col items-center justify-center">
-                <h3 className="text-xl font-semibold">Apakah kamu yakin?</h3>
-                <p className="text-base text-[#64748B]">
+              <div className="w-full flex flex-col text-center items-center justify-center">
+                <h3 className="text-xl max-md:text-base font-semibold">
+                  Apakah kamu yakin?
+                </h3>
+                <p className="text-base max-md:text-xs text-[#64748B]">
                   Anda tidak dapat mengembalikan penghapusan ini?
                 </p>
               </div>
@@ -554,13 +569,13 @@ export const TableData = ({
             <div className="w-full flex gap-4 items-center justify-between">
               <button
                 onClick={closeDeleteModal}
-                className="w-full px-10 py-3 border text-slate-600 text-base font-semibold border-slate-600 rounded-full"
+                className="w-full px-10 py-3 max-md:text-xs max-md:px-7 border text-slate-600 text-base font-semibold border-slate-600 rounded-full"
               >
                 Batal
               </button>
               <button
                 onClick={deleteItem}
-                className="w-full px-10 py-3 text-white text-base font-semibold bg-red-600 rounded-full"
+                className="w-full px-10 py-3 max-md:text-xs max-md:px-7 text-white text-base font-semibold bg-red-600 rounded-full"
               >
                 Hapus
               </button>
@@ -572,16 +587,18 @@ export const TableData = ({
       {isRecoveryOpen && (
         <div className="w-full fixed inset-0 flex items-center justify-center">
           <div className="w-full h-screen bg-black absolute opacity-50"></div>
-          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] flex items-center justify-center flex-col gap-8">
+          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] max-md:w-[300px] flex items-center justify-center flex-col gap-8">
             <div className="w-full flex flex-col items-center justify-center gap-5">
-              <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                  <ExclamationTriangleIcon className="text-yellow-600 size-7" />
+              <div className="w-20 h-20 max-md:w-14 max-md:h-14 bg-red-50 rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 max-md:h-11 max-md:w-11 bg-red-100 rounded-full flex items-center justify-center">
+                  <ExclamationTriangleIcon className="text-yellow-600 size-7 max-md:size-5" />
                 </div>
               </div>
-              <div className="w-full flex flex-col items-center justify-center">
-                <h3 className="text-xl font-semibold">Recovery Data?</h3>
-                <p className="text-base text-[#64748B]">
+              <div className="w-full flex flex-col text-center items-center justify-center ">
+                <h3 className="text-xl max-md:text-base font-semibold">
+                  Recovery Data?
+                </h3>
+                <p className="text-base max-md:text-xs text-[#64748B]">
                   Apakah Anda ingin mengembalikan data ini?
                 </p>
               </div>
@@ -589,13 +606,13 @@ export const TableData = ({
             <div className="w-full flex gap-4 items-center justify-between">
               <button
                 onClick={closeRecoveryModal}
-                className="w-full px-10 py-3 border text-slate-600 text-base font-semibold border-slate-600 rounded-full"
+                className="w-full px-10 py-3 max-md:text-xs max-md:px-7 border text-slate-600 text-base font-semibold border-slate-600 rounded-full"
               >
                 Batal
               </button>
               <button
                 onClick={recoveryItem}
-                className="w-full px-10 py-3 text-white text-base font-semibold bg-green-600 rounded-full"
+                className="w-full px-10 py-3 max-md:text-xs max-md:px-7 text-white text-base font-semibold bg-green-600 rounded-full"
               >
                 Recovery
               </button>
@@ -605,13 +622,13 @@ export const TableData = ({
       )}
 
       {showPagination && (
-        <div className="flex justify-center mt-4 px-4 py-2">
+        <div className="flex justify-center mt-4 px-4 py-2 max-md:text-xs max-md:px-0 max-md:py-0">
           <button
             onClick={() => paginate(1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1 mx-1 rounded ${
+            className={`px-3 py-1 mx-1 max-md:px-1 rounded ${
               currentPage === 1
-                ? "bg-orange-600 text-white cursor-not-allowed"
+                ? "bg-orange-100 text-orange-300 cursor-not-allowed"
                 : "bg-orange-100 text-orange-700 hover:bg-orange-300"
             }`}
           >
@@ -622,9 +639,9 @@ export const TableData = ({
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1 mx-1 rounded ${
+            className={`px-3 py-1 mx-1 max-md:px-2 rounded ${
               currentPage === 1
-                ? "bg-orange-600 text-white cursor-not-allowed"
+                ? "bg-orange-100 text-orange-300 cursor-not-allowed"
                 : "bg-orange-100 text-orange-700 hover:bg-orange-300"
             }`}
           >
@@ -635,14 +652,14 @@ export const TableData = ({
           {Array.from({ length: totalPage }, (_, index) => {
             const pageNumber = index + 1;
             if (
-              pageNumber >= currentPage - 1 && // Show previous 2 pages
-              pageNumber <= currentPage + 1 // Show next 2 pages
+              pageNumber >= currentPage - 1 &&
+              pageNumber <= currentPage + 1 
             ) {
               return (
                 <button
                   key={pageNumber}
                   onClick={() => paginate(pageNumber)}
-                  className={`px-3 py-1 mx-1 rounded ${
+                  className={`px-3 py-1 mx-1 max-md:px-2 rounded ${
                     currentPage === pageNumber
                       ? "bg-orange-600 text-white"
                       : "bg-orange-100 text-orange-700 hover:bg-orange-300"
@@ -659,9 +676,9 @@ export const TableData = ({
           <button
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPage}
-            className={`px-3 py-1 mx-1 rounded ${
+            className={`px-3 py-1 mx-1 max-md:px-2 rounded ${
               currentPage === totalPage
-                ? "bg-orange-600 text-white cursor-not-allowed"
+                ? "bg-orange-100 text-orange-300 cursor-not-allowed"
                 : "bg-orange-100 text-orange-700 hover:bg-orange-300"
             }`}
           >
@@ -672,9 +689,9 @@ export const TableData = ({
           <button
             onClick={() => paginate(totalPage)}
             disabled={currentPage === totalPage}
-            className={`px-3 py-1 mx-1 rounded ${
+            className={`px-3 py-1 mx-1 max-md:px-2 rounded ${
               currentPage === totalPage
-                ? "bg-orange-600 text-white cursor-not-allowed"
+                ? "bg-orange-100 text-orange-300 cursor-not-allowed"
                 : "bg-orange-100 text-orange-700 hover:bg-orange-300"
             }`}
           >

@@ -38,8 +38,8 @@ export const ItemsPage = () => {
   const handleUpdate = async () => {
     try {
       setLoading(true);
-      const data = await fetchDataBarang(); 
-      setBarang(data); 
+      const data = await fetchDataBarang();
+      setBarang(data);
     } catch (error) {
       console.error("Error updating data:", error);
     } finally {
@@ -48,7 +48,7 @@ export const ItemsPage = () => {
   };
 
   const handleDelete = async (id) => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const response = await deleteProductData(id);
       const data = await fetchDataBarang();
@@ -59,7 +59,7 @@ export const ItemsPage = () => {
     } catch (error) {
       console.error("Error deleting product:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -79,17 +79,18 @@ export const ItemsPage = () => {
   return (
     <div className="">
       <ContentLayout>
-        <div className="w-full py-4 px-6 flex">
-          {/* Heading Text */}
-          <div className="text-nowrap w-fit">
-            <h1 className="text-2xl font-bold">Jumlah Barang</h1>
-            <p className="text-sm text-slate-700">
-              Tambahkan barang atau atur barang kamu disini!
-            </p>
-          </div>
-          {/* Button */}
-          <div className="w-full flex items-center justify-end gap-2">
-            {/* <ButtonIcon
+        <div className="mb-12 pb-6">
+          <div className="w-full py-4 px-6 flex max-md:flex-col max-md:gap-2">
+            {/* Heading Text */}
+            <div className="text-nowrap max-md:text-wrap w-fit">
+              <h1 className="text-2xl max-md:text-lg font-bold">Jumlah Barang</h1>
+              <p className="text-sm max-md:text-xs text-slate-700">
+                Tambahkan barang atau atur barang kamu disini!
+              </p>
+            </div>
+            {/* Button */}
+            <div className="w-full flex items-center justify-end gap-2">
+              {/* <ButtonIcon
               icon={<ArrowUpOnSquareIcon className="size-5 text-slate-400" />}
               showArrow={false}
               title="Import"
@@ -101,41 +102,42 @@ export const ItemsPage = () => {
               title="Export"
               classNameBtn="border-2 rounded-lg px-2 py-1"
             /> */}
-            {/* <ButtonIcon
+              {/* <ButtonIcon
               icon={<PlusIcon className="size-5 text-white" />}
               showArrow={false}
               title="Buat Kategori"
               classNameBtn="border-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-2 py-1"
               titleColor="text-white"
             /> */}
-            <ButtonIcon
-              icon={<PlusIcon className="size-5 text-white" />}
-              showArrow={false}
-              title="Tambah Barang"
-              classNameBtn="border-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-2 py-1"
-              titleColor="text-white"
-              linkTo="/barang/tambah-barang"
+              <ButtonIcon
+                icon={<PlusIcon className="size-5 text-white" />}
+                showArrow={false}
+                title="Tambah Barang"
+                classNameBtn="border-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-2 py-1"
+                titleColor="text-white"
+                linkTo="/barang/tambah-barang"
+              />
+            </div>
+          </div>
+          <hr className="mx-4" />
+          {/* Pass the handleEdit and handleDelete functions to TableData */}
+          <div className="px-6">
+            <TableData
+              itemsPerPage={10}
+              data={barang}
+              showSearchSet={true}
+              showAksi={true}
+              showEditBtn={true}
+              showDeleteBtn={true}
+              onRecovery={handleRecovery}
+              onDelete={handleDelete}
+              onUpdate={handleUpdate}
+              showRecoveryBtn={true}
+              kategoriFilter={true}
+              statusFilter={true}
+              sortedData={true}
             />
           </div>
-        </div>
-        <hr className="mx-4" />
-        {/* Pass the handleEdit and handleDelete functions to TableData */}
-        <div className="px-6">
-          <TableData
-            itemsPerPage={10}
-            data={barang}
-            showSearchSet={true}
-            showAksi={true}
-            showEditBtn={true}
-            showDeleteBtn={true}
-            onRecovery={handleRecovery}
-            onDelete={handleDelete}
-            onUpdate={handleUpdate}
-            showRecoveryBtn={true}
-            kategoriFilter={true}
-            statusFilter={true}
-            sortedData={true}
-          />
         </div>
       </ContentLayout>
     </div>
