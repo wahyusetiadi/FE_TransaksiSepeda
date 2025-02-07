@@ -6,17 +6,22 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   addOutbond,
   addTransaction,
+  addTransactionNonVip,
   getAllCustomerTransactions,
 } from "../../../api/api";
+import { use } from "react";
 
 export const AddTransactions = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addedItems } = location.state || {};
   const [isOn, setIson] = useState(true);
+  const [isOnState, setIsOnState] = useState("Belum Lunas");
+  const [statusPembayaran, setStatusPembayaran] = useState("Belum Lunas");
   const [loading, setLoading] = useState(false);
   const [pelanggan, setPelanggan] = useState("");
   const [customers, setCustomers] = useState([]);
+  const [hutang, setHutang] = useState(0);
   const [message, setMessage] = useState("");
 
   const [transactionCode, setTransactionCode] = useState("");
@@ -24,6 +29,11 @@ export const AddTransactions = () => {
   const [total, setTotal] = useState(0);
   const [item, setItem] = useState("");
   const [descriptions, setDescriptions] = useState("");
+
+  const handleToggleStatus = () => {
+    setIsOnState((prev) => !prev);
+    setStatusPembayaran((prev) => (prev === true ? false : true));
+  };
 
   const filteredItems =
     addedItems?.filter((item) => item.id && item.quantity > 0) || [];
@@ -36,6 +46,10 @@ export const AddTransactions = () => {
 
   const handleToggle = () => {
     setIson(!isOn);
+  };
+
+  const handleToggleState = () => {
+    setIsOnState(!isOnState);
   };
 
   const handleCustomer = (e) => {
@@ -52,56 +66,123 @@ export const AddTransactions = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const customerName = isOn
+      ? customers.find((customer) => Number(customer.id) === Number(customerId))
+          ?.name
+      : "Error";
+
+    const customerNameNonVip = !isOn ? pelanggan : "";
+
+    console.log("customerVIP", customerName);
+    console.log("nonVIPCustomer", customerNameNonVip);
+
+    if (isOn) {
+      sessionStorage.setItem("customers", customerName);
+    }
+
+    if (!isOn) {
+      sessionStorage.setItem("pelanggan", customerNameNonVip);
+    }
+
+    const lunas = isOnState ? true : false;
+
+    const payloadNonVip = {
+      transactionCode: transactionCode,
+      customer: pelanggan,
+      total: calculateTotal(),
+      items: addedItems?.map((item) => ({
+        product_id: item.id,
+        amount: item.quantity,
+        total: item.price * item.quantity,
+      })),
+      description: descriptions,
+      hutang: hutang,
+      lunas: lunas,
+    };
+
     const payload = {
       transactionCode: transactionCode,
       customerId: customerId,
       total: calculateTotal(),
       items: addedItems?.map((item) => ({
         product_id: item.id,
-        // price: item.price,
         amount: item.quantity,
         total: item.price * item.quantity,
       })),
       description: descriptions,
-      hutang: 0,
+      hutang: hutang,
+      lunas: lunas,
     };
-    console.log(JSON.stringify(payload, null, 2));
+
+    // console.log(JSON.stringify(payload, null, 2));
 
     const payloadOutbond = {
-      customerId: customerId,
+      customer: pelanggan || customerId, //customer string
+      transactionCode: transactionCode,
       items: addedItems?.map((item) => ({
         product_id: item.id,
-        // price: item.price,
         amount: item.quantity,
         total: item.price * item.quantity,
-        hutang: 0,
+        hutang: hutang,
         keterangan: descriptions,
       })),
     };
 
-    console.log(JSON.stringify(payloadOutbond, null, 2));
+    // console.log(JSON.stringify(payloadOutbond, null, 2));
 
-    try {
-      const result = await addTransaction(payload);
-      if (
-        result.data.meta.code === 201 &&
-        result.data.meta.status === "success"
-      ) {
-        setMessage(
-          `Transaksi Berhasil dibuat: ${result.data.transaction_code}`
-        );
-        navigate("/transaksi/pembayaran", {
-          state: {
-            transactionCode: transactionCode,
-            items: addedItems,
-            total: calculateTotal(),
-          },
-        });
-      } else {
-        setMessage("Transaksi gagal dibuat");
+    if (isOn === true) {
+      try {
+        const result = await addTransaction(payload);
+        if (
+          result.data.meta.code === 201 &&
+          result.data.meta.status === "success"
+        ) {
+          setMessage(
+            `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
+          );
+          sessionStorage.setItem("transactionCode", transactionCode);
+          sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
+          sessionStorage.setItem("total", calculateTotal());
+          sessionStorage.setItem("description", descriptions);
+          sessionStorage.setItem("hutang", hutang);
+
+          setTimeout(() => {
+            window.open("/transaksi/pembayaran");
+            navigate("/transaksi");
+          }, 100);
+        } else {
+          setMessage("Transaksi gagal dibuat");
+        }
+      } catch (error) {
+        setMessage(`Error: ${error.message}`);
       }
-    } catch (error) {
-      setMessage(`Error: ${error.message}`);
+    } else if (!isOn) {
+      try {
+        //retail
+        const result = await addTransactionNonVip(payloadNonVip);
+        if (
+          result.data.meta.code === 201 &&
+          result.data.meta.status === "success"
+        ) {
+          setMessage(
+            `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
+          );
+          alert(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
+          sessionStorage.setItem("transactionCode", transactionCode);
+          sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
+          sessionStorage.setItem("total", calculateTotal());
+          sessionStorage.setItem("description", descriptions);
+          sessionStorage.setItem("hutang", hutang);
+          setTimeout(() => {
+            window.open("/transaksi/pembayaran");
+            navigate("/transaksi");
+          }, 100);
+        } else {
+          setMessage("Transaksi gagal dibuat");
+        }
+      } catch (error) {
+        setMessage(`Error: ${error.message}`);
+      }
     }
 
     try {
@@ -111,7 +192,7 @@ export const AddTransactions = () => {
         result.data.meta.status === "success"
       ) {
         setMessage(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
-        // navigate("/transaksi/pembayaran");
+        alert(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
       } else {
         setMessage("Transaksi gagal dibuat");
       }
@@ -137,6 +218,10 @@ export const AddTransactions = () => {
   };
 
   useEffect(() => {
+    setTransactionCode(generateTransactionCode);
+  }, []);
+
+  useEffect(() => {
     if (isOn) {
       const fetchCustomers = async () => {
         setLoading(true);
@@ -152,8 +237,7 @@ export const AddTransactions = () => {
 
       fetchCustomers();
     }
-    setTransactionCode(generateTransactionCode);
-  }, [isOn]);
+  }, [isOn, isOnState]);
 
   return (
     <div>
@@ -161,7 +245,9 @@ export const AddTransactions = () => {
         <div className="mb-12 pb-4">
           <div className="p-6 w-fit">
             <ButtonIcon
-              icon={<ChevronLeftIcon className="h-6 max-md:h-4 text-orange-500" />}
+              icon={
+                <ChevronLeftIcon className="h-6 max-md:h-4 text-orange-500" />
+              }
               title="Kembali"
               titleColor="text-orange-600 font-semibold text-base max-md:text-xs"
               showArrow={false}
@@ -174,7 +260,9 @@ export const AddTransactions = () => {
             <div className="mt-4 grid grid-cols-2 max-md:grid-cols-1 px-6 gap-8">
               <div className="mx-2 w-full flex flex-col gap-10 pr-6 border-r-2">
                 <div className="w-full flex flex-col gap-6">
-                  <h1 className="text-xl max-md:text-lg  font-bold">Informasi Pelanggan</h1>
+                  <h1 className="text-xl max-md:text-lg  font-bold">
+                    Informasi Pelanggan
+                  </h1>
                   <div className="w-full flex text-nowrap max-md:text-xs max-md:text-wrap">
                     <p>Apakah Pelanggan Sudah Terdaftar</p>
                     <div
@@ -206,10 +294,9 @@ export const AddTransactions = () => {
                         value={customerId}
                         onChange={(e) => setCustomerId(e.target.value)}
                         className="px-4 py-2 max-md:text-xs border-2 rounded"
+                        required
                       >
-                        <option value="" disabled>
-                          Pilih Pelanggan
-                        </option>
+                        <option>Pilih Pelanggan</option>
                         {loading ? (
                           <option value="" disabled>
                             Loading...
@@ -248,6 +335,48 @@ export const AddTransactions = () => {
                   />
                 </div>
 
+                <div className="w-full flex gap-1">
+                  <div className="w-full flex flex-col gap-1">
+                    <div className="w-full flex flex-col gap-1">
+                      <label htmlFor="" className="max-md:text-xs font-bold">
+                        Hutang
+                      </label>
+                      <input
+                        type="number"
+                        value={isOnState ? 0 : hutang || ""}
+                        onChange={(e) => setHutang(e.target.value)}
+                        className="px-4 py-2 border-2 rounded max-md:text-xs"
+                        placeholder="Masukkan Hutang"
+                        disabled={isOnState} // Disable the input when 'Lunas' (isOnState is true)
+                      />
+                    </div>
+                    <div
+                      className={`w-full justify-start mt-6 relative inline-flex items-center cursor-pointer gap-3 ${
+                        isOnState ? "justify-start" : "justify-start"
+                      }`}
+                      onClick={handleToggleStatus}
+                    >
+                      <span
+                        className={`w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${
+                          isOnState ? "bg-orange-600" : "bg-gray-300"
+                        }`}
+                      >
+                        <span
+                          className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-all duration-300 ${
+                            isOnState ? "translate-x-4" : "translate-x-0"
+                          }`}
+                        />
+                      </span>
+
+                      {isOnState ? (
+                        <p className="mr-2">Lunas</p>
+                      ) : (
+                        <p className="mr-2">Belum Lunas</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {/* <div className="w-full flex flex-col gap-6">
                 <h1 className="text-xl font-bold">Informasi Transaksi</h1>
                 <div className="w-full">
@@ -277,7 +406,9 @@ export const AddTransactions = () => {
               </div> */}
 
                 <div className="w-full flex flex-col gap-6">
-                  <h1 className="text-xl max-md:text-lg font-bold">Informasi Pembayaran</h1>
+                  <h1 className="text-xl max-md:text-lg font-bold">
+                    Informasi Pembayaran
+                  </h1>
                   <div className="w-full max-md:text-xs">
                     <h1>Metode Pembayaran</h1>
                     <div className="w-full flex gap-4 text-sm font-semibold max-md:grid">
@@ -352,7 +483,9 @@ export const AddTransactions = () => {
               </div>
 
               <div className="mx-2 w-full flex flex-col gap-8">
-                <h1 className="text-xl max-md:text-lg font-bold">Rincian Pesanan</h1>
+                <h1 className="text-xl max-md:text-lg font-bold">
+                  Rincian Pesanan
+                </h1>
                 <div className="">
                   <div className="w-fullm max-md:text-[10px] flex items-center justify-start gap-4">
                     <div className="w-full">

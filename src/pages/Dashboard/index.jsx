@@ -14,6 +14,7 @@ import {
   getAllProducts,
   getAllTransactions,
   getTransaksi,
+  getUser,
 } from "../../api/api";
 import "./style.css";
 import {
@@ -28,6 +29,7 @@ import { Link } from "react-router-dom";
 export const Dashboard = () => {
   const [transaksi, setTransaksi] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState('')
 
   const [barang, setBarang] = useState([]);
   const [countBarang, setCountBarang] = useState(0);
@@ -40,96 +42,20 @@ export const Dashboard = () => {
   const [outbond, setOutbond] = useState([]);
   const [countOutbond, setCountOutbond] = useState(0);
 
-  // useEffect(() => {
-  //   const fetchTransaksi = async () => {
-  //     try {
-  //       const data = await getTransaksi();
-
-  //       // Proses data transaksi untuk mengelompokkan barang berdasarkan ID Transaksi dan Tanggal
-  //       const groupedData = data.reduce((acc, item) => {
-  //         // Jika sudah ada transaksi dengan idTransaksi dan tanggal yang sama, gabungkan barangnya
-  //         const existingTransaction = acc.find(
-  //           (trans) =>
-  //             trans.idTransaksi === item.idTransaksi &&
-  //             trans.tanggal === item.tanggal
-  //         );
-
-  //         if (existingTransaction) {
-  //           // Gabungkan barang baru ke transaksi yang sudah ada
-  //           existingTransaction.barang = [
-  //             ...existingTransaction.barang,
-  //             ...item.barang,
-  //           ];
-  //         } else {
-  //           // Jika transaksi belum ada, buat transaksi baru
-  //           acc.push({
-  //             idTransaksi: item.idTransaksi,
-  //             tanggal: item.tanggal,
-  //             pelanggan: item.pelanggan?.nama,
-  //             noTelp: item.pelanggan?.noTelp,
-  //             barang: item.barang,
-  //             jenis: item.jenis,
-  //             alamat: item.alamat,
-  //             pembayaran: item.jenisPembayaran,
-  //             bukti: item.bukti,
-  //             totalTransaksi: item.total_transaksi,
-  //             status: item.status,
-  //           });
-  //         }
-  //         return acc;
-  //       }, []);
-
-  //       // Menyusun data untuk tabel
-  //       const formattedData = groupedData.flatMap((item) => {
-  //         // Gabungkan nama barang beserta jumlahnya dalam satu kolom
-  //         const barangNames = item.barang
-  //           .map((barang) => `- (${barang.jumlah}x) ${barang.namaBarang}`)
-  //           .join("\n"); // Gabungkan setiap barang menjadi satu string
-
-  //         const barangNamesList = barangNames.split("\n").map((line, index) => (
-  //           <div key={index}>{line}</div> // Each line gets its own div to break it into lines
-  //         ));
-  //         const totalJumlah = item.barang.reduce(
-  //           (sum, barang) => sum + barang.jumlah,
-  //           0
-  //         );
-  //         const totalHarga = item.barang.reduce(
-  //           (sum, barang) => sum + barang.total_harga,
-  //           0
-  //         );
-
-  //         return {
-  //           idTransaksi: item.idTransaksi,
-  //           tanggal: item.tanggal,
-  //           pelanggan: item.pelanggan,
-  //           noTelp: item.noTelp,
-  //           barang: barangNamesList, // Gabungkan nama barang dan jumlahnya
-  //           // jumlah: totalJumlah,
-  //           jenis: item.jenis,
-  //           alamat: item.alamat,
-  //           pembayaran: item.pembayaran,
-  //           bukti: item.bukti,
-  //           total: totalHarga.toLocaleString(), // Total harga
-  //           status: item.status,
-  //         };
-  //       });
-
-  //       const sortedData = formattedData.sort(
-  //         (a, b) => new Date(b.tanggal) - new Date(a.tanggal)
-  //       );
-
-  //       setTransaksi(sortedData);
-  //     } catch (error) {
-  //       console.error("Error fetching data transaksi", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchTransaksi();
-  // }, []);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+        console.log("Data User:", userData);
+      } catch (error) {
+        console.error("Error get User Data:", error);
+        throw error;
+      }
+    };
+
     const fetchDataBarang = async () => {
       try {
         const data = await getAllProducts();
@@ -160,7 +86,7 @@ export const Dashboard = () => {
         setCustomer(data);
         setCountCustomer(data.length);
         // console.log('setCustomer', data);
-        console.log("setCountCustomer", data.length);
+        // console.log("setCountCustomer", data.length);
       } catch (error) {
         console.error("Error fetching all customer data", error);
         throw error;
@@ -172,8 +98,8 @@ export const Dashboard = () => {
         const data = await getAllHistoryTransactions();
         setHistory(data);
         setCounthistory(data.length);
-        console.log("setHistory", data);
-        console.log("setCountHistory", data.length);
+        // console.log("setHistory", data);
+        // console.log("setCountHistory", data.length);
       } catch (error) {
         console.error("Error fetching all transactions history", error);
         throw error;
@@ -185,14 +111,15 @@ export const Dashboard = () => {
         const data = await getAllOutbond();
         setOutbond(data);
         setCountOutbond(data.length);
-        console.log("barang keluar", data);
-        console.log("setCountOutBond", data.length);
+        // console.log("barang keluar", data);
+        // console.log("setCountOutBond", data.length);
       } catch (error) {
         console.error("Error fetching all outbond", error);
         throw error;
       }
     };
 
+    fetchUser();
     fetchDataBarangKeluar();
     fetchDataHistoryTransaksi();
     fetchDataPelanggan();

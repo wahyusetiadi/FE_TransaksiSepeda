@@ -13,12 +13,14 @@ export const SearchSet = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [serachQuery, setSearchQuery] = useState("");
-  const [status, setStatus] = useState(false); // Default: status dropdown tertutup
-  const [kategori, setKategori] = useState(false); // Default: kategori dropdown tertutup
-  const [isAscending, setIsAscending] = useState(true); // Default urutan ascending
+  const [status, setStatus] = useState(false);
+  const [kategori, setKategori] = useState(false);
+  const [sortFilter, setSortFilter] = useState(false);
+  const [isAscending, setIsAscending] = useState(true);
 
   const statusRef = useRef(null);
   const kategoriRef = useRef(null);
+  const sortRef = useRef(null);
 
   const handleChangeStatus = (status) => {
     setStatus(!status);
@@ -30,53 +32,71 @@ export const SearchSet = ({
     onFilterChange("kategori", kategori);
   };
 
+  const handleChangeSortFilter = (sortFilter) => {
+    setSortFilter(!sortFilter);
+    onSortChange("urutkan", sortFilter);
+  };
+
   const handleSearchChange = (query) => {
     setSearchQuery(query);
     onSearchChange(query);
   };
 
-  // Handle sort change
   const handleSortChange = () => {
     setIsAscending(!isAscending);
     onSortChange(isAscending ? "asc" : "desc");
   };
 
-  // Handle close dropdown when clicked outside
   const handleClose = (e) => {
     if (
       statusRef.current &&
       !statusRef.current.contains(e.target) &&
       kategoriRef.current &&
-      !kategoriRef.current.contains(e.target)
+      !kategoriRef.current.contains(e.target) &&
+      sortRef.current &&
+      !sortRef.current.contains(e.target)
     ) {
-      setStatus(false); // Menutup dropdown status jika klik di luar
-      setKategori(false); // Menutup dropdown kategori jika klik di luar
+      setStatus(false);
+      setKategori(false);
+      setSortFilter(false);
     }
   };
 
   const toggleStatus = () => {
     setStatus(!status);
-    if (kategori) setKategori(false); // Close kategori dropdown if it's open
+    if (kategori) {
+      setKategori(false);
+      setSortFilter(false);
+    }
   };
 
   const toggleKategori = () => {
     setKategori(!kategori);
-    if (status) setStatus(false); // Close status dropdown if it's open
+    if (status) {
+      setStatus(false);
+      setSortFilter(false);
+    }
+  };
+
+  const toggleSortFilter = () => {
+    setSortFilter(!sortFilter);
+    if (sortFilter) {
+      setStatus(false);
+      setKategori(false);
+    }
   };
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen); // Toggle antara true dan false
+    setIsMenuOpen(!isMenuOpen);
   };
 
-  // Reset dropdowns to initial state when component mounts
   useEffect(() => {
-    setStatus(false); // Set status dropdown ke false (tertutup) saat pertama kali render
-    setKategori(false); // Set kategori dropdown ke false (tertutup) saat pertama kali render
+    setStatus(false);
+    setKategori(false);
+    setSortFilter(false);
 
-    // Menambahkan event listener untuk klik di luar
     document.addEventListener("click", handleClose);
 
-    // Cleanup event listener saat komponen unmount
     return () => {
       document.removeEventListener("click", handleClose);
     };
@@ -95,7 +115,7 @@ export const SearchSet = ({
         <div className="md:hidden">
           <ButtonIcon
             title="Menu"
-            classNameBtn="border rounded px-2 py-1"
+            classNameBtn="border rounded px-2 py-1 hover:bg-slate-100"
             onClick={toggleMenu} // Function to toggle burger menu
           />
         </div>
@@ -106,13 +126,13 @@ export const SearchSet = ({
             <div className="w-fit flex flex-col" ref={statusRef}>
               <ButtonIcon
                 title="Status"
-                classNameBtn="border rounded px-2 py-1"
+                classNameBtn="border rounded px-2 py-1 hover:bg-slate-100"
                 onClick={toggleStatus}
               />
               {status && (
-                <div className="absolute mt-8 bg-orange-50 px-2 shadow text-sm">
+                <div className="absolute mt-8 bg-orange-50 shadow text-sm">
                   <ul>
-                    <li>
+                    <li className="hover:bg-orange-100 w-full text-left">
                       <button
                         className="px-2 py-1"
                         onClick={() => handleChangeStatus("Tersedia")}
@@ -120,7 +140,7 @@ export const SearchSet = ({
                         Tersedia
                       </button>
                     </li>
-                    <li>
+                    <li className="hover:bg-orange-100 w-full text-left">
                       <button
                         className="px-2 py-1"
                         onClick={() => handleChangeStatus("Tidak Tersedia")}
@@ -138,13 +158,13 @@ export const SearchSet = ({
             <div className="w-fit flex flex-col" ref={kategoriRef}>
               <ButtonIcon
                 title="Kategori"
-                classNameBtn="border rounded px-2 py-1"
+                classNameBtn="border rounded px-2 py-1 hover:bg-slate-100"
                 onClick={toggleKategori} // Toggle kategori dropdown
               />
               {kategori && (
-                <div className="absolute mt-8 bg-orange-50 px-2 shadow text-sm">
+                <div className="absolute mt-8 bg-orange-50 shadow text-sm">
                   <ul>
-                    <li>
+                    <li className="hover:bg-orange-100 w-full text-left">
                       <button
                         className="px-2 py-1"
                         onClick={() => handleChangeKategori("SEPEDA")}
@@ -152,7 +172,7 @@ export const SearchSet = ({
                         Sepeda
                       </button>
                     </li>
-                    <li>
+                    <li className="hover:bg-orange-100 w-full text-left">
                       <button
                         className="px-2 py-1"
                         onClick={() => handleChangeKategori("SPAREPART")}
@@ -167,14 +187,37 @@ export const SearchSet = ({
           )}
 
           {sortedData && (
-            <div>
+            <div className="w-fit flex flex-col" ref={sortRef}>
               <ButtonIcon
                 title="Urutkan"
-                classNameBtn="border rounded px-2 py-1"
+                classNameBtn="border rounded px-2 py-1 hover:bg-slate-100"
                 icon={<AdjustmentsHorizontalIcon className="size-5" />}
                 showArrow={false}
-                onClick={handleSortChange} // Toggle urutan
+                onClick={handleSortChange}
+                // onClick={toggleSortFilter}
               />
+              {sortFilter && (
+                <div className="absolute mt-8 bg-orange-50 shadow text-sm">
+                  <ul>
+                    <li>
+                      <button
+                        className="px-2 py-1"
+                        onClick={() => handleChangeSortFilter("A-Z")}
+                      >
+                        A-Z
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="px-2 py-1"
+                        onClick={() => handleChangeSortFilter("Z-A")}
+                      >
+                        Z-A
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -253,7 +296,7 @@ export const SearchSet = ({
                   classNameBtn="border rounded px-2 py-1"
                   icon={<AdjustmentsHorizontalIcon className="size-5" />}
                   showArrow={false}
-                  onClick={handleSortChange} // Toggle urutan
+                  // onClick={handleSortChange} // Toggle urutan
                 />
               </div>
             )}

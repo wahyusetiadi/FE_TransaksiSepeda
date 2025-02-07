@@ -6,12 +6,14 @@ import { TableData } from "../../components/organisms/TableData";
 import {
   deleteProductData,
   getAllProducts,
+  getUser,
   recoveryProductData,
 } from "../../api/api";
 
 export const ItemsPage = () => {
   const [barang, setBarang] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const [alert, setAlert] = useState({ show: false, message: "" });
 
   const showAlert = (message) => {
@@ -31,7 +33,18 @@ export const ItemsPage = () => {
     }
   };
 
+  const fetchUser = async () => {
+    try {
+      const userData = await getUser();
+      setUser(userData);
+    } catch (error) {
+      console.error("Error fetch User Data:", error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
+    fetchUser();
     fetchDataBarang();
   }, []);
 
@@ -46,6 +59,9 @@ export const ItemsPage = () => {
       setLoading(false);
     }
   };
+
+  const isAdminBesar = user?.role === "owner";
+  const isAdminCabang = user?.role === "admin";
 
   const handleDelete = async (id) => {
     setLoading(true);
@@ -83,7 +99,9 @@ export const ItemsPage = () => {
           <div className="w-full py-4 px-6 flex max-md:flex-col max-md:gap-2">
             {/* Heading Text */}
             <div className="text-nowrap max-md:text-wrap w-fit">
-              <h1 className="text-2xl max-md:text-lg font-bold">Jumlah Barang</h1>
+              <h1 className="text-2xl max-md:text-lg font-bold">
+                Jumlah Barang
+              </h1>
               <p className="text-sm max-md:text-xs text-slate-700">
                 Tambahkan barang atau atur barang kamu disini!
               </p>
@@ -109,14 +127,16 @@ export const ItemsPage = () => {
               classNameBtn="border-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-2 py-1"
               titleColor="text-white"
             /> */}
-              <ButtonIcon
-                icon={<PlusIcon className="size-5 text-white" />}
-                showArrow={false}
-                title="Tambah Barang"
-                classNameBtn="border-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-2 py-1"
-                titleColor="text-white"
-                linkTo="/barang/tambah-barang"
-              />
+              {isAdminBesar && !isAdminCabang && (
+                <ButtonIcon
+                  icon={<PlusIcon className="size-5 text-white" />}
+                  showArrow={false}
+                  title="Tambah Barang"
+                  classNameBtn="border-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-2 py-1"
+                  titleColor="text-white"
+                  linkTo="/barang/tambah-barang"
+                />
+              )}
             </div>
           </div>
           <hr className="mx-4" />

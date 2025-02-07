@@ -3,25 +3,56 @@ import { ContentLayout } from "../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../components/molecules/ButtonIcon";
 import { ArrowPathIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import { TableData } from "../../components/organisms/TableData";
-import { getAllHistoryTransactions, getTransaksi } from "../../api/api";
+import {
+  deleteHistoryTransactionsById,
+  getAllHistoryTransactions,
+  getTransaksi,
+} from "../../api/api";
 import { useNavigate } from "react-router-dom";
 
 export const HistoryTransactions = () => {
   const [historyTransaction, setHistoryTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState({ show: false, message: "" });
   const navigate = useNavigate();
 
+  const showAlert = (message) => {
+    setAlert({ show: true, message });
+    setTimeout(() => setAlert({ show: false, message: "" }), 3000);
+  };
+
+  const fetchTransactionsHistory = async () => {
+    try {
+      const data = await getAllHistoryTransactions();
+      const sortedData = data.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+      });
+      setHistoryTransactions(sortedData);
+    } catch (error) {
+      console.error("Error fetch data history transactions", error);
+    }
+  };
   useEffect(() => {
-    const fetchTransactionsHistory = async () => {
-      try {
-        const data = await getAllHistoryTransactions();
-        setHistoryTransactions(data);
-      } catch (error) {
-        console.error("Error fetch data history transactions", error);
-      }
-    };
     fetchTransactionsHistory();
   }, []);
+
+  const handleDelete = async (id) => {
+    setLoading(true);
+    try {
+      const response = await deleteHistoryTransactionsById(id);
+      const data = await fetchTransactionsHistory();
+      setHistoryTransactions(data);
+      if (response.meta.status === "success") {
+        showAlert("Barang berhasil dihapus");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle detail click
   const handleDetailClick = (id) => {
@@ -57,6 +88,8 @@ export const HistoryTransactions = () => {
               showSearchSet={true}
               showDateTime={true}
               showAksi={true}
+              showDeleteBtnPerm={true}
+              onDelete={handleDelete}
               showDetailBtn={true}
               onDetail={handleDetailClick} // Pass handleDetailClick here
               sortedData={true}

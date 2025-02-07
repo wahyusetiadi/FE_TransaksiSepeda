@@ -8,9 +8,12 @@ import {
   PencilSquareIcon,
   PlusIcon,
   TrashIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ModalEdit } from "../ModalEdit";
 import { PhotoIcon } from "@heroicons/react/24/solid";
+import { getUser } from "../../../api/api";
+import { ModalStockEdit } from "../../molecules/ModalStockEdit";
 
 function toTitleCaseWithSpace(str) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");
@@ -28,6 +31,7 @@ export const TableData = ({
   showDeleteBtn = false,
   showDetailBtn = false,
   showRecoveryBtn = false,
+  showDeleteBtnPerm = false,
   showAddBtn = false,
   onEdit = () => {},
   onDelete = () => {},
@@ -53,6 +57,7 @@ export const TableData = ({
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedKategori, setSelectedKategori] = useState("");
+  const [user, setUser] = useState(null);
   const [selectedItem, setSelectedItem] = useState({
     id: "",
     name: "",
@@ -61,6 +66,14 @@ export const TableData = ({
     type: "",
     status: "",
   });
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(amount);
+  };
+  
 
   const handleAddClick = (item) => {
     if (!itemQuantities[item.id]) {
@@ -169,6 +182,16 @@ export const TableData = ({
     setFilteredData(sorted);
   };
 
+  const fetchUser = async () => {
+    try {
+      const userData = await getUser();
+      setUser(userData);
+    } catch (error) {
+      console.error("Error GET USER DATA:", error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     let filtered = data;
 
@@ -194,20 +217,24 @@ export const TableData = ({
       });
     }
 
+    fetchUser();
     setFilteredData(filtered);
   }, [selectedStatus, selectedKategori, searchQuery, data]); // Reapply filters when they change
+  const isAdminBesar = user?.role === "owner";
+  const isAdminCabang = user?.role === "admin";
 
   const columns = Object.keys(data[0] || {}).filter((key) => {
     if (key === "id" && !showId) return false;
     if ((key === "tanggal" || key === "waktu") && !showDateTime) return false;
     if (key === "isDeleted" || key === "updatedAt") return false;
-    if (key === "bukti" || key === "items") return false;
+    if (key === "bukti" || key === "items" || key === "productId") return false;
     if (key === "deskripsi" && !showDeskripsi) return false;
+    if (key === "aksi" && isAdminCabang) return false;
     return key !== "id";
   });
 
   if (showAksi) {
-    columns.push("aksi");
+    columns.push("actions");
   }
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -267,6 +294,14 @@ export const TableData = ({
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // Update the state with the new value
+    }));
+  };
+
   return (
     <div className="text-nowrap max-md:text-wrap">
       {showSearchSet && (
@@ -300,25 +335,36 @@ export const TableData = ({
             </tr>
           </thead>
 
-          <tbody className="text-black text-xs max-md:text-[10px]">
+          <tbody className="text-black text-xs max-md:text-[10px]" key={""}>
             {currentItems.length > 0 ? (
               currentItems.map((item, index) => (
-                <tr key={item.id} className="border-b">
+                <tr key={item.id || index} className="border-b">
                   {showId && (
                     <td className="py-2 px-6 text-left">
                       {index + 1 + (currentPage - 1) * itemsPerPage}
                     </td>
                   )}
                   {columns.map((col) => {
-                    if (col === "tanggal") {
+                    if (col === "date") {
                       return (
                         <td key={col} className="py-2 px-6 text-left">
-                          {col === "tanggal"
+                          {col === "date"
                             ? formatTanggal(item[col])
                             : item[col]}
                         </td>
                       );
                     }
+
+                    if (col == "createdAt") {
+                      return (
+                        <td key={col} className="py-2 px-6 text-left">
+                          {col === "createdAt"
+                            ? formatTanggal(item[col])
+                            : item[col]}
+                        </td>
+                      );
+                    }
+
                     if (col === "bukti") {
                       return (
                         <td className="py-2 px-6 text-left">
@@ -339,7 +385,25 @@ export const TableData = ({
                         </td>
                       );
                     }
-                    if (col === "aksi") {
+
+                    if (col === "lunas") {
+                      return (
+                        <td
+                          key={col}
+                          className=""
+                        >
+                          <div className="font-semibold">
+                            {item.lunas === 1 ? (
+                              <span className="text-green-600 px-2 py-1 bg-green-100 rounded-full">Lunas</span> // If lunas is 1, show "Lunas"
+                            ) : (
+                              <span className="text-red-600 px-2 py-1 bg-red-100 rounded-full">Belum</span> // If lunas is 0, show "Belum"
+                            )}
+                          </div>
+                        </td>
+                      );
+                    }
+
+                    if (col === "actions") {
                       return (
                         <td
                           key={col}
@@ -367,7 +431,7 @@ export const TableData = ({
                                   {/* Ini akan tampil pada layar kecil */}
                                 </button>
 
-                                {isEditOpen && (
+                                {isEditOpen && isAdminBesar && (
                                   <div className="w-full fixed inset-0 flex items-center justify-center">
                                     <div className="w-full h-dvh bg-black absolute opacity-10"></div>
                                     <ModalEdit
@@ -383,25 +447,42 @@ export const TableData = ({
                                     />
                                   </div>
                                 )}
+
+                                {isEditOpen && isAdminCabang && (
+                                  <div className="w-full fixed inset-0 flex items-center justify-center">
+                                    <div className="w-full h-dvh bg-black absolute opacity-10"></div>
+                                    <ModalStockEdit
+                                      onClick={closeEditModal}
+                                      idBarang={selectedItem.id}
+                                      namaBarang={selectedItem.name}
+                                      hargaBarang={selectedItem.price}
+                                      stcokBarang={selectedItem.stock}
+                                      statusBarang={selectedItem.status}
+                                      typeBarang={selectedItem.type}
+                                      handleSubmit={onSubmitEdit}
+                                      onUpdate={onUpdate}
+                                    />
+                                  </div>
+                                )}
                               </>
                             )}
-                            {showDeleteBtn && item.isDeleted === 0 && (
-                              <button
-                                onClick={() => {
-                                  console.log(
-                                    `Delete button clicked for item: ${item.id}`
-                                  );
-                                  openDeleteModal(item);
-                                }}
-                                className="w-full max-md:w-fit px-2 py-1 font-semibold text-xs bg-red-100 text-red-600 rounded flex gap-2 items-center justify-center"
-                              >
-                                <TrashIcon className="size-3 hidden md:block" />
-                                <span className="hidden md:block">
-                                  Hapus
-                                </span>{" "}
-                                <TrashIcon className="size-3 md:hidden" />
-                              </button>
-                            )}
+                            {showDeleteBtn &&
+                              item.isDeleted === 0 &&
+                              isAdminBesar && (
+                                <button
+                                  onClick={() => {
+                                    console.log(
+                                      `Delete button clicked for item: ${item.id}`
+                                    );
+                                    openDeleteModal(item);
+                                  }}
+                                  className="w-full max-md:w-fit px-2 py-1 font-semibold text-xs bg-red-100 text-red-600 rounded flex gap-2 items-center justify-center"
+                                >
+                                  <TrashIcon className="size-3 hidden md:block" />
+                                  <span className="hidden md:block">Hapus</span>{" "}
+                                  <TrashIcon className="size-3 md:hidden" />
+                                </button>
+                              )}
                             {showRecoveryBtn && item.isDeleted === 1 && (
                               <button
                                 onClick={() => {
@@ -413,7 +494,9 @@ export const TableData = ({
                                 className="w-full max-md:w-fit px-2 py-1 font-semibold text-xs bg-green-100 text-green-600 rounded flex gap-2 items-center justify-center"
                               >
                                 <ArrowPathIcon className="size-3 hidden md:block" />
-                                <span className="hidden md:block">Recovery</span>{" "}
+                                <span className="hidden md:block">
+                                  Recovery
+                                </span>{" "}
                                 <ArrowPathIcon className="size-3 md:hidden" />
                               </button>
                             )}
@@ -427,8 +510,28 @@ export const TableData = ({
                                 }}
                                 className="w-full px-2 py-1 font-semibold text-xs bg-blue-100 text-blue-600 rounded flex gap-2 items-center justify-center"
                               >
-                                <EyeIcon className="size-3" />
-                                Detail
+                                <EyeIcon className="size-3 hidden md:block" />
+                                <span className="hidden md:block">
+                                  Detail
+                                </span>{" "}
+                                <EyeIcon className="size-3 md:hidden" />
+                              </button>
+                            )}
+                            {showDeleteBtnPerm && isAdminBesar && (
+                              <button
+                                onClick={() => {
+                                  console.log(
+                                    `Permanent Delete for item : ${item.id}`
+                                  );
+                                  openDeleteModal(item);
+                                }}
+                                className="w-full max-md:w-fit px-2 py-1 font-semibold text-xs bg-red-100 text-red-600 rounded flex gap-2 items-center justify-center"
+                              >
+                                <TrashIcon className="size-3 hidden md:block" />
+                                <span className="hidden md:block">
+                                  Hapus
+                                </span>{" "}
+                                <TrashIcon className="size-3 md:hidden" />
                               </button>
                             )}
 
@@ -480,10 +583,25 @@ export const TableData = ({
                         </td>
                       );
                     }
+
                     if (col === "price") {
                       return (
                         <td key={col} className="py-2 px-6 text-left">
-                          {item[col].toLocaleString("id-ID")}
+                          {formatCurrency(item[col])}
+                        </td>
+                      );
+                    }
+                    if (col === "total") {
+                      return (
+                        <td key={col} className="py-2 px-6 text-left">
+                          {formatCurrency(item[col])}
+                        </td>
+                      );
+                    }
+                    if (col === "hutang") {
+                      return (
+                        <td key={col} className="py-2 px-6 text-left">
+                          {formatCurrency(item[col])}
                         </td>
                       );
                     }
@@ -530,7 +648,7 @@ export const TableData = ({
                     return (
                       <td key={col} className="py-2 px-6 text-left">
                         {col === "Harga"
-                          ? item[col].toLocaleString()
+                          ? formatCurrency(item[col])
                           : item[col]}
                       </td>
                     );
@@ -653,7 +771,7 @@ export const TableData = ({
             const pageNumber = index + 1;
             if (
               pageNumber >= currentPage - 1 &&
-              pageNumber <= currentPage + 1 
+              pageNumber <= currentPage + 1
             ) {
               return (
                 <button

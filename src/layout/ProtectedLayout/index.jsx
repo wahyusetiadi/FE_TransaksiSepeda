@@ -1,8 +1,10 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const ProtectedLayout = () => {
   const token = localStorage.getItem("token");
+  // const token = Cookies.get("token");
 
   const isAuthenticated = token && isTokenVaild(token);
   if (!isAuthenticated) {

@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 // Menentukan path relatif menuju file data.json yang ada di folder public
 const API_URL = "/data.json";
@@ -7,6 +8,10 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 const getAuthHeader = async () => {
   const token = localStorage.getItem("jwtToken");
   if (token) {
+    // console.log("Authorization Header:", {
+    //   Authorization: `Bearer ${token}`,
+    //   "Content-Type": "application/json",
+    // });
     return {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -15,7 +20,18 @@ const getAuthHeader = async () => {
   return {};
 };
 
-// POST LOGIN
+// const getAuthHeader = async () => {
+//   const token = Cookies.get("token");  // Ambil token dari cookies
+//   if (token) {
+//     return {
+//       Authorization: `Bearer ${token}`,
+//       "Content-Type": "application/json",
+//     };
+//   }
+//   return {};
+// };
+
+// POST LOGIN LOCALSTORAGE
 export const loginUser = async (username, password) => {
   try {
     const response = await axios.post(`${BASE_URL}/auth/login`, {
@@ -30,8 +46,47 @@ export const loginUser = async (username, password) => {
   }
 };
 
+export const getUser = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/auth/users/data`, {
+      headers: await getAuthHeader(),
+    });
+    // console.log('getUser:', response);
+    return response.data.data;
+  } catch (error) {
+    console.error(
+      "Error fetching users:",
+      error.response ? error.response.data : error
+    );
+    throw error;
+  }
+};
+
+// POST LOGIN COOKIES
+// export const loginUser = async (username, password) => {
+//   try {
+//     const response = await axios.post(`${BASE_URL}/auth/login`, {
+//       username: username,
+//       password: password,
+//     });
+
+//     // Menyimpan token di cookies dengan pengaturan yang aman
+//     Cookies.set("jwtToken", response.data.data, {
+//       expires: 7,  // Token akan kadaluwarsa setelah 7 hari, sesuaikan dengan kebutuhan
+//       secure: true, // Hanya kirim cookie lewat HTTPS
+//       sameSite: "Strict", // Menghindari CSRF
+//       httpOnly: true, // Agar token tidak dapat diakses lewat JavaScript
+//     });
+
+//     return response.data;
+//   } catch (error) {
+//     console.error("Login Error:", error);
+//     throw error;
+//   }
+// };
+
 //GET ALL PRODUCTS
-export const getAllProducts = async () => {
+export const getAllProductsOwner = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/products/get-all`);
     return response.data.data;
@@ -40,6 +95,30 @@ export const getAllProducts = async () => {
     throw error;
   }
 };
+
+export const getAllProducts = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/products/get-all-duplicate`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching products data:", error);
+    throw error;
+  }
+};
+
+//GET ALL PRODUCT TRANSACTIONS
+export const getAllProductTransactions = async () => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/products/get-all/transaction`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("Error Fetching get  all products transactions", error);
+    throw error;
+  }
+};
+
 //POST NEW PRODUCT
 export const createProducts = async (productData) => {
   try {
@@ -89,6 +168,19 @@ export const getProductData = async (id) => {
 // //UPDATEPRODUCT BY ID
 export const updateProductData = async (id, data) => {
   try {
+    const response = await axios.put(
+      `${BASE_URL}/products/owner/update/${id}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating product:", error);
+    throw error;
+  }
+};
+
+export const updateProductDataAdmin = async (id, data) => {
+  try {
     const response = await axios.put(`${BASE_URL}/products/update/${id}`, data);
     return response.data;
   } catch (error) {
@@ -103,7 +195,7 @@ export const deleteProductData = async (id) => {
       isDeleted: true,
     });
 
-    console.log("Response Deleted:", response.data);
+    // console.log("Response Deleted:", response.data);
     return response.data;
   } catch (error) {
     console.error(
@@ -120,7 +212,7 @@ export const recoveryProductData = async (id) => {
       isDeleted: false,
     });
 
-    console.log("Response Deleted:", response.data);
+    // console.log("Response Deleted:", response.data);
     return response.data;
   } catch (error) {
     console.error(
@@ -148,6 +240,30 @@ export const addTransaction = async (payload) => {
       return { success: true, data: response.data }; // Use response.data here
     } else {
       return { success: false, error: response.data }; // Use response.data here as well
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// POST TRANSAKSI NON VIP
+export const addTransactionNonVip = async (payloadNonVip) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/transactions/create/retail`,
+      payloadNonVip,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status === 201) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, error: response.data };
     }
   } catch (error) {
     console.error("API Error:", error);
@@ -340,6 +456,60 @@ export const exportOutbond = async (fromDate, toDate) => {
     throw error;
   }
 };
+// GET TRANSACTIONS BY CODE
+export const getTransactionByCode = async (codeTransaction) => {
+  try {
+    let url = `${BASE_URL}/transactions/get-transaction/receipt?transactionsCode=`;
+
+    if (codeTransaction) {
+      url += `${codeTransaction}`;
+    }
+
+    const response = await axios.get(url);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error get receipttransactions", error);
+    throw error;
+  }
+};
+
+export const deleteHistoryTransactionsById = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${BASE_URL}/transactions/delete/${id}`,
+      {
+        headers: await getAuthHeader(),
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("Error API Delete transactions:", error);
+    throw error;
+  }
+};
+
+export const updatePaid = async (id, paylaod) => {
+  try {
+    const response = await axios.put(
+      `${BASE_URL}/transactions/edit-detail/paid/${id}`,
+      paylaod,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 201) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, error: response.data };
+    }
+  } catch (error) {
+    console.error("Error UPDATE API detail transactions:", error);
+    throw error;
+  }
+};
+
 // Json Data Dummy
 // Fungsi untuk mendapatkan data login (users)
 export const login = async (username, password) => {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Logo2 from "../../../assets/logo2.svg";
 import Logo from "../../../assets/logo.svg";
+import Cookies from "js-cookie";
 
 import {
   ArchiveBoxIcon,
@@ -16,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import "./style.css";
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
 
-export const SideBar = () => {
+export const SideBar = ({ user, role, loggedInfo = false }) => {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // State for the burger menu
 
@@ -30,26 +31,37 @@ export const SideBar = () => {
 
   const navigate = useNavigate();
   const handleLogout = () => {
+    // Cookies.remove("token", { path: '/'});
+    // window.location.href = '/';
     localStorage.removeItem("token"); // Remove token from localStorage
     navigate("/"); // Redirect to login page
   };
 
   return (
     <div className="xl:w-[276px] lg:w-[200px] fixed lg:static h-screen bg-white text-slate-400 p-6 text-lg overflow-y-auto no-scrollbar">
-      <div className="sticky top-0 left-0 bg-white">
+      <div className="sticky top-0 left-0 bg-white hidden md:block">
         {/* Logo for large screens, switches between Logo2 and Logo based on isOpen */}
-        <img
+        {/* <img
           src={isOpen ? Logo : Logo2}
           alt="Logo"
           className="hidden lg:block xl:w-auto 2xl:max-w-[200px] max-h-[32px] mb-12"
-        />
-        <button className="lg:hidden" onClick={toggleSidebar}>
+        /> */}
+        <button
+          className="w-auto flex gap-2 items-center justify-center py-2"
+          onClick={toggleSidebar}
+        >
+          <img src={Logo} alt="" className="size-8" />
+          <p className="text-orange-500 font-bold text-3xl hidden lg:block">
+            GMJ
+          </p>
+        </button>
+        {/* <button className="lg:hidden" onClick={toggleSidebar}>
           <img
             src={isOpen ? Logo2 : Logo}
             alt="Logo"
             className="lg:hidden xl:w-auto 2xl:max-w-[200px] max-h-[32px] mb-12"
           />
-        </button>
+        </button> */}
       </div>
 
       {/* Burger Menu Button for small screens */}
@@ -74,6 +86,13 @@ export const SideBar = () => {
       </button> */}
 
       {/* Sidebar Content */}
+      {loggedInfo && (
+        <div className="w-full text-black flex items-center gap-1 my-4">
+          <p className="text-sm">Login As:</p>
+          <p className="text-sm font-semibold">{user}</p>
+          <p className="text-sm font-medium">({role})</p>
+        </div>
+      )}
       <div
         className={`${
           isOpen ? "block" : "hidden"
@@ -87,8 +106,8 @@ export const SideBar = () => {
               title="Dashboard"
               showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
-              // linkTo="/dashboard"
-              linkTo='/'
+              linkTo="/dashboard"
+              // linkTo='/'
             />
             <ButtonIcon
               icon={<ArchiveBoxIcon className="w-6 h-6" />}

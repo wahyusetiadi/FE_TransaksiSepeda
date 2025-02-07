@@ -3,6 +3,8 @@ import ImageSide from "../../assets/image/1213.png";
 import Logo1 from "../../assets/logo1.svg";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/api";
+import logo from '../../assets/logo.svg'
+import Cookies from "js-cookie";
 // import { login } from "../../api/api";
 
 export const Auth = () => {
@@ -24,8 +26,11 @@ export const Auth = () => {
 
       if (response && response.data) {
         localStorage.setItem("token", response.data);
-        // navigate("/dashboard");
-        navigate("/");
+        console.log(response.data);
+        
+        // Cookies.set("token", response.data);
+        navigate("/dashboard");
+        // navigate("/");
         console.log("response", response.data);
       }
     } catch (err) {
@@ -45,9 +50,13 @@ export const Auth = () => {
         <img src={ImageSide} />
       </div> */}
 
-      <div className="md:w-[600px] max-md:w-[300px] py-20 max-md:py-8 max-  md:px-4 border bg-slate-100 rounded-lg flex flex-col items-center justify-center">
-        <div className="mb-6">
-          <img src={Logo1} className="w-72 max-md:w-40" />
+      <div className="md:w-[600px] max-md:w-[300px] py-20 max-md:py-8 max-md:px-4 border bg-slate-100 rounded-lg flex flex-col items-center justify-center">
+        <div className="mb-6 w-full flex gap-4 items-center justify-center">
+          <img src={logo} className="w-32 max-md:w-40" />
+          <div className="w-fit flex flex-col items-start justify-stretch text-start text-5xl font-bold text-orange-500">
+            <p>GMJ</p>
+            <p>Bike Shop</p>
+          </div>
         </div>
         <form action="" onSubmit={handleSubmit}>
           <div className="text-center w-full">

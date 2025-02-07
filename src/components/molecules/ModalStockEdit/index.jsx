@@ -1,8 +1,8 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import React, { useState } from "react";
-import { updateProductData } from "../../../api/api";
+import { updateProductData, updateProductDataAdmin } from "../../../api/api";
 
-export const ModalEdit = ({
+export const ModalStockEdit = ({
   onClick,
   idBarang,
   namaBarang,
@@ -28,9 +28,10 @@ export const ModalEdit = ({
   // Fungsi untuk menangani perubahan input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const NumericValue = Number(value)
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: NumericValue,
     });
   };
 
@@ -46,15 +47,15 @@ export const ModalEdit = ({
     e.preventDefault();
 
     const updateData = {
-      name: formData.namaBarang,
-      status: formData.statusBarang,
-      price: formData.hargaBarang,
+      // name: formData.namaBarang,
+      // status: formData.statusBarang,
+      // price: formData.hargaBarang,
       stock: formData.stcokBarang,
-      type: formData.typeBarang,
+      // type: formData.typeBarang,
     };
 
     try {
-      const response = await updateProductData(idBarang, updateData);
+      const response = await updateProductDataAdmin(idBarang, updateData);
       console.log("Produk berhasil di update", response);
       onClick();
       if (onUpdate) {
@@ -70,7 +71,7 @@ export const ModalEdit = ({
     <div className="w-[560px] p-8 h-auto rounded-lg bg-white z-50 max-md:w-[300px] max-md:p-6">
       <div className="w-full flex">
         <div className="w-full flex items-center justify-start">
-          <h1 className="text-2xl max-md:text-lg font-bold">Edit Detail Barang</h1>
+          <h1 className="text-2xl max-md:text-lg font-bold">Edit Jumlah Stock</h1>
         </div>
         <div className="w-full flex items-center justify-end">
           <button onClick={onClick}>
@@ -82,7 +83,8 @@ export const ModalEdit = ({
       <div className="w-full flex gap-4">
         <div className="w-full flex flex-col gap-2">
           <form onSubmit={handleSubmit}>
-            <div className="w-full flex flex-col">
+            
+            {/* <div className="w-full flex flex-col">
               <label
                 htmlFor="Nama Barang"
                 className="text-base max-md:text-xs font-bold text-slate-700"
@@ -183,7 +185,7 @@ export const ModalEdit = ({
                   name="hargaBarang"
                 />
               </div>
-            </div>
+            </div> */}
 
             <div className="flex items-center my-4">
               <p className="text-base max-md:text-xs font-bold text-[#1E293B] text-nowrap">
@@ -191,7 +193,7 @@ export const ModalEdit = ({
               </p>
               <div className="w-full justify-end flex gap-5">
                 <input
-                type="number"
+                  type="number"
                   className="w-24 h-10 max-md:w-8 max-md:h-8 p-2 border-2 rounded-lg text-center text-lg max-md:text-xs font-bold text-gray-900"
                   value={formData.stcokBarang}
                   onChange={handleInputChange}

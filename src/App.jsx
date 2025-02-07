@@ -16,15 +16,16 @@ import { DetailHistoryTransactions } from "./pages/historyTransactions/DetailHis
 import { ReportOutbond } from "./pages/ReportOutbond";
 import ProtectedLayout from "./layout/ProtectedLayout";
 import { StruckTransactions } from "./components/organisms/StruckTransactions";
+import PaymentPage from "./pages/historyTransactions/PaymentDetail";
 
 function App() {
   return (
     <div className="bg-slate-100 w-full">
       <BrowserRouter>
         <Routes>
-          <Route path="/auth" element={<Auth />} />
-          {/* <Route element={<ProtectedLayout />}> */}
-            <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Auth />} />
+          <Route element={<ProtectedLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/barang" element={<ItemsPage />} />
             <Route path="/barang/tambah-barang" element={<AddItems />} />
             <Route
@@ -48,7 +49,8 @@ function App() {
               element={<DetailHistoryTransactions />}
             />
             <Route path="/laporan-barang-keluar" element={<ReportOutbond />} />
-          {/* </Route> */}
+            <Route path="/payment" element={<PaymentPage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

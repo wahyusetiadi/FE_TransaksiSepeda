@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ContentLayout } from "../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../components/molecules/ButtonIcon";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { getAllProducts } from "../../api/api";
+import { getAllProducts, getAllProductTransactions } from "../../api/api";
 import { TableData } from "../../components/organisms/TableData";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +17,7 @@ export const Transactions = () => {
   useEffect(() => {
     const fetchDataBarang = async () => {
       try {
-        const data = await getAllProducts();
+        const data = await getAllProductTransactions();
         console.log("databarang:", data);
         setBarang(data);
       } catch (error) {
