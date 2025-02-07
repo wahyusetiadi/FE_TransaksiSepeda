@@ -5,6 +5,7 @@ import { ContentLayout } from "../../components/organisms/ContentLayout";
 import { TableData } from "../../components/organisms/TableData";
 import {
   deleteProductData,
+  getAllProductAdmin,
   getAllProducts,
   getUser,
   recoveryProductData,
@@ -23,7 +24,7 @@ export const ItemsPage = () => {
 
   const fetchDataBarang = async () => {
     try {
-      const data = await getAllProducts();
+      const data = await getAllProductAdmin();
       setBarang(data);
       return data; // Return data to be used in handleUpdate
     } catch (error) {

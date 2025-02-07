@@ -11,6 +11,7 @@ import {
   getAllCustomerData,
   getAllHistoryTransactions,
   getAllOutbond,
+  getAllProductAdmin,
   getAllProducts,
   getAllTransactions,
   getTransaksi,
@@ -58,7 +59,7 @@ export const Dashboard = () => {
 
     const fetchDataBarang = async () => {
       try {
-        const data = await getAllProducts();
+        const data = await getAllProductAdmin();
         setBarang(data);
         setCountBarang(data.length);
         // console.log("setBarang", data);

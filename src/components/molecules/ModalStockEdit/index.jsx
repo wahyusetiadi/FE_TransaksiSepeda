@@ -1,6 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import React, { useState } from "react";
-import { updateProductData, updateProductDataAdmin } from "../../../api/api";
+import { updateProductData, updateProductDataAdmin, updateProductStocByAdmin } from "../../../api/api";
 
 export const ModalStockEdit = ({
   onClick,
@@ -55,7 +55,7 @@ export const ModalStockEdit = ({
     };
 
     try {
-      const response = await updateProductDataAdmin(idBarang, updateData);
+      const response = await updateProductStocByAdmin(idBarang, updateData);
       console.log("Produk berhasil di update", response);
       onClick();
       if (onUpdate) {

@@ -73,7 +73,6 @@ export const TableData = ({
       currency: "IDR",
     }).format(amount);
   };
-  
 
   const handleAddClick = (item) => {
     if (!itemQuantities[item.id]) {
@@ -193,8 +192,9 @@ export const TableData = ({
   };
 
   useEffect(() => {
-    let filtered = data;
+    let filtered = Array.isArray(data) ? [...data] : []; // Ensure data is an array
 
+    // Apply filters and search logic
     if (selectedStatus) {
       filtered = filtered.filter((item) => item.status === selectedStatus);
     }
@@ -218,8 +218,9 @@ export const TableData = ({
     }
 
     fetchUser();
-    setFilteredData(filtered);
+    setFilteredData(filtered); // Always set as an array
   }, [selectedStatus, selectedKategori, searchQuery, data]); // Reapply filters when they change
+
   const isAdminBesar = user?.role === "owner";
   const isAdminCabang = user?.role === "admin";
 
@@ -229,7 +230,7 @@ export const TableData = ({
     if (key === "isDeleted" || key === "updatedAt") return false;
     if (key === "bukti" || key === "items" || key === "productId") return false;
     if (key === "deskripsi" && !showDeskripsi) return false;
-    if (key === "aksi" && isAdminCabang) return false;
+    if (key === "aksi") return false;
     return key !== "id";
   });
 
@@ -242,8 +243,10 @@ export const TableData = ({
   const totalPage = Math.ceil(filteredData.length / itemsPerPage);
 
   useEffect(() => {
-    const updateData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-    setCurrentItems(updateData);
+    if (Array.isArray(filteredData)) {
+      const updateData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+      setCurrentItems(updateData);
+    }
   }, [filteredData, currentPage]);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -388,15 +391,16 @@ export const TableData = ({
 
                     if (col === "lunas") {
                       return (
-                        <td
-                          key={col}
-                          className=""
-                        >
+                        <td key={col} className="">
                           <div className="font-semibold">
                             {item.lunas === 1 ? (
-                              <span className="text-green-600 px-2 py-1 bg-green-100 rounded-full">Lunas</span> // If lunas is 1, show "Lunas"
+                              <span className="text-green-600 px-2 py-1 bg-green-100 rounded-full">
+                                Lunas
+                              </span> // If lunas is 1, show "Lunas"
                             ) : (
-                              <span className="text-red-600 px-2 py-1 bg-red-100 rounded-full">Belum</span> // If lunas is 0, show "Belum"
+                              <span className="text-red-600 px-2 py-1 bg-red-100 rounded-full">
+                                Belum
+                              </span> // If lunas is 0, show "Belum"
                             )}
                           </div>
                         </td>
@@ -410,7 +414,7 @@ export const TableData = ({
                           className="py-2 px-6 font-semibold flex justify-center items-center"
                         >
                           <div className="flex flex-col justify-center gap-2 items-center">
-                            {showEditBtn && item.isDeleted === 0 && (
+                            {showEditBtn && (
                               <>
                                 <button
                                   onClick={() => {

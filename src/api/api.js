@@ -88,7 +88,9 @@ export const getUser = async () => {
 //GET ALL PRODUCTS
 export const getAllProductsOwner = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/products/get-all`);
+    const response = await axios.get(`${BASE_URL}/products/get-all`, {
+      headers: await getAuthHeader(),
+    });
     return response.data.data;
   } catch (error) {
     console.error("Error fetching products data:", error);
@@ -96,12 +98,32 @@ export const getAllProductsOwner = async () => {
   }
 };
 
+//CONTOH
 export const getAllProducts = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/products/get-all-duplicate`);
+    const response = await axios.get(`${BASE_URL}/products/get-all-duplicate`, {
+      headers: await getAuthHeader(),
+    });
     return response.data.data;
   } catch (error) {
     console.error("Error fetching products data:", error);
+    throw error;
+  }
+};
+
+//
+export const getAllProductAdmin = async () => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/products/product-user/get-all`,
+      {
+        headers: await getAuthHeader(),
+      }
+    );
+    console.log("Get All Product Admin", response.data.data);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error GET API getAllProductAdmin", error);
     throw error;
   }
 };
@@ -110,7 +132,10 @@ export const getAllProducts = async () => {
 export const getAllProductTransactions = async () => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/products/get-all/transaction`
+      `${BASE_URL}/products/get-all/transaction`,
+      {
+        headers: await getAuthHeader(),
+      }
     );
     return response.data.data;
   } catch (error) {
@@ -126,10 +151,13 @@ export const createProducts = async (productData) => {
       `${BASE_URL}/products/create`,
       productData,
       {
-        headers: {
-          "Content-Type": "application/json", // Pastikan header Content-Type sudah benar
-        },
+        headers: await getAuthHeader(),
       }
+      // {
+      //   headers: {
+      //     "Content-Type": "application/json", // Pastikan header Content-Type sudah benar
+      //   },
+      // }
     );
 
     // Response dari API
@@ -150,7 +178,9 @@ export const createProducts = async (productData) => {
 //GET PRODUCTS BY ID
 export const getProductData = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/products/${id}`);
+    const response = await axios.get(`${BASE_URL}/products/${id}`, {
+      headers: await getAuthHeader(),
+    });
 
     if (
       response.data.meta.status === "succes" &&
@@ -170,6 +200,9 @@ export const updateProductData = async (id, data) => {
   try {
     const response = await axios.put(
       `${BASE_URL}/products/owner/update/${id}`,
+      {
+        headers: await getAuthHeader(),
+      },
       data
     );
     return response.data;
@@ -181,19 +214,53 @@ export const updateProductData = async (id, data) => {
 
 export const updateProductDataAdmin = async (id, data) => {
   try {
-    const response = await axios.put(`${BASE_URL}/products/update/${id}`, data);
+    const response = await axios.put(
+      `${BASE_URL}/products/update/${id}`,
+      {
+        headers: await getAuthHeader(),
+      },
+      data
+    );
     return response.data;
   } catch (error) {
     console.error("Error updating product:", error);
     throw error;
   }
 };
+
+//POST UPDATE STOCK BY ADMIN CABANG
+export const updateProductStocByAdmin = async (id, data) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/products/product-user/edit`, 
+      {
+        id,    // Include the product ID
+        ...data // Spread the updateData to include fields like stock
+      },
+      {
+        headers: await getAuthHeader(), // Include headers
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error POST API update product data", error);
+    throw error;
+  }
+};
+
+
 // POST DELETE PRODUCT DATA
 export const deleteProductData = async (id) => {
   try {
-    const response = await axios.post(`${BASE_URL}/products/delete/${id}`, {
-      isDeleted: true,
-    });
+    const response = await axios.post(
+      `${BASE_URL}/products/delete/${id}`,
+      {
+        headers: await getAuthHeader(),
+      },
+      {
+        isDeleted: true,
+      }
+    );
 
     // console.log("Response Deleted:", response.data);
     return response.data;
@@ -208,9 +275,15 @@ export const deleteProductData = async (id) => {
 // POST RECOVERY PRODUCT DATA
 export const recoveryProductData = async (id) => {
   try {
-    const response = await axios.post(`${BASE_URL}/products/recovery/${id}`, {
-      isDeleted: false,
-    });
+    const response = await axios.post(
+      `${BASE_URL}/products/recovery/${id}`,
+      {
+        headers: await getAuthHeader(),
+      },
+      {
+        isDeleted: false,
+      }
+    );
 
     // console.log("Response Deleted:", response.data);
     return response.data;
@@ -230,10 +303,13 @@ export const addTransaction = async (payload) => {
       `${BASE_URL}/transactions/create`,
       payload,
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: await getAuthHeader(),
       }
+      // {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // }
     );
 
     if (response.status === 201) {
@@ -254,10 +330,13 @@ export const addTransactionNonVip = async (payloadNonVip) => {
       `${BASE_URL}/transactions/create/retail`,
       payloadNonVip,
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: await getAuthHeader(),
       }
+      // {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // }
     );
 
     if (response.status === 201) {
@@ -274,7 +353,9 @@ export const addTransactionNonVip = async (payloadNonVip) => {
 // GET ALL TRANSACTIONS
 export const getAllTransactions = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/transactions/get-all`);
+    const response = await axios.get(`${BASE_URL}/transactions/get-all`, {
+      headers: await getAuthHeader(),
+    });
     return response.data.data;
   } catch (error) {
     console.error("Error fetching transactions data", error);
@@ -285,7 +366,9 @@ export const getAllTransactions = async () => {
 // GET ALL CUSTOMER DATA
 export const getAllCustomerData = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/customers/get-all`);
+    const response = await axios.get(`${BASE_URL}/customers/get-all`, {
+      headers: await getAuthHeader(),
+    });
     return response.data.data;
   } catch (error) {
     console.error("Error fetching customer data:", error);
@@ -297,7 +380,10 @@ export const getAllCustomerData = async () => {
 export const getAllCustomerTransactions = async () => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/customers/transactions/get-all`
+      `${BASE_URL}/customers/transactions/get-all`,
+      {
+        headers: await getAuthHeader(),
+      }
     );
     return response.data.data;
   } catch (error) {
@@ -314,10 +400,13 @@ export const createCustomer = async (customersData) => {
       `${BASE_URL}/customers/create`,
       customersData,
       {
-        headers: {
-          "Content-Type": "application/json", // Pastikan header Content-Type sudah benar
-        },
+        headers: await getAuthHeader(),
       }
+      // {
+      //   headers: {
+      //     "Content-Type": "application/json", // Pastikan header Content-Type sudah benar
+      //   },
+      // }
     );
 
     // Response dari API
@@ -340,7 +429,10 @@ export const createCustomer = async (customersData) => {
 export const getAllHistoryTransactions = async () => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/transactions/history/get-all`
+      `${BASE_URL}/transactions/history/get-all`,
+      {
+        headers: await getAuthHeader(),
+      }
     );
     return response.data.data;
   } catch (error) {
@@ -354,6 +446,9 @@ export const getHistoryTransactionDetail = async (id) => {
   try {
     const response = await axios.get(
       `${BASE_URL}/transactions/get-detail/${id}`,
+      {
+        headers: await getAuthHeader(),
+      },
       {
         headers: {
           "Cache-Control": "no-cache",
@@ -387,10 +482,13 @@ export const addOutbond = async (payloadOutbond) => {
       `${BASE_URL}/barang-keluar/create`,
       payloadOutbond,
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: await getAuthHeader(),
       }
+      // {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // }
     );
 
     if (response.status === 201) {
@@ -407,7 +505,9 @@ export const addOutbond = async (payloadOutbond) => {
 // GET ALL BARANG KELUAR
 export const getAllOutbond = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/barang-keluar/get-all`);
+    const response = await axios.get(`${BASE_URL}/barang-keluar/get-all`, {
+      headers: await getAuthHeader(),
+    });
     return response.data.data;
   } catch (error) {
     console.error("Error fetching all outbond", error);
