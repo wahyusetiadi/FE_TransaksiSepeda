@@ -61,7 +61,8 @@ export const TableData = ({
   const [selectedItem, setSelectedItem] = useState({
     id: "",
     name: "",
-    price: "",
+    price_ecer: "",
+    price_grosir: "",
     stock: "",
     type: "",
     status: "",
@@ -224,18 +225,21 @@ export const TableData = ({
   const isAdminBesar = user?.role === "owner";
   const isAdminCabang = user?.role === "admin";
 
-  const columns = Object.keys(data[0] || {}).filter((key) => {
-    if (key === "id" && !showId) return false;
-    if ((key === "tanggal" || key === "waktu") && !showDateTime) return false;
-    if (key === "isDeleted" || key === "updatedAt") return false;
-    if (key === "bukti" || key === "items" || key === "productId") return false;
-    if (key === "deskripsi" && !showDeskripsi) return false;
-    if (key === "aksi") return false;
-    return key !== "id";
-  });
+  const columns = Array.isArray(data) && data.length > 0
+  ? Object.keys(data[0] || {}).filter((key) => {
+      if (key === "id" && !showId) return false;
+      if ((key === "tanggal" || key === "waktu") && !showDateTime) return false;
+      if (key === "isDeleted" || key === "updatedAt") return false;
+      if (key === "bukti" || key === "items" || key === "productId") return false;
+      if (key === "deskripsi" && !showDeskripsi) return false;
+      if (key === "aksi") return false;
+      return key !== "id";
+    })
+  : [];
+
 
   if (showAksi) {
-    columns.push("actions");
+    columns.push("aksi");
   }
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -255,7 +259,8 @@ export const TableData = ({
     setSelectedItem({
       id: item.id,
       name: item.name,
-      price: item.price,
+      price_ecer: item.price_ecer,
+      price_grosir: item.price_grosir,
       stock: item.stock,
       type: item.type,
       status: item.status,
@@ -330,8 +335,27 @@ export const TableData = ({
             <tr>
               {columns.map((col) => (
                 <th key={col} className="px-6 py-4 text-left">
-                  {toTitleCase(toTitleCaseWithSpace(col)) === "Namabarang"
-                    ? "Nama Barang"
+                  {/* Ganti nama kolom "price" menjadi "Harga" */}
+                  {toTitleCase(toTitleCaseWithSpace(col)) === "Price_ecer"
+                    ? "Harga Ecer"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Price_grosir"
+                    ? "Harga Grosir"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Product_code"
+                    ? "Kode Produk"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Name"
+                    ? "Nama"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Transaction_code"
+                    ? "Kode Transaksi"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Customer"
+                    ? "Pelanggan"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Description"
+                    ? "Pembayaran"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Date"
+                    ? "Tanggal"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Price"
+                    ? "Harga"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Amount"
+                    ? "Jumlah"
                     : toTitleCase(toTitleCaseWithSpace(col))}
                 </th>
               ))}
@@ -407,7 +431,7 @@ export const TableData = ({
                       );
                     }
 
-                    if (col === "actions") {
+                    if (col === "aksi") {
                       return (
                         <td
                           key={col}
@@ -442,7 +466,10 @@ export const TableData = ({
                                       onClick={closeEditModal}
                                       idBarang={selectedItem.id}
                                       namaBarang={selectedItem.name}
-                                      hargaBarang={selectedItem.price}
+                                      hargaBarangEcer={selectedItem.price_ecer}
+                                      hargaBarangGrosir={
+                                        selectedItem.price_grosir
+                                      }
                                       stcokBarang={selectedItem.stock}
                                       statusBarang={selectedItem.status}
                                       typeBarang={selectedItem.type}
@@ -588,7 +615,14 @@ export const TableData = ({
                       );
                     }
 
-                    if (col === "price") {
+                    if (col === "price_ecer") {
+                      return (
+                        <td key={col} className="py-2 px-6 text-left">
+                          {formatCurrency(item[col])}
+                        </td>
+                      );
+                    }
+                    if (col === "price_grosir") {
                       return (
                         <td key={col} className="py-2 px-6 text-left">
                           {formatCurrency(item[col])}

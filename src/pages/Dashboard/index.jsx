@@ -50,7 +50,7 @@ export const Dashboard = () => {
       try {
         const userData = await getUser();
         setUser(userData);
-        console.log("Data User:", userData);
+        // console.log("Data User:", userData);
       } catch (error) {
         console.error("Error get User Data:", error);
         throw error;
@@ -59,7 +59,7 @@ export const Dashboard = () => {
 
     const fetchDataBarang = async () => {
       try {
-        const data = await getAllProductAdmin();
+        const data = await getAllProducts();
         setBarang(data);
         setCountBarang(data.length);
         // console.log("setBarang", data);
@@ -109,10 +109,10 @@ export const Dashboard = () => {
 
     const fetchDataBarangKeluar = async () => {
       try {
-        const data = await getAllOutbond();
+        const data = await getAllHistoryTransactions();
         setOutbond(data);
         setCountOutbond(data.length);
-        // console.log("barang keluar", data);
+        console.log("barang keluar", data);
         // console.log("setCountOutBond", data.length);
       } catch (error) {
         console.error("Error fetching all outbond", error);
@@ -173,13 +173,11 @@ export const Dashboard = () => {
                 <h1 className="text-sm font-bold">{`${countBarang} item`}</h1>
               </div>
             </Link>
-            <Link to="/transaksi">
               <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
                 <h1 className="text-base font-bold">Transaksi</h1>
                 <ShoppingBagIcon className="text-orange-600 size-8" />
                 <h1 className="text-sm font-bold">{`${countTransactions} Transaksi`}</h1>
               </div>
-            </Link>
             <Link to="/pelanggan">
               <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
                 <h1 className="text-base font-bold">Pelanggan</h1>

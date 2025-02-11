@@ -24,7 +24,7 @@ export const ItemsPage = () => {
 
   const fetchDataBarang = async () => {
     try {
-      const data = await getAllProductAdmin();
+      const data = await getAllProducts();
       setBarang(data);
       return data; // Return data to be used in handleUpdate
     } catch (error) {

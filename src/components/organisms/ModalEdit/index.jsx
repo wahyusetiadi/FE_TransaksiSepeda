@@ -7,7 +7,8 @@ export const ModalEdit = ({
   idBarang,
   namaBarang,
   statusBarang,
-  hargaBarang,
+  hargaBarangEcer,
+  hargaBarangGrosir,
   stcokBarang,
   typeBarang,
   onUpdate,
@@ -17,7 +18,8 @@ export const ModalEdit = ({
   const [formData, setFormData] = useState({
     namaBarang,
     statusBarang,
-    hargaBarang,
+    hargaBarangEcer,
+    hargaBarangGrosir,
     stcokBarang,
     typeBarang,
   });
@@ -40,7 +42,7 @@ export const ModalEdit = ({
     currency: "IDR",
     minimumFractionDigits: 0, // Menghilangkan angka di belakang koma
     maximumFractionDigits: 0, // Menghilangkan angka di belakang koma
-  }).format(formData.hargaBarang);
+  }).format(formData.hargaBarangEcer || formData.hargaBarangGrosir);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,9 +50,10 @@ export const ModalEdit = ({
     const updateData = {
       name: formData.namaBarang,
       status: formData.statusBarang,
-      price: formData.hargaBarang,
-      stock: formData.stcokBarang,
-      type: formData.typeBarang,
+      price_ecer: formData.hargaBarangEcer,
+      price_grosir: formData.hargaBarangGrosir,
+      // stock: formData.stcokBarang,
+      // type: formData.typeBarang,
     };
 
     try {
@@ -99,7 +102,7 @@ export const ModalEdit = ({
               />
             </div>
 
-            <div className="w-full flex flex-col mt-4">
+            {/* <div className="w-full flex flex-col mt-4">
               <label
                 htmlFor="Tipe Barang"
                 className="text-base max-md:text-xs font-bold text-slate-700"
@@ -128,7 +131,7 @@ export const ModalEdit = ({
                   </option>
                 )}
               </select>
-            </div>
+            </div> */}
 
             <div className="flex gap-4 mt-4">
               <div className="w-full flex flex-col">
@@ -168,7 +171,7 @@ export const ModalEdit = ({
                 htmlFor="Harga Barang"
                 className="text-base max-md:text-xs font-bold text-slate-700"
               >
-                Harga Barang
+                Harga Barang Grosir
               </label>
               <div className="flex gap-4">
                 <div className="w-14 flex max-md:w-10 max-md:text-xs items-center justify-center bg-slate-100 font-bold text-sm rounded">
@@ -178,14 +181,36 @@ export const ModalEdit = ({
                   type="number"
                   className="w-full px-4 py-2 border rounded max-md:text-xs"
                   placeholder="Masukkan Harga Barang"
-                  value={formData.hargaBarang}
+                  value={formData.hargaBarangGrosir}
                   onChange={handleInputChange}
                   name="hargaBarang"
                 />
               </div>
             </div>
 
-            <div className="flex items-center my-4">
+            <div className="w-full flex flex-col mt-4">
+              <label
+                htmlFor="Harga Barang"
+                className="text-base max-md:text-xs font-bold text-slate-700"
+              >
+                Harga Barang Ecer
+              </label>
+              <div className="flex gap-4">
+                <div className="w-14 flex max-md:w-10 max-md:text-xs items-center justify-center bg-slate-100 font-bold text-sm rounded">
+                  Rp
+                </div>
+                <input
+                  type="number"
+                  className="w-full px-4 py-2 border rounded max-md:text-xs"
+                  placeholder="Masukkan Harga Barang"
+                  value={formData.hargaBarangEcer}
+                  onChange={handleInputChange}
+                  name="hargaBarang"
+                />
+              </div>
+            </div>
+
+            {/* <div className="flex items-center my-4">
               <p className="text-base max-md:text-xs font-bold text-[#1E293B] text-nowrap">
                 Jumlah Stock
               </p>
@@ -198,7 +223,7 @@ export const ModalEdit = ({
                   name="stcokBarang"
                 />
               </div>
-            </div>
+            </div> */}
             <button
               type="submit"
               className="w-full py-4 bg-orange-600 text-base text-white font-semibold text-center rounded-full mt-4"

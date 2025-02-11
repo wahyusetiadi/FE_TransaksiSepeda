@@ -57,10 +57,62 @@ const PaymentPage = () => {
   const formatTime = (date) => {
     return new Date(date).toLocaleTimeString();
   };
+  const handlePrint = () => {
+    const printContents = document.getElementById("print-content").innerHTML;
+    const printWindow = window.open("", "", "width=600,height=800");
+    
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Struk Pembelian</title>
+          <style>
+            body {
+              font-family: 'Courier New', monospace;
+              padding: 10px;
+              font-size: 12px;
+              color: #333;
+            }
+            .text-center {
+              text-align: center;
+            }
+            .text-start {
+              text-align: left;
+            }
+            .flex {
+              display: flex;
+              justify-content: space-between;
+            }
+            .gap-2 {
+              gap: 8px;
+            }
+            .my-2 {
+              margin-top: 8px;
+              margin-bottom: 8px;
+            }
+            .font-semibold {
+              font-weight: 600;
+            }
+            .font-bold {
+              font-weight: 700;
+            }
+            .text-xs {
+              font-size: 10px;
+            }
+          </style>
+        </head>
+        <body>
+          ${printContents}
+        </body>
+      </html>
+    `);
+    
+    printWindow.document.close();  // Penting untuk menyelesaikan proses dokumen
+    printWindow.print();           // Melakukan print
+  };
 
   return (
     <div className="w-full h-screen flex flex-col text-center items-center justify-center">
-      <div className="w-[400px] h-auto bg-white rounded-lg p-4 text-xs font-mono border border-gray-300">
+      <div className="w-[375px] h-auto bg-white rounded-lg p-4 text-xs font-mono border border-gray-300" id="print-content">
         {/* Header struk */}
         <div className="text-center">
           <h1 className="font-bold">GMJ Bike Shop</h1>
@@ -132,7 +184,7 @@ const PaymentPage = () => {
       </div>
       <div className="print-button-container mt-4 text-white text-sm">
         <button
-          onClick={() => window.print()}
+          onClick={handlePrint}
           className="print-button px-4 py-2 bg-orange-600 rounded-full"
         >
           Cetak Struk

@@ -116,7 +116,7 @@ export const SideBar = ({ user, role, loggedInfo = false }) => {
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
               linkTo="/barang"
             />
-            {openDropdown && (
+            {/* {openDropdown && (
               <div className="">
                 <ul className="text-sm ml-6">
                   <li className="mb-4">Sepeda Gunung</li>
@@ -127,14 +127,36 @@ export const SideBar = ({ user, role, loggedInfo = false }) => {
                   <li className="mb-4">Aksesoris</li>
                 </ul>
               </div>
-            )}
+            )} */}
             <ButtonIcon
               icon={<ShoppingBagIcon className="w-6 h-6" />}
               title="Transaksi"
               showArrow={false}
               classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
-              linkTo="/transaksi"
+              onClick={toggleDropdown}
             />
+            {openDropdown && (
+              <div className="">
+                <ul className="text-sm ml-6">
+                  <li className="mb-4">
+                    <ButtonIcon
+                      title="Grosir"
+                      showArrow={false}
+                      classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
+                      linkTo="/transaksi/grosir"
+                    />
+                  </li>
+                  <li className="mb-4">
+                  <ButtonIcon
+                      title="Eceran"
+                      showArrow={false}
+                      classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
+                      linkTo="/transaksi/eceran"
+                    />
+                  </li>
+                </ul>
+              </div>
+            )}
             <ButtonIcon
               icon={<UserGroupIcon className="w-6 h-6" />}
               title="Pelanggan"

@@ -24,6 +24,7 @@ export const HistoryTransactions = () => {
   const fetchTransactionsHistory = async () => {
     try {
       const data = await getAllHistoryTransactions();
+
       const sortedData = data.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
@@ -34,23 +35,25 @@ export const HistoryTransactions = () => {
       console.error("Error fetch data history transactions", error);
     }
   };
-  useEffect(() => {
-    fetchTransactionsHistory();
-  }, []);
 
   const handleDelete = async (id) => {
-    setLoading(true);
     try {
       const response = await deleteHistoryTransactionsById(id);
       const data = await fetchTransactionsHistory();
-      setHistoryTransactions(data);
+      if (Array.isArray(data)) {
+        const sortedData = data.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateB - dateA;
+        });
+        setHistoryTransactions(sortedData);
+      }
+
       if (response.meta.status === "success") {
         showAlert("Barang berhasil dihapus");
       }
     } catch (error) {
       console.error("Error deleting product:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -58,6 +61,9 @@ export const HistoryTransactions = () => {
   const handleDetailClick = (id) => {
     navigate(`/riwayat-transaksi/detail/${id}`); // Navigate to the detail page with the transaction ID
   };
+  useEffect(() => {
+    fetchTransactionsHistory();
+  }, []);
 
   return (
     <div>

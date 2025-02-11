@@ -3,35 +3,34 @@ import { SideBar } from "../SideBar";
 import { TopBar } from "../TopBar";
 import { useLocation } from "react-router-dom"; // Untuk mengambil rute saat ini
 import { getUser } from "../../../api/api";
+import { ClipLoader } from "react-spinners"; // Import spinner loading
 
 export const ContentLayout = ({ children }) => {
   const location = useLocation(); // Mengambil lokasi atau rute saat ini
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true); // State untuk menunjukkan loading
 
   useEffect(() => {
     const fetchUser = async () => {
+      setLoading(true); // Menyatakan bahwa data sedang dimuat
       try {
         const userData = await getUser();
         setUser(userData);
-        // console.log("Data User:", userData);
         setMessage(
           `Hello, ${userData.username}! Your role is ${userData.role}.`
         );
-
-        // setTimeout(() => {
-        //   setMessage('');
-        // },1000)
       } catch (error) {
         console.error("Error get User Data:", error);
-        throw error;
+      } finally {
+        setLoading(false); // Data selesai dimuat, set loading ke false
       }
     };
     fetchUser();
-  }, []);
+  }, [location]); // Memantau perubahan route
 
   return (
-    <div className="w-full flex h-screen ">
+    <div className="w-full flex h-screen">
       <div className="w-auto hidden md:block">
         <SideBar loggedInfo={true} user={user?.username} role={user?.role} />
       </div>
@@ -40,9 +39,16 @@ export const ContentLayout = ({ children }) => {
         {/* <div className="w-full">
           <TopBar />
         </div> */}
+        
         <div className="h-full overflow-y-auto max-xl:p-6 md:p-4">
           <div className="w-full h-auto rounded-lg bg-white">
-            <div key={location.pathname}>{children}</div>
+            {loading ? (
+              <div className="flex justify-center items-center h-full">
+                <ClipLoader color="#EA580C" size={50} />
+              </div>
+            ) : (
+              <div key={location.pathname}>{children}</div> // Menampilkan konten setelah loading selesai
+            )}
           </div>
         </div>
       </div>

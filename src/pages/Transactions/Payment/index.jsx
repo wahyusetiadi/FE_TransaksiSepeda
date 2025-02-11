@@ -15,7 +15,7 @@ export const Payment = () => {
   const description = sessionStorage.getItem("description");
   const customer = sessionStorage.getItem("customers");
   const pelanggan = sessionStorage.getItem("pelanggan");
-  const hutang = sessionStorage.getItem("hutang")
+  const hutang = sessionStorage.getItem("hutang");
 
   console.log("addedItems:", addedItems);
   console.log("total:", total);
@@ -35,15 +35,68 @@ export const Payment = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-  
+
+  // const handlePrint = () => {
+  //   const printContents = document.getElementById("print-content").innerHTML;
+  //   const originalContents = document.body.innerHTML;
+  //   document.body.innerHTML = printContents;
+  //   window.print();
+  //   document.body.innerHTML = originalContents;
+  // };
 
   const handlePrint = () => {
     const printContents = document.getElementById("print-content").innerHTML;
-    const originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
+    const printWindow = window.open("", "", "width=600,height=800");
+    
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Struk Pembelian</title>
+          <style>
+            body {
+              font-family: 'Courier New', monospace;
+              padding: 10px;
+              font-size: 12px;
+              color: #333;
+            }
+            .text-center {
+              text-align: center;
+            }
+            .text-start {
+              text-align: left;
+            }
+            .flex {
+              display: flex;
+              justify-content: space-between;
+            }
+            .gap-2 {
+              gap: 8px;
+            }
+            .my-2 {
+              margin-top: 8px;
+              margin-bottom: 8px;
+            }
+            .font-semibold {
+              font-weight: 600;
+            }
+            .font-bold {
+              font-weight: 700;
+            }
+            .text-xs {
+              font-size: 10px;
+            }
+          </style>
+        </head>
+        <body>
+          ${printContents}
+        </body>
+      </html>
+    `);
+    
+    printWindow.document.close();  // Penting untuk menyelesaikan proses dokumen
+    printWindow.print();           // Melakukan print
   };
+  
 
   return (
     <div>
@@ -69,11 +122,11 @@ export const Payment = () => {
             <hr className="my-2" />
             <div className="text-start">
               <p className="text-xs">
-                Pelanggan: 
+                Pelanggan:
                 <b>
-                  {customer !== "Error"
+                  {customer && customer !== "Error"
                     ? customer
-                    : pelanggan !== "Error"
+                    : pelanggan && pelanggan !== "Error"
                     ? pelanggan
                     : "Data tidak tersedia"}
                 </b>
@@ -93,7 +146,12 @@ export const Payment = () => {
                 <span>
                   (x{item.quantity}) {item.name}
                 </span>
-                <span>{formatCurrency(item.price * item.quantity)}</span>
+                <span>
+                  {formatCurrency(
+                    (item.price || item.price_ecer || item.price_grosir) *
+                      item.quantity
+                  )}
+                </span>
               </div>
             ))}
           </div>
@@ -106,7 +164,7 @@ export const Payment = () => {
           </div>
           <div className="flex justify-between text-sm font-semibold">
             <p>Total Bayar</p>
-            <p>{formatCurrency(total-hutang)}</p>
+            <p>{formatCurrency(total - hutang)}</p>
           </div>
           <div className="flex justify-between text-sm font-semibold">
             <p>Hutang</p>

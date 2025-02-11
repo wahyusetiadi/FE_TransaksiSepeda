@@ -98,10 +98,36 @@ export const getAllProductsOwner = async () => {
   }
 };
 
+
+
 //CONTOH
 export const getAllProducts = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/products/get-all-duplicate`, {
+      headers: await getAuthHeader(),
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching products data:", error);
+    throw error;
+  }
+};
+
+export const getAllProductsEceran = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/products/get-all/transaction/ecer`, {
+      headers: await getAuthHeader(),
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching products data:", error);
+    throw error;
+  }
+};
+
+export const getAllProductsGrosir = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/products/get-all/transaction/grosir`, {
       headers: await getAuthHeader(),
     });
     return response.data.data;
@@ -120,7 +146,7 @@ export const getAllProductAdmin = async () => {
         headers: await getAuthHeader(),
       }
     );
-    console.log("Get All Product Admin", response.data.data);
+    // console.log("Get All Product Admin", response.data.data);
     return response.data.data;
   } catch (error) {
     console.error("Error GET API getAllProductAdmin", error);
@@ -200,9 +226,7 @@ export const updateProductData = async (id, data) => {
   try {
     const response = await axios.put(
       `${BASE_URL}/products/owner/update/${id}`,
-      {
-        headers: await getAuthHeader(),
-      },
+      
       data
     );
     return response.data;
@@ -581,7 +605,7 @@ export const deleteHistoryTransactionsById = async (id) => {
         headers: await getAuthHeader(),
       }
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     console.error("Error API Delete transactions:", error);
     throw error;

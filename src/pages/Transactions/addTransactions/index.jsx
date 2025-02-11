@@ -93,7 +93,10 @@ export const AddTransactions = () => {
       items: addedItems?.map((item) => ({
         product_id: item.id,
         amount: item.quantity,
-        total: item.price * item.quantity,
+        total:
+          item.price * item.quantity ||
+          item.price_grosir * item.quantity ||
+          item.price_ecer * item.quantity,
       })),
       description: descriptions,
       hutang: hutang,
@@ -107,7 +110,10 @@ export const AddTransactions = () => {
       items: addedItems?.map((item) => ({
         product_id: item.id,
         amount: item.quantity,
-        total: item.price * item.quantity,
+        total:
+          item.price * item.quantity ||
+          item.price_grosir * item.quantity ||
+          item.price_ecer * item.quantity,
       })),
       description: descriptions,
       hutang: hutang,
@@ -122,7 +128,10 @@ export const AddTransactions = () => {
       items: addedItems?.map((item) => ({
         product_id: item.id,
         amount: item.quantity,
-        total: item.price * item.quantity,
+        total:
+          item.price * item.quantity ||
+          item.price_grosir * item.quantity ||
+          item.price_ecer * item.quantity,
         hutang: hutang,
         keterangan: descriptions,
       })),
@@ -148,7 +157,8 @@ export const AddTransactions = () => {
 
           setTimeout(() => {
             window.open("/transaksi/pembayaran");
-            navigate("/transaksi");
+            navigate("/dashboard");
+            sessionStorage.clear();
           }, 100);
         } else {
           setMessage("Transaksi gagal dibuat");
@@ -167,7 +177,6 @@ export const AddTransactions = () => {
           setMessage(
             `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
           );
-          alert(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
           sessionStorage.setItem("transactionCode", transactionCode);
           sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
           sessionStorage.setItem("total", calculateTotal());
@@ -175,7 +184,7 @@ export const AddTransactions = () => {
           sessionStorage.setItem("hutang", hutang);
           setTimeout(() => {
             window.open("/transaksi/pembayaran");
-            navigate("/transaksi");
+            navigate("/dashboard");
           }, 100);
         } else {
           setMessage("Transaksi gagal dibuat");
@@ -192,7 +201,6 @@ export const AddTransactions = () => {
         result.data.meta.status === "success"
       ) {
         setMessage(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
-        alert(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
       } else {
         setMessage("Transaksi gagal dibuat");
       }
@@ -204,7 +212,11 @@ export const AddTransactions = () => {
 
   const calculateTotal = () => {
     return addedItems?.reduce((total, item) => {
-      const price = item.price && !isNaN(item.price) ? Number(item.price) : 0;
+      const price =
+        (item.price || item.price_grosir || item.price_ecer) &&
+        !isNaN(item.price || item.price_grosir || item.price_ecer)
+          ? Number(item.price || item.price_grosir || item.price_ecer)
+          : 0;
       return total + price * item.quantity;
     }, 0);
   };
@@ -498,7 +510,12 @@ export const AddTransactions = () => {
                                   {`(x${item.quantity})`} {item.name}
                                 </p>
                                 <div className="">
-                                  {formatCurrency(item.price * item.quantity)}
+                                  {formatCurrency(
+                                    (item.price ||
+                                      item.price_grosir * item.quantity ||
+                                      item.price_ecer * item.quantity) *
+                                      item.quantity
+                                  )}
                                 </div>
                               </div>
                             </li>
