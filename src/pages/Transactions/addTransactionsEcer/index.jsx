@@ -11,11 +11,11 @@ import {
 } from "../../../api/api";
 import { use } from "react";
 
-export const AddTransactions = () => {
+export const AddTransactionsEcer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addedItems } = location.state || {};
-  const [isOn, setIson] = useState(true);
+  const [isOn, setIson] = useState(false);
   const [isOnState, setIsOnState] = useState("Belum Lunas");
   const [statusPembayaran, setStatusPembayaran] = useState("Belum Lunas");
   const [loading, setLoading] = useState(false);
@@ -103,22 +103,22 @@ export const AddTransactions = () => {
       lunas: lunas,
     };
 
-    const payload = {
-      transactionCode: transactionCode,
-      customerId: customerId,
-      total: calculateTotal(),
-      items: addedItems?.map((item) => ({
-        product_id: item.id,
-        amount: item.quantity,
-        total:
-          item.price * item.quantity ||
-          item.price_grosir * item.quantity ||
-          item.price_ecer * item.quantity,
-      })),
-      description: descriptions,
-      hutang: hutang,
-      lunas: lunas,
-    };
+    // const payload = {
+    //   transactionCode: transactionCode,
+    //   customerId: customerId,
+    //   total: calculateTotal(),
+    //   items: addedItems?.map((item) => ({
+    //     product_id: item.id,
+    //     amount: item.quantity,
+    //     total:
+    //       item.price * item.quantity ||
+    //       item.price_grosir * item.quantity ||
+    //       item.price_ecer * item.quantity,
+    //   })),
+    //   description: descriptions,
+    //   hutang: hutang,
+    //   lunas: lunas,
+    // };
 
     // console.log(JSON.stringify(payload, null, 2));
 
@@ -139,34 +139,35 @@ export const AddTransactions = () => {
 
     // console.log(JSON.stringify(payloadOutbond, null, 2));
 
-    if (isOn === true) {
-      try {
-        const result = await addTransaction(payload);
-        if (
-          result.data.meta.code === 201 &&
-          result.data.meta.status === "success"
-        ) {
-          setMessage(
-            `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
-          );
-          sessionStorage.setItem("transactionCode", transactionCode);
-          sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
-          sessionStorage.setItem("total", calculateTotal());
-          sessionStorage.setItem("description", descriptions);
-          sessionStorage.setItem("hutang", hutang);
+    // if (isOn === true) {
+    //   try {
+    //     const result = await addTransaction(payload);
+    //     if (
+    //       result.data.meta.code === 201 &&
+    //       result.data.meta.status === "success"
+    //     ) {
+    //       setMessage(
+    //         `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
+    //       );
+    //       sessionStorage.setItem("transactionCode", transactionCode);
+    //       sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
+    //       sessionStorage.setItem("total", calculateTotal());
+    //       sessionStorage.setItem("description", descriptions);
+    //       sessionStorage.setItem("hutang", hutang);
 
-          setTimeout(() => {
-            window.open("/transaksi/pembayaran");
-            navigate("/dashboard");
-            sessionStorage.clear();
-          }, 100);
-        } else {
-          setMessage("Transaksi gagal dibuat");
-        }
-      } catch (error) {
-        setMessage(`Error: ${error.message}`);
-      }
-    } else if (!isOn) {
+    //       setTimeout(() => {
+    //         window.open("/transaksi/pembayaran");
+    //         navigate("/dashboard");
+    //         sessionStorage.clear();
+    //       }, 100);
+    //     } else {
+    //       setMessage("Transaksi gagal dibuat");
+    //     }
+    //   } catch (error) {
+    //     setMessage(`Error: ${error.message}`);
+    //   }
+    // } 
+    // else if (!isOn) {
       try {
         //retail
         const result = await addTransactionNonVip(payloadNonVip);
@@ -192,7 +193,7 @@ export const AddTransactions = () => {
       } catch (error) {
         setMessage(`Error: ${error.message}`);
       }
-    }
+    // }
 
     try {
       const result = await addOutbond(payloadOutbond);
@@ -275,7 +276,7 @@ export const AddTransactions = () => {
                   <h1 className="text-xl max-md:text-lg  font-bold">
                     Informasi Pelanggan
                   </h1>
-                  <div className="w-full flex text-nowrap max-md:text-xs max-md:text-wrap">
+                  {/* <div className="w-full flex text-nowrap max-md:text-xs max-md:text-wrap">
                     <p>Apakah Pelanggan Sudah Terdaftar</p>
                     <div
                       className={`w-full justify-end relative inline-flex items-center cursor-pointer ${
@@ -295,7 +296,7 @@ export const AddTransactions = () => {
                         />
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="flex flex-col">
                     <label className="text-base max-md:text-xs font-bold">
                       {isOn ? "Pilih Pelanggan" : "Nama Pelanggan"}

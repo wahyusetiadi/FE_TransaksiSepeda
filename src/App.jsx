@@ -19,6 +19,8 @@ import { StruckTransactions } from "./components/organisms/StruckTransactions";
 import PaymentPage from "./pages/historyTransactions/PaymentDetail";
 import { TransactionsEceran } from "./pages/Transactions/Eceran";
 import { TransactionsGrosir } from "./pages/Transactions/Grosir";
+import { AddTransactionsGrosir } from "./pages/Transactions/addTransactionsGrosir";
+import { AddTransactionsEcer } from "./pages/Transactions/addTransactionsEcer";
 
 function App() {
   return (
@@ -27,27 +29,41 @@ function App() {
         <Routes>
           <Route path="/" element={<Auth />} />
           <Route element={<ProtectedLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/barang" element={<ItemsPage />} />
-          <Route path="/barang/tambah-barang" element={<AddItems />} />
-          <Route path="/barang/edit-barang/:idBarang" element={<EditItems />} />
-          {/* <Route path="/transaksi" element={<Transactions />} /> */}
-          <Route path="/transaksi/eceran" element={<TransactionsEceran />} />
-          <Route path="/transaksi/grosir" element={<TransactionsGrosir />} />
-          <Route
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/barang" element={<ItemsPage />} />
+            <Route path="/barang/tambah-barang" element={<AddItems />} />
+            <Route
+              path="/barang/edit-barang/:idBarang"
+              element={<EditItems />}
+            />
+            {/* <Route path="/transaksi" element={<Transactions />} /> */}
+            <Route path="/transaksi/eceran" element={<TransactionsEceran />} />
+            <Route path="/transaksi/grosir" element={<TransactionsGrosir />} />
+            {/* <Route
             path="/transaksi/tambah-transaksi"
             element={<AddTransactions />}
-          />
-          <Route path="/transaksi/pembayaran" element={<Payment />} />
-          <Route path="/cetak-struk" element={<StruckTransactions />} />
-          <Route path="/pelanggan" element={<CostumerPage />} />
-          <Route path="/riwayat-transaksi" element={<HistoryTransactions />} />
-          <Route
-            path="/riwayat-transaksi/detail/:id"
-            element={<DetailHistoryTransactions />}
-          />
-          <Route path="/laporan-barang-keluar" element={<ReportOutbond />} />
-          <Route path="/payment" element={<PaymentPage />} />
+          /> */}
+            <Route
+              path="/transaksi/tambah-transaksi-grosir"
+              element={<AddTransactionsGrosir />}
+            />
+            <Route
+              path="/transaksi/tambah-transaksi-ecer"
+              element={<AddTransactionsEcer />}
+            />
+            <Route path="/transaksi/pembayaran" element={<Payment />} />
+            <Route path="/cetak-struk" element={<StruckTransactions />} />
+            <Route path="/pelanggan" element={<CostumerPage />} />
+            <Route
+              path="/riwayat-transaksi"
+              element={<HistoryTransactions />}
+            />
+            <Route
+              path="/riwayat-transaksi/detail/:id"
+              element={<DetailHistoryTransactions />}
+            />
+            <Route path="/laporan-barang-keluar" element={<ReportOutbond />} />
+            <Route path="/payment" element={<PaymentPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

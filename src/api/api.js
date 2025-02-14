@@ -98,8 +98,6 @@ export const getAllProductsOwner = async () => {
   }
 };
 
-
-
 //CONTOH
 export const getAllProducts = async () => {
   try {
@@ -115,9 +113,12 @@ export const getAllProducts = async () => {
 
 export const getAllProductsEceran = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/products/get-all/transaction/ecer`, {
-      headers: await getAuthHeader(),
-    });
+    const response = await axios.get(
+      `${BASE_URL}/products/get-all/transaction/ecer`,
+      {
+        headers: await getAuthHeader(),
+      }
+    );
     return response.data.data;
   } catch (error) {
     console.error("Error fetching products data:", error);
@@ -127,9 +128,12 @@ export const getAllProductsEceran = async () => {
 
 export const getAllProductsGrosir = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/products/get-all/transaction/grosir`, {
-      headers: await getAuthHeader(),
-    });
+    const response = await axios.get(
+      `${BASE_URL}/products/get-all/transaction/grosir`,
+      {
+        headers: await getAuthHeader(),
+      }
+    );
     return response.data.data;
   } catch (error) {
     console.error("Error fetching products data:", error);
@@ -226,7 +230,7 @@ export const updateProductData = async (id, data) => {
   try {
     const response = await axios.put(
       `${BASE_URL}/products/owner/update/${id}`,
-      
+
       data
     );
     return response.data;
@@ -256,10 +260,10 @@ export const updateProductDataAdmin = async (id, data) => {
 export const updateProductStocByAdmin = async (id, data) => {
   try {
     const response = await axios.post(
-      `${BASE_URL}/products/product-user/edit`, 
+      `${BASE_URL}/products/product-user/edit`,
       {
-        id,    // Include the product ID
-        ...data // Spread the updateData to include fields like stock
+        id, // Include the product ID
+        ...data, // Spread the updateData to include fields like stock
       },
       {
         headers: await getAuthHeader(), // Include headers
@@ -272,17 +276,16 @@ export const updateProductStocByAdmin = async (id, data) => {
   }
 };
 
-
 // POST DELETE PRODUCT DATA
 export const deleteProductData = async (id) => {
   try {
     const response = await axios.post(
       `${BASE_URL}/products/delete/${id}`,
       {
-        headers: await getAuthHeader(),
+        isDeleted: true,
       },
       {
-        isDeleted: true,
+        headers: await getAuthHeader(),
       }
     );
 
@@ -302,10 +305,10 @@ export const recoveryProductData = async (id) => {
     const response = await axios.post(
       `${BASE_URL}/products/recovery/${id}`,
       {
-        headers: await getAuthHeader(),
+        isDeleted: false,
       },
       {
-        isDeleted: false,
+        headers: await getAuthHeader(),
       }
     );
 

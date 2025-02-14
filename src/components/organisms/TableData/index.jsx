@@ -14,6 +14,7 @@ import { ModalEdit } from "../ModalEdit";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { getUser } from "../../../api/api";
 import { ModalStockEdit } from "../../molecules/ModalStockEdit";
+import { Modal } from "../../molecules/Modal";
 
 function toTitleCaseWithSpace(str) {
   return str.replace(/([a-z])([A-Z])/g, "$1 $2");
@@ -225,18 +226,20 @@ export const TableData = ({
   const isAdminBesar = user?.role === "owner";
   const isAdminCabang = user?.role === "admin";
 
-  const columns = Array.isArray(data) && data.length > 0
-  ? Object.keys(data[0] || {}).filter((key) => {
-      if (key === "id" && !showId) return false;
-      if ((key === "tanggal" || key === "waktu") && !showDateTime) return false;
-      if (key === "isDeleted" || key === "updatedAt") return false;
-      if (key === "bukti" || key === "items" || key === "productId") return false;
-      if (key === "deskripsi" && !showDeskripsi) return false;
-      if (key === "aksi") return false;
-      return key !== "id";
-    })
-  : [];
-
+  const columns =
+    Array.isArray(data) && data.length > 0
+      ? Object.keys(data[0] || {}).filter((key) => {
+          if (key === "id" && !showId) return false;
+          if ((key === "tanggal" || key === "waktu") && !showDateTime)
+            return false;
+          if (key === "isDeleted" || key === "updatedAt") return false;
+          if (key === "bukti" || key === "items" || key === "productId")
+            return false;
+          if (key === "deskripsi" && !showDeskripsi) return false;
+          if (key === "aksi") return false;
+          return key !== "id";
+        })
+      : [];
 
   if (showAksi) {
     columns.push("aksi");
@@ -344,7 +347,8 @@ export const TableData = ({
                     ? "Kode Produk"
                     : toTitleCase(toTitleCaseWithSpace(col)) === "Name"
                     ? "Nama"
-                    : toTitleCase(toTitleCaseWithSpace(col)) === "Transaction_code"
+                    : toTitleCase(toTitleCaseWithSpace(col)) ===
+                      "Transaction_code"
                     ? "Kode Transaksi"
                     : toTitleCase(toTitleCaseWithSpace(col)) === "Customer"
                     ? "Pelanggan"
@@ -367,7 +371,7 @@ export const TableData = ({
               currentItems.map((item, index) => (
                 <tr key={item.id || index} className="border-b">
                   {showId && (
-                    <td className="py-2 px-6 text-left">
+                    <td className="py-2 px-6 text-left border">
                       {index + 1 + (currentPage - 1) * itemsPerPage}
                     </td>
                   )}
@@ -568,6 +572,22 @@ export const TableData = ({
 
                             {showAddBtn && (
                               <>
+                                {/* <button
+                                  onClick={() => handleAddClick(item)}
+                                  className={`w-fit px-5 py-2 font-semibold text-white text-xs rounded-full flex gap-2 items-center justify-center ${
+                                    item.isDeleted === 1 ||
+                                    item.status === "Tidak Tersedia"
+                                      ? "bg-slate-400 cursor-not-allowed"
+                                      : "bg-orange-600"
+                                  }`}
+                                  disabled={
+                                    item.isDeleted === 1 ||
+                                    item.status === "Tidak Tersedia"
+                                  }
+                                >
+                                  <PlusIcon className="size-3" />
+                                  Tambah
+                                </button> */}
                                 {!itemQuantities[item.id] ? (
                                   <button
                                     onClick={() => handleAddClick(item)}
@@ -706,43 +726,31 @@ export const TableData = ({
       {isDeleteOpen && (
         <div className="w-full fixed inset-0 flex items-center justify-center">
           <div className="w-full h-screen bg-black absolute opacity-50"></div>
-          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] max-md:w-[300px] flex items-center justify-center flex-col gap-8">
-            <div className="w-full flex flex-col items-center justify-center gap-5">
-              <div className="w-20 h-20 max-md:w-14 max-md:h-14 bg-red-50 rounded-full flex items-center justify-center">
-                <div className="w-16 h-16 max-md:w-11 max-md:h-11 bg-red-100 rounded-full flex items-center justify-center">
-                  <ExclamationTriangleIcon className="text-red-600 size-7 max-md:size-5" />
-                </div>
-              </div>
-              <div className="w-full flex flex-col text-center items-center justify-center">
-                <h3 className="text-xl max-md:text-base font-semibold">
-                  Apakah kamu yakin?
-                </h3>
-                <p className="text-base max-md:text-xs text-[#64748B]">
-                  Anda tidak dapat mengembalikan penghapusan ini?
-                </p>
-              </div>
-            </div>
-            <div className="w-full flex gap-4 items-center justify-between">
-              <button
-                onClick={closeDeleteModal}
-                className="w-full px-10 py-3 max-md:text-xs max-md:px-7 border text-slate-600 text-base font-semibold border-slate-600 rounded-full"
-              >
-                Batal
-              </button>
-              <button
-                onClick={deleteItem}
-                className="w-full px-10 py-3 max-md:text-xs max-md:px-7 text-white text-base font-semibold bg-red-600 rounded-full"
-              >
-                Hapus
-              </button>
-            </div>
-          </div>
+          <Modal
+            titleModal={"Apakah kamu yakin?"}
+            subtitleModal={"Anda tidak dapat mengembalikan penghapusan ini!"}
+            IconModal={
+              <ExclamationTriangleIcon className="text-red-600 size-7 max-md:size-5" />
+            }
+            iconModalBg1={"bg-red-50"}
+            iconModalBg2={"bg-red-100"}
+            bgBtnTrue={"bg-red-600"}
+            titleOnClickTrueBtn={"Hapus"}
+            onClickCancel={closeDeleteModal}
+            onClickTrue={deleteItem}
+          />
         </div>
       )}
 
       {isRecoveryOpen && (
         <div className="w-full fixed inset-0 flex items-center justify-center">
           <div className="w-full h-screen bg-black absolute opacity-50"></div>
+          <Modal
+            titleModal="Recovery Data?"
+            subtitleModal="Apakah Anda ingin mengembalikan data ini?"
+            IconModal={<ExclamationTriangleIcon className="text-yellow-600 size-7 max-md:size-5" />}
+            iconModalBg1='bg-'
+          />
           <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] max-md:w-[300px] flex items-center justify-center flex-col gap-8">
             <div className="w-full flex flex-col items-center justify-center gap-5">
               <div className="w-20 h-20 max-md:w-14 max-md:h-14 bg-red-50 rounded-full flex items-center justify-center">

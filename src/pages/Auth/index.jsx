@@ -3,7 +3,7 @@ import ImageSide from "../../assets/image/1213.png";
 import Logo1 from "../../assets/logo1.svg";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/api";
-import logo from '../../assets/logo.svg'
+import logo from "../../assets/logo.svg";
 import Cookies from "js-cookie";
 // import { login } from "../../api/api";
 
@@ -26,12 +26,12 @@ export const Auth = () => {
 
       if (response && response.data) {
         localStorage.setItem("token", response.data);
-        console.log(response.data);
-        
+        // console.log(response.data);
+
         // Cookies.set("token", response.data);
         navigate("/dashboard");
         // navigate("/");
-        console.log("response", response.data);
+        // console.log("response", response.data);
       }
     } catch (err) {
       if (err.response.data.message) {

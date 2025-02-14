@@ -112,7 +112,7 @@ export const Dashboard = () => {
         const data = await getAllHistoryTransactions();
         setOutbond(data);
         setCountOutbond(data.length);
-        console.log("barang keluar", data);
+        // console.log("barang keluar", data);
         // console.log("setCountOutBond", data.length);
       } catch (error) {
         console.error("Error fetching all outbond", error);

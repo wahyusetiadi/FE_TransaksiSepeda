@@ -8,11 +8,13 @@ import {
 import { TableData } from "../../../components/organisms/TableData";
 import { useParams } from "react-router-dom";
 import { getHistoryTransactionDetail, updatePaid } from "../../../api/api";
+import { ClipLoader } from "react-spinners";
 
 export const DetailHistoryTransactions = () => {
   const { id } = useParams();
   const [transactionsDetail, setTransactionsDetail] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOn, setIsOn] = useState(false);
@@ -28,37 +30,43 @@ export const DetailHistoryTransactions = () => {
     if (!isOn) {
       setTransactionsDetail({
         ...transactionsDetail,
-        hutang: transactionsDetail?.hutang || "",
+        hutang: transactionsDetail?.hutang || 0,
       });
     }
   };
 
-  useEffect(() => {
-    const fetchTransactionDetails = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await getHistoryTransactionDetail(id);
+  const fetchTransactionDetails = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getHistoryTransactionDetail(id);
 
-        // Check if we have valid data
-        if (response && response.data) {
-          setTransactionsDetail(response.data);
-        } else if (response) {
-          setTransactionsDetail(response);
-        } else {
-          throw new Error("No data received from server");
-        }
-      } catch (error) {
-        console.error("Error fetching transaction details:", error);
-        setError(error.message || "Failed to fetch transaction details");
-      } finally {
-        setLoading(false);
+      // Check if we have valid data
+      if (response && response.data) {
+        setTransactionsDetail(response.data);
+      } else if (response) {
+        setTransactionsDetail(response);
+      } else {
+        throw new Error("No data received from server");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching transaction details:", error);
+      setError(error.message || "Failed to fetch transaction details");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     if (id) {
       fetchTransactionDetails();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (transactionsDetail?.hutang <= 0) {
+      setIsOn(true);
+    }
+  }, [transactionsDetail?.hutang]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -83,19 +91,23 @@ export const DetailHistoryTransactions = () => {
 
     try {
       const result = await updatePaid(id, payload);
-      console.log('update paid', result.error.meta);
 
-      if (result.error.meta.status) {
-        setMessage(
-          `Update detail transaksi berhasil:`
-        );
-        
-      } else {
-        setMessage("Gagal Update detail transaksi");
-      }
+      setTimeout(() => {
+        if (result.error.meta.status) {
+          setMessage(`Update detail transaksi berhasil`);
+        } else {
+          setMessage("Gagal Update detail transaksi");
+        }
+        setTimeout(() => {
+          setMessage("");
+        }, 2000);
+        setLoading(false);
+      });
+      // console.log("update paid", result.error.meta);
     } catch (error) {
       setMessage(`Error:  ${error.message}`);
     } finally {
+      fetchTransactionDetails();
       setIsModalOpen(false);
     }
   };
@@ -148,7 +160,7 @@ export const DetailHistoryTransactions = () => {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
+  const closeModal = async () => {
     setIsModalOpen(false);
   };
 
@@ -202,11 +214,14 @@ export const DetailHistoryTransactions = () => {
 
   return (
     <ContentLayout>
-      {/* {message && (
-        <div className="mt-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+      {message && (
+        <>
+        <div className="w-full mt-4 p-4 fixed bg-green-100 border-l-4 border-green-500 text-green-700">
           <p>{message}</p>
         </div>
-      )} */}
+        </>
+      )}
+
       <div className="pb-6">
         <div className="p-6 w-fit">
           <ButtonIcon
@@ -255,7 +270,7 @@ export const DetailHistoryTransactions = () => {
               <div className="text-start w-full flex flex-col gap-2">
                 <p className="text-slate-600 font-medium text-xs">Hutang</p>
                 <h1 className="text-base font-bold">
-                  {transactionsDetail.hutang || "-"}
+                  {transactionsDetail.hutang || 0}
                 </h1>
                 <hr />
               </div>
@@ -305,20 +320,44 @@ export const DetailHistoryTransactions = () => {
       {isModalOpen && (
         <div className="w-full fixed inset-0 flex items-center justify-center">
           <div className="w-full h-screen bg-black absolute opacity-50"></div>
-          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] max-md:w-[300px] flex items-center justify-center flex-col gap-8">
+          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] max-md:w-[300px] flex items-center justify-center flex-col gap-4">
             <div className="w-full flex flex-col items-center justify-center gap-5">
               <div className="w-full flex flex-col text-center items-center justify-center">
                 <h3 className="text-xl max-md:text-base font-semibold">Edit</h3>
-                <p className="text-base max-md:text-xs text-[#64748B]">
+                <p className="text-base max-md:text-xs text-[#64748B] px-12">
                   Pastikan Customer sudah melakukan pelunasan.
                 </p>
               </div>
             </div>
 
-            <form action="" onSubmit={handleSubmit}>
+            <form
+              action=""
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-2"
+            >
+              <div className="w-full flex flex-col gap-2">
+                <label htmlFor="">Hutang</label>
+                <input
+                  type="text"
+                  className="px-4 py-2 border-2 rounded max-md:text-xs"
+                  value={isOn ? 0 : transactionsDetail.hutang}
+                  onChange={(e) => {
+                    if (!isOn) {
+                      const updatedHutang = e.target.value;
+                      if (/^\d*$/.test(updatedHutang)) {
+                        setTransactionsDetail({
+                          ...transactionsDetail,
+                          hutang: updatedHutang || 0,
+                        });
+                      }
+                    }
+                  }}
+                  disabled={isOn}
+                />
+              </div>
               <div className="">
                 <div
-                  className={`w-full justify-start mt-6 relative inline-flex items-center cursor-pointer gap-3 ${
+                  className={`w-full justify-start relative inline-flex items-center cursor-pointer gap-3 ${
                     isOn ? "justify-start" : "justify-start"
                   }`}
                   onClick={handleToggleState}
@@ -343,27 +382,6 @@ export const DetailHistoryTransactions = () => {
                 </div>
               </div>
 
-              <div className="w-full flex flex-col">
-                <label htmlFor="">Hutang</label>
-                <input
-                  type="number"
-                  className="px-4 py-2 border-2 rounded max-md:text-xs"
-                  value={isOn ? 0 : transactionsDetail.hutang || ""}
-                  onChange={(e) => {
-                    if (!isOn) {
-                      const updatedHutang = e.target.value;
-                      if (/^\d*$/.test(updatedHutang)) {
-                        setTransactionsDetail({
-                          ...transactionsDetail,
-                          hutang: updatedHutang || "",
-                        });
-                      }
-                    }
-                  }}
-                  disabled={isOn}
-                />
-              </div>
-
               <div className="w-full flex gap-4 items-center justify-between">
                 <button
                   onClick={closeModal}
@@ -372,10 +390,18 @@ export const DetailHistoryTransactions = () => {
                   Batal
                 </button>
                 <button
-                  // onClick={deleteItem}
-                  className="w-full px-10 py-3 max-md:text-xs max-md:px-7 text-white text-base font-semibold bg-green-600 rounded-full"
+                  onClick={loadingSubmit}
+                  className="w-full px-10 py-3 max-md:text-xs max-md:px-7 text-white text-base font-semibold bg-orange-600 rounded-full"
                 >
-                  Simpan
+                  {loadingSubmit ? (
+                    <ClipLoader
+                      size={24}
+                      color="#fff"
+                      loading={loadingSubmit}
+                    />
+                  ) : (
+                    "Simpan"
+                  )}
                 </button>
               </div>
             </form>

@@ -18,7 +18,7 @@ export const TransactionsGrosir = () => {
     const fetchDataBarang = async () => {
       try {
         const data = await getAllProductsGrosir();
-        console.log("databarang Grosir:", data);
+        // console.log("databarang Grosir:", data);
         setBarang(data);
       } catch (error) {
         console.error("Error fetching data barang Grosir:", error);
@@ -81,7 +81,7 @@ export const TransactionsGrosir = () => {
   };
 
   const handleCheckout = () => {
-    navigate("/transaksi/tambah-transaksi", {
+    navigate("/transaksi/tambah-transaksi-grosir", {
       state: { addedItems },
     });
   };

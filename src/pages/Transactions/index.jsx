@@ -93,7 +93,9 @@ export const Transactions = () => {
           <div className="w-full py-4 px-6 flex max-md:flex-col max-md:gap-2">
             <div className="text-nowrap w-fit">
               <h1 className="text-2xl max-md:text-lg font-bold">Transaksi</h1>
-              <p className="text-sm max-md:text-xs text-slate-700">Buat Transaksi disini!</p>
+              <p className="text-sm max-md:text-xs text-slate-700">
+                Buat Transaksi disini!
+              </p>
             </div>
 
             <div className="w-full flex items-center justify-end gap-2">
@@ -137,6 +139,23 @@ export const Transactions = () => {
                   <h1 className="text-2xl max-md:text-lg font-bold text-orange-600">
                     {formatCurrency(calculateTotalPrice())}
                   </h1>
+                </div>
+                <div className="w-full max-h-32 overflow-y-auto">
+                  <ul className="space-y-2">
+                    {addedItems.map((item, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center"
+                      >
+                        <span>
+                          {item.name} x{item.quantity}
+                        </span>
+                        <span>
+                          {formatCurrency(item.price * item.quantity)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
                 <div className="w-full max-md:w-fit flex flex-grow items-center justify-end">
