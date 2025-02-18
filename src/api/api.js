@@ -420,7 +420,6 @@ export const getAllCustomerTransactions = async () => {
 };
 
 // CREATE CUSTOMER DATA
-
 export const createCustomer = async (customersData) => {
   try {
     const response = await axios.post(
@@ -449,6 +448,30 @@ export const createCustomer = async (customersData) => {
         error.message ||
         "Terjadi kesalahan"
     );
+  }
+};
+
+//UPDATE CUSTOMER DATA
+export const updateCustomerData = async (id, data) => {
+  try {
+    const response = await axios.put(
+      `${BASE_URL}/customers/update/${id}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error updating customer:", error);
+    throw error;
+  }
+};
+
+export const deleteCustomerData = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/customers/delete/${id}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error DELETE API", error);
+    throw error;
   }
 };
 

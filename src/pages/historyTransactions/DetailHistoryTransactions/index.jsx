@@ -9,6 +9,7 @@ import { TableData } from "../../../components/organisms/TableData";
 import { useParams } from "react-router-dom";
 import { getHistoryTransactionDetail, updatePaid } from "../../../api/api";
 import { ClipLoader } from "react-spinners";
+import { formatCurrency } from "../../../utils";
 
 export const DetailHistoryTransactions = () => {
   const { id } = useParams();
@@ -313,8 +314,8 @@ export const DetailHistoryTransactions = () => {
           </div>
         </div>
       </div>
-      <div className="px-6 pr-36 w-full flex justify-end text-right font-bold">
-        <p>total : {transactionsDetail.total}</p>
+      <div className="px-6 pr-36 w-full flex justify-end text-right font-bold pb-4">
+        <p>Total : {formatCurrency(transactionsDetail.total)}</p>
       </div>
 
       {isModalOpen && (

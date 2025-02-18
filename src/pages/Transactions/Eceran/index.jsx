@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  ArrowPathIcon,
-  MinusIcon,
-  PlusIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { getAllProductsEceran } from "../../../api/api";
 import { ContentLayout } from "../../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../../components/molecules/ButtonIcon";
 import { TableData } from "../../../components/organisms/TableData";
+import { formatCurrency } from "../../../utils";
+import { PlusIcon } from "@heroicons/react/24/solid";
+import { MinusIcon } from "@heroicons/react/24/solid";
 
 export const TransactionsEceran = () => {
   const [barang, setBarang] = useState([]);
@@ -23,7 +22,7 @@ export const TransactionsEceran = () => {
     const fetchDataBarang = async () => {
       try {
         const data = await getAllProductsEceran();
-        // console.log("databarang Ecer:", data); 
+        // console.log("databarang Ecer:", data);
         setBarang(data);
       } catch (error) {
         console.error("Error fetching data barang:", error);
@@ -58,11 +57,32 @@ export const TransactionsEceran = () => {
     });
   };
 
-  // Reset cart and hide checkout
+  const handleIncrease = (item) => {
+    setAddedItems((prevItems) => {
+      return prevItems.map((prevItem) =>
+        prevItem.id === item.id
+          ? { ...prevItem, quantity: prevItem.quantity + 1 }
+          : prevItem
+      );
+    });
+  };
+
+  const handleDecrease = (item) => {
+    setAddedItems((prevItems) => {
+      return prevItems
+        .map((prevItem) =>
+          prevItem.id === item.id
+            ? { ...prevItem, quantity: prevItem.quantity - 1 }
+            : prevItem
+        )
+        .filter((item) => item.quantity > 0);
+    });
+  };
+
   const handleReset = () => {
-    setAddedItems([]); // Reset added items
-    setShowCheckout(false); // Hide checkout
-    setReloadKey((prevKey) => prevKey + 1); // Trigger re-render of ContentLayout by updating reloadKey
+    setAddedItems([]); 
+    setShowCheckout(false);
+    setReloadKey((prevKey) => prevKey + 1); 
   };
 
   const calculateTotalPrice = () => {
@@ -79,25 +99,10 @@ export const TransactionsEceran = () => {
     return addedItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-    }).format(amount);
-  };
-
   const handleCheckout = () => {
     navigate("/transaksi/tambah-transaksi-ecer", {
       state: { addedItems },
     });
-  };
-
-  const openList = () => {
-    setShowListBarang(true);
-  };
-
-  const closeList = () => {
-    setShowListBarang(false);
   };
 
   return (
@@ -148,72 +153,62 @@ export const TransactionsEceran = () => {
 
           {showCheckout && (
             <div className="w-fit flex justify-end">
-              <div className="w-[1000px] h-[100px] max-md:w-[332px] border bg-white rounded-lg fixed bottom-0 right-6 max-md:right-3 flex flex-grow items-center px-6 max-md:px-2">
-                <div className="w-full flex gap-2 text-start items- justify-start">
-                  <div className="w-full flex text-nowrap gap-2 max-md:flex-col max-md:items-start max-md:text-xs items-center justify-start">
-                    <p>Total Pesanan</p>
-                    <p>({calculateTotalItems()} barang)</p>
-                    <h1 className="text-2xl max-md:text-lg font-bold text-orange-600">
-                      {formatCurrency(calculateTotalPrice())}
-                    </h1>
+              <div className="w-[276px] h-full max-md:w-[332px] border bg-white rounded-lg fixed bottom-0 left-0 max-md:right-3 flex flex-grow items-start py-4 px-6 max-md:px-2">
+                <div className="w-full flex flex-col gap-2 text-start items- justify-start">
+                  <div className="w-fit flex flex-col text-nowrap gap-2 max-md:flex-col max-md:items-start max-md:text-xs items-start justify-start">
+                    <p className="text-lg font-semibold">Daftar Pesanan</p>
                   </div>
-                  <div className="w-full text-nowrap text-sm max-h-[90px] mx-2 py-4 overflow-y-auto">
-                    <ul className="">
+                  <div className="w-full text-[10px] h-[300px] max-h-[300px] mx-2 py-4 overflow-y-auto">
+                    <ul>
                       {addedItems.map((item) => (
                         <li
                           key={item.id}
-                          className="flex justify-between items-center"
+                          className="flex justify-between items-center pt-2"
                         >
                           <span>{item.name}</span>
-                          <span>x{item.quantity}</span>
+                          <div className="flex items-center">
+                            <button
+                              onClick={() => handleDecrease(item)}
+                              className="w-6 h-6 flex items-center justify-center border  border-orange-600 rounded"
+                              disabled={item.quantity <= 0}
+                            >
+                              <MinusIcon className="text-red-600 size-4" />
+                            </button>
+                            <span className="mx-2">x{item.quantity}</span>
+                            <button
+                              onClick={() => handleIncrease(item)}
+                              className="w-6 h-6 flex items-center justify-center bg-orange-600 rounded"
+                            >
+                              <PlusIcon className="text-white size-4" />
+                            </button>
+                          </div>
                         </li>
                       ))}
                     </ul>
                   </div>
-                  {/* <button
-                    onClick={openList}
-                    className="text-sm text-blue-500 hover:text-blue-800 hover:underline"
-                  >
-                    Lihat List
-                  </button> */}
-                </div>
-                {showListBarang && (
-                  <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white w-[450px] p-6 rounded-lg shadow-lg">
-                      <div className="w-full flex items-start justify-between">
-                        <h3 className="text-xl font-bold mb-1">List Barang</h3>
-                        <button onClick={closeList} className="text-gray-600">
-                          X
-                        </button>
-                      </div>
-                      <hr className="mb-2" />
-                      <div className="w-full max-h-[300px] overflow-y-auto">
-                        {" "}
-                        {/* Menambahkan max height dan overflow */}
-                        <ul className="space-y-2">
-                          {addedItems.map((item) => (
-                            <li
-                              key={item.id}
-                              className="flex justify-between items-center"
-                            >
-                              <span>{item.name}</span>
-                              <span>x{item.quantity}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+                  <div className="flex gap-1 mt-6">
+                    <p>Total</p>
+                    <p>({calculateTotalItems()} barang)</p>
                   </div>
-                )}
-
-                <div className="w-fit max-md:w-fit flex flex-grow items-center justify-end">
-                  <ButtonIcon
-                    title="Checkout"
-                    titleColor="text-white font-bold"
-                    showArrow={false}
-                    classNameBtn="px-16 py-3 max-md:px-4 bg-orange-600 rounded-full"
-                    onClick={handleCheckout}
-                  />
+                  <div className="">
+                    <h1 className="text-2xl max-md:text-lg font-bold text-orange-600">
+                      {formatCurrency(calculateTotalPrice())}
+                    </h1>
+                  </div>
+                  <div className="w-full flex flex-col gap-4">
+                    <button
+                      onClick={handleCheckout}
+                      className="w-full bg-orange-600 py-3 rounded-full text-white text-sm font-bold"
+                    >
+                      Checkout
+                    </button>
+                    <button
+                      onClick={handleReset}
+                      className="w-full border border-orange-600 py-3 rounded-full text-orange-600 text-sm font-bold"
+                    >
+                      Batal
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

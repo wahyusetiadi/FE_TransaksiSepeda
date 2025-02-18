@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 import { getUser } from "../../../api/api";
+import { formatCurrency } from "../../../utils";
 
 const PaymentPage = () => {
   const [transactionData, setTransactionData] = useState(null);
@@ -192,13 +193,6 @@ const PaymentPage = () => {
       </div>
     </div>
   );
-};
-
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  }).format(amount);
 };
 
 export default PaymentPage;

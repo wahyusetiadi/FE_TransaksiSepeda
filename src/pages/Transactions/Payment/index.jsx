@@ -1,13 +1,7 @@
 import React, { useEffect } from "react";
-import { ContentLayout } from "../../../components/organisms/ContentLayout";
-import { useLocation } from "react-router-dom";
+import { formatCurrency } from "../../../utils";
 
 export const Payment = () => {
-  const location = useLocation();
-  // const { transactionCode } = location.state || {};
-  // const { description } = location.state || {};
-  // const addItems = location.state?.items || [];
-  // const total = location.state?.total || 0;
   const date = new Date();
   const transactionCode = sessionStorage.getItem("transactionCode");
   const addedItems = JSON.parse(sessionStorage.getItem("addedItems"));
@@ -35,14 +29,6 @@ export const Payment = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-
-  // const handlePrint = () => {
-  //   const printContents = document.getElementById("print-content").innerHTML;
-  //   const originalContents = document.body.innerHTML;
-  //   document.body.innerHTML = printContents;
-  //   window.print();
-  //   document.body.innerHTML = originalContents;
-  // };
 
   const handlePrint = () => {
     const printContents = document.getElementById("print-content").innerHTML;
@@ -97,7 +83,6 @@ export const Payment = () => {
     printWindow.print();           // Melakukan print
   };
   
-
   return (
     <div>
       <div className="w-full flex justify-center">
@@ -204,13 +189,6 @@ export const Payment = () => {
       </div>
     </div>
   );
-};
-
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  }).format(amount);
 };
 
 const formatTanggal = (date) => {

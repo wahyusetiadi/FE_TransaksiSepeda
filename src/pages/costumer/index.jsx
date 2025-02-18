@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { ContentLayout } from "../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../components/molecules/ButtonIcon";
-import {
-  DocumentTextIcon,
-  PlusIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { TableData } from "../../components/organisms/TableData";
-import { createCustomer, getAllCustomerData } from "../../api/api";
+import {
+  createCustomer,
+  deleteCustomerData,
+  getAllCustomerData,
+} from "../../api/api";
 
 export const CostumerPage = () => {
   const [customer, setCustomer] = useState([]);
   const [isShowAddCustomer, setIsShowAddCustomer] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const [name, setName] = useState("");
   const [telp, setTelp] = useState("");
   const [type, setType] = useState("");
@@ -64,12 +66,40 @@ export const CostumerPage = () => {
       setType("");
     } catch (error) {
       setMessage(`Error: ${error.message}`);
+    } finally {
+      setTimeout(() => {
+        setMessage("")
+      }, 3000);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    setLoading(true);
+    try {
+      const response = await deleteCustomerData(id);
+      const data = await fetchDataCustomer();
+    } catch (error) {
+      console.error("Error delete Customer", error);
+    } finally {
+      setMessage(`Data pelanggan dengan ID ${id} berhasil di hapus`);
+      setLoading(false);
+
+      setTimeout(() => {
+        setMessage("");
+      }, 3000);
     }
   };
 
   return (
     <div>
       <ContentLayout>
+      {message && (
+          <>
+            <div className="w-full mt-4 p-4 fixed bg-green-100 border-l-4 border-green-500 text-green-700">
+              <p>{message}</p>
+            </div>
+          </>
+        )}
         <div className="px-6 py-4">
           {/* HEAD TITLE */}
           <div className="w-full flex items-center">
@@ -80,12 +110,6 @@ export const CostumerPage = () => {
               </p>
             </div>
             <div className="w-full flex items-center justify-end gap-2">
-              {/* <ButtonIcon
-                icon={<DocumentTextIcon className="size-5 text-slate-400" />}
-                showArrow={false}
-                title="Export"
-                classNameBtn="border-2 rounded-lg px-2 py-1"
-              /> */}
               <ButtonIcon
                 icon={<PlusIcon className="size-5 text-white" />}
                 showArrow={false}
@@ -104,6 +128,10 @@ export const CostumerPage = () => {
               itemsPerPage={10}
               showSearchSet={true}
               sortedData={true}
+              showAksi={true}
+              showEditCustomerBtn={true}
+              showDeleteCustomerBtn={true}
+              onDelete={handleDelete}
             />
           </div>
         </div>

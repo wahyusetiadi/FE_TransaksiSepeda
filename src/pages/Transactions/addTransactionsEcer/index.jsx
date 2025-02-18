@@ -10,6 +10,7 @@ import {
   getAllCustomerTransactions,
 } from "../../../api/api";
 import { use } from "react";
+import { formatCurrency } from "../../../utils";
 
 export const AddTransactionsEcer = () => {
   const navigate = useNavigate();
@@ -54,13 +55,6 @@ export const AddTransactionsEcer = () => {
 
   const handleCustomer = (e) => {
     setPelanggan(e.target.value);
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-    }).format(amount);
   };
 
   const handleSubmit = async (event) => {

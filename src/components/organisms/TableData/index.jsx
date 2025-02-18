@@ -8,17 +8,19 @@ import {
   PencilSquareIcon,
   PlusIcon,
   TrashIcon,
-  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ModalEdit } from "../ModalEdit";
-import { PhotoIcon } from "@heroicons/react/24/solid";
 import { getUser } from "../../../api/api";
 import { ModalStockEdit } from "../../molecules/ModalStockEdit";
 import { Modal } from "../../molecules/Modal";
-
-function toTitleCaseWithSpace(str) {
-  return str.replace(/([a-z])([A-Z])/g, "$1 $2");
-}
+import Pagination from "../../molecules/Pagination";
+import {
+  formatCurrency,
+  formatTanggal,
+  toTitleCase,
+  toTitleCaseWithSpace,
+} from "../../../utils";
+import { ModalCustomerEdit } from "../ModalCustomerEdit";
 
 export const TableData = ({
   data,
@@ -29,6 +31,8 @@ export const TableData = ({
   showAksi = false,
   showDeskripsi = false,
   showEditBtn = false,
+  showEditCustomerBtn = false,
+  showDeleteCustomerBtn = false,
   showDeleteBtn = false,
   showDetailBtn = false,
   showRecoveryBtn = false,
@@ -53,7 +57,9 @@ export const TableData = ({
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isEditCustomerOpen, setIsEditCustomerOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleteCustomerOpen, setIsDeleteCustomerOpen] = useState(false);
   const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -68,22 +74,35 @@ export const TableData = ({
     type: "",
     status: "",
   });
+  const [selcetedCustomer, setSelectedCustomer] = useState({
+    id: "",
+    name: "",
+    telp: "",
+    type: "",
+  });
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-    }).format(amount);
-  };
+  // const handleAddClick = (item) => {
+  //   if (!itemQuantities[item.id]) {
+  //     setItemQuantities((prev) => ({
+  //       ...prev,
+  //       [item.id]: 1,
+  //     }));
+  //     onAdd({ ...item, quantity: 1 });
+  //   }
+  // };
 
   const handleAddClick = (item) => {
-    if (!itemQuantities[item.id]) {
-      setItemQuantities((prev) => ({
+    setItemQuantities((prev) => {
+      const newQuantity = prev[item.id] ? prev[item.id] + 1 : 0; // Jika item sudah ada, tambahkan 1, jika belum, mulai dari 1
+      return {
         ...prev,
-        [item.id]: 1,
-      }));
-      onAdd({ ...item, quantity: 1 });
-    }
+        [item.id]: newQuantity,
+      };
+    });
+    onAdd({
+      ...item,
+      quantity: itemQuantities[item.id] ? itemQuantities[item.id] + 1 : 1,
+    });
   };
 
   const handleQuantityChange = (item, change) => {
@@ -113,6 +132,16 @@ export const TableData = ({
     setIsEditOpen(false);
   };
 
+  const openDeleteCustomerModal = (item) => {
+    setSelectedCustomer(item);
+    setIsDeleteCustomerOpen(true);
+  };
+
+  const closeDeleteCustomerModal = () => {
+    setIsDeleteCustomerOpen(false);
+    setSelectedCustomer(null);
+  };
+
   const openDeleteModal = (item) => {
     setSelectedItem(item);
     setIsDeleteOpen(true);
@@ -133,29 +162,6 @@ export const TableData = ({
     setSelectedItem(null);
   };
 
-  const toTitleCase = (str) => {
-    return str
-      .toLowerCase()
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
-  const formatTanggal = (tanggal) => {
-    return new Date(tanggal).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  // useEffect(() => {
-  //   if (Array.isArray(data)) {
-  //     setFilteredData(data);
-  //   } else {
-  //     setFilteredData([]);
-  //   }
-  // }, [data]);
   const handleFilterChange = (filterType, value) => {
     if (filterType === "status") {
       setSelectedStatus(value);
@@ -166,17 +172,12 @@ export const TableData = ({
 
   const handleSortChange = (order) => {
     const sorted = [...filteredData].sort((a, b) => {
-      // Pertama, cek apakah `name` ada, jika tidak, pakai `tanggal`
-      const keyA = a.name || a.date; // jika `name` tidak ada, gunakan `tanggal`
-      const keyB = b.name || b.date; // jika `name` tidak ada, gunakan `tanggal`
-
-      // Cek jika `keyA` dan `keyB` adalah tanggal, maka sort berdasarkan tanggal
+      const keyA = a.name || a.date;
+      const keyB = b.name || b.date;
       if (keyA instanceof Date && keyB instanceof Date) {
         const comparison = keyA - keyB;
         return order === "asc" ? comparison : -comparison;
       }
-
-      // Jika bukan tanggal, lakukan pengurutan berdasarkan string (localeCompare)
       const comparison = String(keyA).localeCompare(String(keyB));
       return order === "asc" ? comparison : -comparison;
     });
@@ -194,9 +195,7 @@ export const TableData = ({
   };
 
   useEffect(() => {
-    let filtered = Array.isArray(data) ? [...data] : []; // Ensure data is an array
-
-    // Apply filters and search logic
+    let filtered = Array.isArray(data) ? [...data] : [];
     if (selectedStatus) {
       filtered = filtered.filter((item) => item.status === selectedStatus);
     }
@@ -220,8 +219,8 @@ export const TableData = ({
     }
 
     fetchUser();
-    setFilteredData(filtered); // Always set as an array
-  }, [selectedStatus, selectedKategori, searchQuery, data]); // Reapply filters when they change
+    setFilteredData(filtered);
+  }, [selectedStatus, selectedKategori, searchQuery, data]);
 
   const isAdminBesar = user?.role === "owner";
   const isAdminCabang = user?.role === "admin";
@@ -232,6 +231,7 @@ export const TableData = ({
           if (key === "id" && !showId) return false;
           if ((key === "tanggal" || key === "waktu") && !showDateTime)
             return false;
+          if (key === "address") return false;
           if (key === "isDeleted" || key === "updatedAt") return false;
           if (key === "bukti" || key === "items" || key === "productId")
             return false;
@@ -271,12 +271,29 @@ export const TableData = ({
     openEditModal();
   };
 
+  const handleEditCustomerClick = (item) => {
+    setSelectedCustomer({
+      id: item.id,
+      name: item.name,
+      telp: item.telp,
+      type: item.type,
+    });
+    openEditCustomerModal();
+  };
+
+  const openEditCustomerModal = () => {
+    setIsEditCustomerOpen(true);
+  };
+
+  const closeEditCustomerModal = () => {
+    setIsEditCustomerOpen(false);
+  };
+
   const handleSearchChange = (query) => {
     setSearchQuery(query);
     const lowercasedQuery = query.toLowerCase();
 
     const filtered = data.filter((item) => {
-      // Check for undefined or null values before calling .toLowerCase()
       const name = item.name ? item.name.toLowerCase() : "";
       const type = item.type ? item.type.toLowerCase() : "";
       const customer = item.customer ? item.customer.toLowerCase() : "";
@@ -298,19 +315,18 @@ export const TableData = ({
     }
   };
 
+  const deleteCustomer = () => {
+    if (selcetedCustomer) {
+      onDelete(selcetedCustomer.id);
+      closeDeleteCustomerModal();
+    }
+  };
+
   const recoveryItem = () => {
     if (selectedItem) {
       onRecovery(selectedItem.id);
       closeRecoveryModal();
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value, // Update the state with the new value
-    }));
   };
 
   return (
@@ -338,7 +354,6 @@ export const TableData = ({
             <tr>
               {columns.map((col) => (
                 <th key={col} className="px-6 py-4 text-left">
-                  {/* Ganti nama kolom "price" menjadi "Harga" */}
                   {toTitleCase(toTitleCaseWithSpace(col)) === "Price_ecer"
                     ? "Harga Ecer"
                     : toTitleCase(toTitleCaseWithSpace(col)) === "Price_grosir"
@@ -360,6 +375,12 @@ export const TableData = ({
                     ? "Harga"
                     : toTitleCase(toTitleCaseWithSpace(col)) === "Amount"
                     ? "Jumlah"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Address"
+                    ? "Alamat"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Type"
+                    ? "Tipe"
+                    : toTitleCase(toTitleCaseWithSpace(col)) === "Created At"
+                    ? "Dibuat"
                     : toTitleCase(toTitleCaseWithSpace(col))}
                 </th>
               ))}
@@ -385,7 +406,6 @@ export const TableData = ({
                         </td>
                       );
                     }
-
                     if (col == "createdAt") {
                       return (
                         <td key={col} className="py-2 px-6 text-left">
@@ -395,46 +415,23 @@ export const TableData = ({
                         </td>
                       );
                     }
-
-                    if (col === "bukti") {
-                      return (
-                        <td className="py-2 px-6 text-left">
-                          {item.bukti ? (
-                            <div className="w-full flex gap-2 text-orange-600 items-center justify-center">
-                              <PhotoIcon className="size-4" />
-                              <a
-                                href={item.bukti}
-                                download={item.bukti.split("/").pop()}
-                                className="text-xs font-semibold hover:underline"
-                              >
-                                Bukti
-                              </a>
-                            </div>
-                          ) : (
-                            "-"
-                          )}
-                        </td>
-                      );
-                    }
-
                     if (col === "lunas") {
                       return (
                         <td key={col} className="">
                           <div className="font-semibold">
                             {item.lunas === 1 ? (
-                              <span className="text-green-600 px-2 py-1 bg-green-100 rounded-full">
+                              <span className="text-white px-2 py-1 bg-green-600 rounded-full">
                                 Lunas
-                              </span> // If lunas is 1, show "Lunas"
+                              </span>
                             ) : (
-                              <span className="text-red-600 px-2 py-1 bg-red-100 rounded-full">
+                              <span className="text-white px-2 py-1 bg-red-600 rounded-full">
                                 Belum
-                              </span> // If lunas is 0, show "Belum"
+                              </span>
                             )}
                           </div>
                         </td>
                       );
                     }
-
                     if (col === "aksi") {
                       return (
                         <td
@@ -454,13 +451,8 @@ export const TableData = ({
                                   className="w-full max-md:w-fit px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-600 rounded flex gap-2 items-center justify-center"
                                 >
                                   <PencilSquareIcon className="size-3 hidden md:block" />{" "}
-                                  {/* Ini akan sembunyi pada layar kecil */}
-                                  <span className="hidden md:block">
-                                    Edit
-                                  </span>{" "}
-                                  {/* Ini akan sembunyi pada layar kecil */}
+                                  <span className="hidden md:block">Edit</span>{" "}
                                   <PencilSquareIcon className="size-3 md:hidden" />{" "}
-                                  {/* Ini akan tampil pada layar kecil */}
                                 </button>
 
                                 {isEditOpen && isAdminBesar && (
@@ -501,6 +493,37 @@ export const TableData = ({
                                 )}
                               </>
                             )}
+
+                            {showEditCustomerBtn && (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    console.log(
+                                      `Edit button Clicked for Customer: ${item.id}`
+                                    );
+                                    handleEditCustomerClick(item);
+                                  }}
+                                  className="w-full max-md:w-fit px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-600 rounded flex gap-2 items-center justify-center"
+                                >
+                                  <PencilSquareIcon className="size-3 hidden md:block" />{" "}
+                                  <span className="hidden md:block">Edit</span>{" "}
+                                  <PencilSquareIcon className="size-3 md:hidden" />{" "}
+                                </button>
+                                {isEditCustomerOpen && isAdminBesar && (
+                                  <div className="w-full fixed inset-0 flex items-center justify-center">
+                                    <div className="w-full h-dvh bg-black absolute opacity-10"></div>
+                                    <ModalCustomerEdit
+                                      id={selcetedCustomer.id}
+                                      name={selcetedCustomer.name}
+                                      telp={selcetedCustomer.telp}
+                                      type={selcetedCustomer.type}
+                                      onClick={closeEditCustomerModal}
+                                      onUpdate={onUpdate}
+                                    />
+                                  </div>
+                                )}
+                              </>
+                            )}
                             {showDeleteBtn &&
                               item.isDeleted === 0 &&
                               isAdminBesar && (
@@ -518,6 +541,23 @@ export const TableData = ({
                                   <TrashIcon className="size-3 md:hidden" />
                                 </button>
                               )}
+                            {showDeleteCustomerBtn && (
+                              <button
+                                onClick={() => {
+                                  console.log(
+                                    `Deleted for Customer: ${item.id}`
+                                  );
+                                  openDeleteCustomerModal(item);
+                                }}
+                                className="w-full max-md:w-fit px-2 py-1 font-semibold text-xs bg-red-100 text-red-600 rounded flex gap-2 items-center justify-center"
+                              >
+                                <TrashIcon className="size-3 hidden md:block" />
+                                <span className="hidden md:block">
+                                  Hapus
+                                </span>{" "}
+                                <TrashIcon className="size-3 md:hidden" />
+                              </button>
+                            )}
                             {showRecoveryBtn && item.isDeleted === 1 && (
                               <button
                                 onClick={() => {
@@ -540,8 +580,8 @@ export const TableData = ({
                                 onClick={() => {
                                   console.log(
                                     `Detail button clicked for item: ${item.id}`
-                                  ); // Debug log for the ID
-                                  onDetail(item.id); // Pass only the `id` to the onDetail function
+                                  );
+                                  onDetail(item.id);
                                 }}
                                 className="w-full px-2 py-1 font-semibold text-xs bg-blue-100 text-blue-600 rounded flex gap-2 items-center justify-center"
                               >
@@ -572,7 +612,7 @@ export const TableData = ({
 
                             {showAddBtn && (
                               <>
-                                {/* <button
+                                <button
                                   onClick={() => handleAddClick(item)}
                                   className={`w-fit px-5 py-2 font-semibold text-white text-xs rounded-full flex gap-2 items-center justify-center ${
                                     item.isDeleted === 1 ||
@@ -587,8 +627,8 @@ export const TableData = ({
                                 >
                                   <PlusIcon className="size-3" />
                                   Tambah
-                                </button> */}
-                                {!itemQuantities[item.id] ? (
+                                </button>
+                                {/* {!itemQuantities[item.id] ? (
                                   <button
                                     onClick={() => handleAddClick(item)}
                                     className={`w-fit px-5 py-2 font-semibold text-white text-xs rounded-full flex gap-2 items-center justify-center ${
@@ -627,14 +667,13 @@ export const TableData = ({
                                       <PlusIcon className="size-3" />
                                     </button>
                                   </div>
-                                )}
+                                )} */}
                               </>
                             )}
                           </div>
                         </td>
                       );
                     }
-
                     if (col === "price_ecer") {
                       return (
                         <td key={col} className="py-2 px-6 text-left">
@@ -660,18 +699,6 @@ export const TableData = ({
                       return (
                         <td key={col} className="py-2 px-6 text-left">
                           {formatCurrency(item[col])}
-                        </td>
-                      );
-                    }
-                    if (col === "gambar") {
-                      return (
-                        <td key={col} className="py-2 px-6 text-left">
-                          <img
-                            src={item[col]}
-                            alt={item.namaBarang}
-                            className="rounded-lg"
-                            width="40"
-                          />
                         </td>
                       );
                     }
@@ -705,7 +732,7 @@ export const TableData = ({
                     }
                     return (
                       <td key={col} className="py-2 px-6 text-left">
-                        {col === "Harga"
+                        {col === "price"
                           ? formatCurrency(item[col])
                           : item[col]}
                       </td>
@@ -742,126 +769,52 @@ export const TableData = ({
         </div>
       )}
 
+      {isDeleteCustomerOpen && (
+        <div className="w-full fixed inset-0 flex items-center justify-center">
+          <div className="w-full h-screen bg-black absolute opacity-50"></div>
+          <Modal
+            titleModal={"Apakah kamu yakin?"}
+            subtitleModal={"Anda tidak dapat mengembalikan penghapusan ini!"}
+            IconModal={
+              <ExclamationTriangleIcon className="text-red-600 size-7 max-md:size-5" />
+            }
+            iconModalBg1={"bg-red-50"}
+            iconModalBg2={"bg-red-100"}
+            bgBtnTrue={"bg-red-600"}
+            titleOnClickTrueBtn={"Hapus"}
+            onClickCancel={closeEditCustomerModal}
+            onClickTrue={deleteCustomer}
+          />
+        </div>
+      )}
+
       {isRecoveryOpen && (
         <div className="w-full fixed inset-0 flex items-center justify-center">
           <div className="w-full h-screen bg-black absolute opacity-50"></div>
           <Modal
             titleModal="Recovery Data?"
             subtitleModal="Apakah Anda ingin mengembalikan data ini?"
-            IconModal={<ExclamationTriangleIcon className="text-yellow-600 size-7 max-md:size-5" />}
-            iconModalBg1='bg-'
+            IconModal={
+              <ArrowPathIcon className="text-green-600 size-7 max-md:size-5" />
+            }
+            iconModalBg1="bg-green-50"
+            iconModalBg2="bg-green-100"
+            bgBtnTrue="bg-green-600"
+            titleOnClickTrueBtn="Recovery"
+            onClickCancel={closeRecoveryModal}
+            onClickTrue={recoveryItem}
           />
-          <div className="bg-white p-6 rounded-lg shadow-lg z-10 w-[480px] max-md:w-[300px] flex items-center justify-center flex-col gap-8">
-            <div className="w-full flex flex-col items-center justify-center gap-5">
-              <div className="w-20 h-20 max-md:w-14 max-md:h-14 bg-red-50 rounded-full flex items-center justify-center">
-                <div className="w-16 h-16 max-md:h-11 max-md:w-11 bg-red-100 rounded-full flex items-center justify-center">
-                  <ExclamationTriangleIcon className="text-yellow-600 size-7 max-md:size-5" />
-                </div>
-              </div>
-              <div className="w-full flex flex-col text-center items-center justify-center ">
-                <h3 className="text-xl max-md:text-base font-semibold">
-                  Recovery Data?
-                </h3>
-                <p className="text-base max-md:text-xs text-[#64748B]">
-                  Apakah Anda ingin mengembalikan data ini?
-                </p>
-              </div>
-            </div>
-            <div className="w-full flex gap-4 items-center justify-between">
-              <button
-                onClick={closeRecoveryModal}
-                className="w-full px-10 py-3 max-md:text-xs max-md:px-7 border text-slate-600 text-base font-semibold border-slate-600 rounded-full"
-              >
-                Batal
-              </button>
-              <button
-                onClick={recoveryItem}
-                className="w-full px-10 py-3 max-md:text-xs max-md:px-7 text-white text-base font-semibold bg-green-600 rounded-full"
-              >
-                Recovery
-              </button>
-            </div>
-          </div>
         </div>
       )}
 
       {showPagination && (
-        <div className="flex justify-center mt-4 px-4 py-2 max-md:text-xs max-md:px-0 max-md:py-0">
-          <button
-            onClick={() => paginate(1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 mx-1 max-md:px-1 rounded ${
-              currentPage === 1
-                ? "bg-orange-100 text-orange-300 cursor-not-allowed"
-                : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-            }`}
-          >
-            &lt;&lt;
-          </button>
-
-          {/* Tombol Prev */}
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 mx-1 max-md:px-2 rounded ${
-              currentPage === 1
-                ? "bg-orange-100 text-orange-300 cursor-not-allowed"
-                : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-            }`}
-          >
-            &lt;
-          </button>
-
-          {/* Tombol halaman */}
-          {Array.from({ length: totalPage }, (_, index) => {
-            const pageNumber = index + 1;
-            if (
-              pageNumber >= currentPage - 1 &&
-              pageNumber <= currentPage + 1
-            ) {
-              return (
-                <button
-                  key={pageNumber}
-                  onClick={() => paginate(pageNumber)}
-                  className={`px-3 py-1 mx-1 max-md:px-2 rounded ${
-                    currentPage === pageNumber
-                      ? "bg-orange-600 text-white"
-                      : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-                  }`}
-                >
-                  {pageNumber}
-                </button>
-              );
-            }
-            return null;
-          })}
-
-          {/* Tombol Next */}
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPage}
-            className={`px-3 py-1 mx-1 max-md:px-2 rounded ${
-              currentPage === totalPage
-                ? "bg-orange-100 text-orange-300 cursor-not-allowed"
-                : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-            }`}
-          >
-            &gt;
-          </button>
-
-          {/* Tombol Last */}
-          <button
-            onClick={() => paginate(totalPage)}
-            disabled={currentPage === totalPage}
-            className={`px-3 py-1 mx-1 max-md:px-2 rounded ${
-              currentPage === totalPage
-                ? "bg-orange-100 text-orange-300 cursor-not-allowed"
-                : "bg-orange-100 text-orange-700 hover:bg-orange-300"
-            }`}
-          >
-            &gt;&gt;
-          </button>
-        </div>
+        <>
+          <Pagination
+            currentPage={currentPage}
+            paginate={paginate}
+            totalPage={totalPage}
+          />
+        </>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { formatCurrency } from "../../../utils";
 
 export const StruckTransactions = () => {
   const location = useLocation();
@@ -102,9 +103,3 @@ export const StruckTransactions = () => {
   );
 };
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  }).format(amount);
-};

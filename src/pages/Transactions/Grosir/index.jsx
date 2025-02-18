@@ -5,6 +5,8 @@ import { ContentLayout } from "../../../components/organisms/ContentLayout";
 import { ButtonIcon } from "../../../components/molecules/ButtonIcon";
 import { TableData } from "../../../components/organisms/TableData";
 import { getAllProductsGrosir } from "../../../api/api";
+import { formatCurrency } from "../../../utils";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
 
 export const TransactionsGrosir = () => {
   const [barang, setBarang] = useState([]);
@@ -28,6 +30,11 @@ export const TransactionsGrosir = () => {
     fetchDataBarang();
   }, [reloadKey]); // Fetch ulang produk saat reloadKey berubah
 
+  useEffect(() => {
+    const hasItems = addedItems.some((item) => item.quantity > 0);
+    setShowCheckout(hasItems);
+  }, [addedItems]);
+
   // Show checkout if there are items in the cart
   useEffect(() => {
     const hasItems = addedItems.some((item) => item.quantity > 0);
@@ -40,21 +47,39 @@ export const TransactionsGrosir = () => {
         (prevItem) => prevItem.id === item.id
       );
 
+      let updatedItems = [...prevItems];
+
       if (existingItemIndex >= 0) {
-        const updatedItems = [...prevItems];
-        if (item.quantity === 0) {
-          updatedItems.splice(existingItemIndex, 1);
-        } else {
-          updatedItems[existingItemIndex] = item;
-        }
-        return updatedItems;
+        updatedItems[existingItemIndex] = item;
       } else if (item.quantity > 0) {
-        return [...prevItems, item];
+        updatedItems.push(item);
       }
-      return prevItems;
+
+      // Hapus item dengan quantity 0
+      return updatedItems.filter((item) => item.quantity > 0);
+    });
+  };
+  const handleIncrease = (item) => {
+    setAddedItems((prevItems) => {
+      return prevItems.map((prevItem) =>
+        prevItem.id === item.id
+          ? { ...prevItem, quantity: prevItem.quantity + 1 }
+          : prevItem
+      );
     });
   };
 
+  const handleDecrease = (item) => {
+    setAddedItems((prevItems) => {
+      return prevItems
+        .map((prevItem) =>
+          prevItem.id === item.id
+            ? { ...prevItem, quantity: prevItem.quantity - 1 }
+            : prevItem
+        )
+        .filter((item) => item.quantity > 0);
+    });
+  };
   // Reset cart and hide checkout
   const handleReset = () => {
     setAddedItems([]); // Reset added items
@@ -64,20 +89,16 @@ export const TransactionsGrosir = () => {
 
   const calculateTotalPrice = () => {
     return addedItems.reduce((total, item) => {
-      const harga = item.price_grosir && !isNaN(item.price_grosir) ? Number(item.price_grosir) : 0;
+      const harga =
+        item.price_grosir && !isNaN(item.price_grosir)
+          ? Number(item.price_grosir)
+          : 0;
       return total + harga * item.quantity;
     }, 0);
   };
 
   const calculateTotalItems = () => {
     return addedItems.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-    }).format(amount);
   };
 
   const handleCheckout = () => {
@@ -92,8 +113,12 @@ export const TransactionsGrosir = () => {
         <div className="pb-2 mb-12">
           <div className="w-full py-4 px-6 flex max-md:flex-col max-md:gap-2">
             <div className="text-nowrap w-fit">
-              <h1 className="text-2xl max-md:text-lg font-bold">Transaksi (Grosir)</h1>
-              <p className="text-sm max-md:text-xs text-slate-700">Buat Transaksi disini!</p>
+              <h1 className="text-2xl max-md:text-lg font-bold">
+                Transaksi (Grosir)
+              </h1>
+              <p className="text-sm max-md:text-xs text-slate-700">
+                Buat Transaksi disini!
+              </p>
             </div>
 
             <div className="w-full flex items-center justify-end gap-2">
@@ -130,23 +155,62 @@ export const TransactionsGrosir = () => {
 
           {showCheckout && (
             <div className="w-fit flex justify-end">
-              <div className="w-[1000px] h-[100px] max-md:w-[332px] border bg-white rounded-lg fixed bottom-0 right-6 max-md:right-3 flex flex-grow items-center px-12 max-md:px-2">
-                <div className="w-full flex text-nowrap gap-2 max-md:flex-col max-md:items-start max-md:text-xs items-center justify-start">
-                  <p>Total Pesanan</p>
-                  <p>({calculateTotalItems()} barang)</p>
-                  <h1 className="text-2xl max-md:text-lg font-bold text-orange-600">
-                    {formatCurrency(calculateTotalPrice())}
-                  </h1>
-                </div>
-
-                <div className="w-full max-md:w-fit flex flex-grow items-center justify-end">
-                  <ButtonIcon
-                    title="Checkout"
-                    titleColor="text-white font-bold"
-                    showArrow={false}
-                    classNameBtn="px-16 py-3 max-md:px-4 bg-orange-600 rounded-full"
-                    onClick={handleCheckout}
-                  />
+              <div className="w-[276px] h-full max-md:w-[332px] border bg-white rounded-lg fixed bottom-0 left-0 max-md:right-3 flex flex-grow items-start py-4 px-6 max-md:px-2">
+                <div className="w-full flex flex-col gap-2 text-start items- justify-start">
+                  <div className="w-fit flex flex-col text-nowrap gap-2 max-md:flex-col max-md:items-start max-md:text-xs items-start justify-start">
+                    <p className="text-lg font-semibold">Daftar Pesanan</p>
+                  </div>
+                  <div className="w-full text-[10px] h-[300px] max-h-[300px] mx-2 py-4 overflow-y-auto">
+                    <ul>
+                      {addedItems.map((item) => (
+                        <li
+                          key={item.id}
+                          className="flex justify-between items-center pt-2"
+                        >
+                          <span className=" w-[250px]">{item.name}</span>
+                          <div className="flex items-center">
+                            <button
+                              onClick={() => handleDecrease(item)}
+                              className="w-6 h-6 flex items-center justify-center border  border-orange-600 rounded"
+                              disabled={item.quantity <= 0}
+                            >
+                              <MinusIcon className="text-red-600 size-4" />
+                            </button>
+                            <span className="mx-2">x{item.quantity}</span>
+                            <button
+                              onClick={() => handleIncrease(item)}
+                              className="w-6 h-6 flex items-center justify-center bg-orange-600 rounded"
+                            >
+                              <PlusIcon className="text-white size-4" />
+                            </button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="flex gap-1 mt-6">
+                    <p>Total</p>
+                    <p>({calculateTotalItems()} barang)</p>
+                  </div>
+                  <div className="">
+                    <h1 className="text-2xl max-md:text-lg font-bold text-orange-600">
+                      {formatCurrency(calculateTotalPrice())}
+                    </h1>
+                  </div>
+                  <div className="w-full flex flex-col gap-4">
+                    <button
+                      onClick={handleCheckout}
+                      className="w-full bg-orange-600 py-3 rounded-full text-white text-sm font-bold"
+                    >
+                      Checkout
+                    </button>
+                    <button
+                      onClick={handleReset}
+                      className="w-full border border-orange-600 py-3 rounded-full text-orange-600 text-sm font-bold"
+                    >
+                      Batal
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import ImageSide from "../../assets/image/1213.png";
-import Logo1 from "../../assets/logo1.svg";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/api";
 import logo from "../../assets/logo.svg";
 import Cookies from "js-cookie";
-// import { login } from "../../api/api";
 
 export const Auth = () => {
   const [username, setUsername] = useState("");

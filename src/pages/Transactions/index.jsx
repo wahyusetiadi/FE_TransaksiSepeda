@@ -5,6 +5,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { getAllProducts, getAllProductTransactions } from "../../api/api";
 import { TableData } from "../../components/organisms/TableData";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency } from "../../utils";
 
 export const Transactions = () => {
   const [barang, setBarang] = useState([]);
@@ -73,12 +74,7 @@ export const Transactions = () => {
     return addedItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-    }).format(amount);
-  };
+
 
   const handleCheckout = () => {
     navigate("/transaksi/tambah-transaksi", {

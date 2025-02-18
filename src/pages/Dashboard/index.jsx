@@ -30,7 +30,7 @@ import { Link } from "react-router-dom";
 export const Dashboard = () => {
   const [transaksi, setTransaksi] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState("");
 
   const [barang, setBarang] = useState([]);
   const [countBarang, setCountBarang] = useState(0);
@@ -128,6 +128,9 @@ export const Dashboard = () => {
     fetchDataBarang();
   }, []);
 
+  const isAdminBesar = user?.role === "owner";
+  const isAdminCabang = user?.role === "admin";
+
   return (
     <div>
       <ContentLayout>
@@ -166,18 +169,23 @@ export const Dashboard = () => {
           <hr className="mx-6" />
           {/* CONTENT */}
           <div className="px-6 py-2 w-full grid grid-cols-2 max-md:grid-cols-1 gap-4 text-nowarp text-slate-700">
-            <Link to="/barang">
-              <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
-                <h1 className="text-base font-bold">Data Barang</h1>
-                <ArchiveBoxIcon className="text-orange-600 size-8" />
-                <h1 className="text-sm font-bold">{`${countBarang} item`}</h1>
-              </div>
-            </Link>
-              <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
-                <h1 className="text-base font-bold">Transaksi</h1>
-                <ShoppingBagIcon className="text-orange-600 size-8" />
-                <h1 className="text-sm font-bold">{`${countTransactions} Transaksi`}</h1>
-              </div>
+            {isAdminBesar &&
+              !isAdminCabang && (
+                <>
+                  <Link to="/barang">
+                    <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
+                      <h1 className="text-base font-bold">Data Barang</h1>
+                      <ArchiveBoxIcon className="text-orange-600 size-8" />
+                      <h1 className="text-sm font-bold">{`${countBarang} item`}</h1>
+                    </div>
+                  </Link>
+                </>
+              )}
+            <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
+              <h1 className="text-base font-bold">Transaksi</h1>
+              <ShoppingBagIcon className="text-orange-600 size-8" />
+              <h1 className="text-sm font-bold">{`${countTransactions} Transaksi`}</h1>
+            </div>
             <Link to="/pelanggan">
               <div className="w-full px-4 py-2 items-start flex flex-col gap-2 border rounded-lg bg-orange-100 hover:bg-orange-200">
                 <h1 className="text-base font-bold">Pelanggan</h1>

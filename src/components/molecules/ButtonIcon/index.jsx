@@ -29,11 +29,11 @@ export const ButtonIcon = ({
   return (
     <div className="w-auto">
       <button
-        className={`w-full text-nowrap flex items-center rounded gap-2 ${classNameBtn}`}
+        className={`w-full text-nowrap flex items-center justify-center rounded gap-2 ${classNameBtn}`}
         onClick={handleClick}
       >
         <div className={className}>{icon}</div>
-        <div className={`flex items-start text-sm ${titleColor}`}>{title}</div>
+        <div className={`w-full text-start text-sm ${titleColor}`}>{title}</div>
         <div className="w-full flex justify-end">
           {showArrow && <ChevronDownIcon className="size-4" />}
           {/* {showArrow &&

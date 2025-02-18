@@ -7,6 +7,7 @@ import {
   deleteProductData,
   getAllProductAdmin,
   getAllProducts,
+  getAllProductsOwner,
   getUser,
   recoveryProductData,
 } from "../../api/api";
@@ -16,17 +17,13 @@ export const ItemsPage = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [alert, setAlert] = useState({ show: false, message: "" });
-
-  const showAlert = (message) => {
-    setAlert({ show: true, message });
-    setTimeout(() => setAlert({ show: false, message: "" }), 3000);
-  };
+  const [message, setMessage] = useState("");
 
   const fetchDataBarang = async () => {
     try {
       const data = await getAllProducts();
       setBarang(data);
-      return data; // Return data to be used in handleUpdate
+      return data;
     } catch (error) {
       console.error("Error fetching barang data:", error);
     } finally {
@@ -68,15 +65,20 @@ export const ItemsPage = () => {
     setLoading(true);
     try {
       const response = await deleteProductData(id);
+      console.log("delete items", response.meta.status);
+
       const data = await fetchDataBarang();
       setBarang(data);
-      if (response.meta.status === "success") {
-        showAlert("Barang berhasil dihapus");
-      }
     } catch (error) {
       console.error("Error deleting product:", error);
     } finally {
+      setMessage("Barang berhasil dihapus");
       setLoading(false);
+
+      // Menunggu selama 3 detik sebelum menutup pesan
+      setTimeout(() => {
+        setMessage(""); // Atau sesuai dengan cara untuk menutup pesan
+      }, 3000); // 3000 ms = 3 detik
     }
   };
 
@@ -85,17 +87,28 @@ export const ItemsPage = () => {
       const response = await recoveryProductData(id);
       const data = await fetchDataBarang();
       setBarang(data);
-      if (response.meta.status === "success") {
-        showAlert("Barang berhasil dipulihkan");
-      }
     } catch (error) {
       console.error("Error recovering product:", error);
+    } finally {
+      setMessage("Barang berhasil dipulihkan");
+      setLoading(false);
+
+      setTimeout(() => {
+        setMessage(""); // Atau sesuai dengan cara untuk menutup pesan
+      }, 3000);
     }
   };
 
   return (
     <div className="">
       <ContentLayout>
+        {message && (
+          <>
+            <div className="w-full mt-4 p-4 fixed bg-green-100 border-l-4 border-green-500 text-green-700">
+              <p>{message}</p>
+            </div>
+          </>
+        )}
         <div className="mb-12 pb-6">
           <div className="w-full py-4 px-6 flex max-md:flex-col max-md:gap-2">
             {/* Heading Text */}

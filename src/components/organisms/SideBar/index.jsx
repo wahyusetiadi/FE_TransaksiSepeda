@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo2 from "../../../assets/logo2.svg";
 import Logo from "../../../assets/logo.svg";
 import Cookies from "js-cookie";
@@ -16,10 +16,12 @@ import { ButtonIcon } from "../../molecules/ButtonIcon";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
 import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/outline";
+import { getUser } from "../../../api/api";
 
-export const SideBar = ({ user, role, loggedInfo = false }) => {
+export const SideBar = ({ users, role, loggedInfo = false }) => {
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [isOpen, setIsOpen] = useState(false); // State for the burger menu
+  const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   const toggleDropdown = () => {
     setOpenDropdown(!openDropdown);
@@ -36,6 +38,23 @@ export const SideBar = ({ user, role, loggedInfo = false }) => {
     localStorage.removeItem("token"); // Remove token from localStorage
     navigate("/"); // Redirect to login page
   };
+
+  const fetchUser = async () => {
+    try {
+      const userData = await getUser();
+      setUser(userData);
+    } catch (error) {
+      console.error("Error GET USER DATA:", error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const isAdminBesar = user?.role === "owner";
+  const isAdminCabang = user?.role === "admin";
 
   return (
     <div className="xl:w-[276px] lg:w-[200px] fixed lg:static h-screen bg-white text-slate-400 p-6 text-lg overflow-y-auto no-scrollbar">
@@ -89,7 +108,7 @@ export const SideBar = ({ user, role, loggedInfo = false }) => {
       {loggedInfo && (
         <div className="w-full text-black flex items-center gap-1 my-4">
           <p className="text-sm">Login As:</p>
-          <p className="text-sm font-semibold">{user}</p>
+          <p className="text-sm font-semibold">{users}</p>
           <p className="text-sm font-medium">({role})</p>
         </div>
       )}
@@ -109,13 +128,18 @@ export const SideBar = ({ user, role, loggedInfo = false }) => {
               linkTo="/dashboard"
               // linkTo='/'
             />
-            <ButtonIcon
-              icon={<ArchiveBoxIcon className="w-6 h-6" />}
-              title="Barang"
-              showArrow={false}
-              classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
-              linkTo="/barang"
-            />
+            {isAdminBesar && (
+              <>
+                <ButtonIcon
+                  icon={<ArchiveBoxIcon className="w-6 h-6" />}
+                  title="Barang"
+                  showArrow={false}
+                  classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
+                  linkTo="/barang"
+                />
+              </>
+            )}
+
             {/* {openDropdown && (
               <div className="">
                 <ul className="text-sm ml-6">
@@ -147,7 +171,7 @@ export const SideBar = ({ user, role, loggedInfo = false }) => {
                     />
                   </li>
                   <li className="mb-4">
-                  <ButtonIcon
+                    <ButtonIcon
                       title="Eceran"
                       showArrow={false}
                       classNameBtn="focus:bg-orange-200 focus:text-orange-600 hover:bg-orange-200 hover:text-orange-600 px-2 py-1"
