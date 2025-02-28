@@ -63,7 +63,6 @@ export const ModalEdit = ({
       if (onUpdate) {
         onUpdate();
       }
-      
     } catch (error) {
       console.error("Error updating product", error);
     }
@@ -73,7 +72,9 @@ export const ModalEdit = ({
     <div className="w-[560px] p-8 h-auto rounded-lg bg-white z-50 max-md:w-[300px] max-md:p-6">
       <div className="w-full flex">
         <div className="w-full flex items-center justify-start">
-          <h1 className="text-2xl max-md:text-lg font-bold">Edit Detail Barang</h1>
+          <h1 className="text-2xl max-md:text-lg font-bold">
+            Edit Detail Barang
+          </h1>
         </div>
         <div className="w-full flex items-center justify-end">
           <button onClick={onClick}>
@@ -157,8 +158,9 @@ export const ModalEdit = ({
                         {option}
                       </option>
                     ))}
+                  {/* No need for 'selected' here; React will manage it through the 'value' prop */}
                   {formData.statusBarang && (
-                    <option value={formData.statusBarang} selected>
+                    <option value={formData.statusBarang}>
                       {formData.statusBarang}
                     </option>
                   )}
@@ -183,7 +185,7 @@ export const ModalEdit = ({
                   placeholder="Masukkan Harga Barang"
                   value={formData.hargaBarangGrosir}
                   onChange={handleInputChange}
-                  name="hargaBarang"
+                  name="hargaBarangGrosir"
                 />
               </div>
             </div>
@@ -205,7 +207,7 @@ export const ModalEdit = ({
                   placeholder="Masukkan Harga Barang"
                   value={formData.hargaBarangEcer}
                   onChange={handleInputChange}
-                  name="hargaBarang"
+                  name="hargaBarangEcer"
                 />
               </div>
             </div>

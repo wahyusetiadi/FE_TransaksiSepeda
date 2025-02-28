@@ -20,9 +20,9 @@ export const AddItems = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [productCode, setProductCode] = useState("");
   const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [price, setPrice] = useState("");
-  const [stock, setStock] = useState("");
+  const [priceEcer, setPriceEcer] = useState("");
+  // const [price, setPrice] = useState("");
+  const [priceGrosir, setPriceGrosir] = useState("");
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
 
@@ -64,18 +64,17 @@ export const AddItems = () => {
       alert("Nama Barang Harus di input!");
       return;
     }
-    if (!price) {
-      alert("Biaya Harus di input!");
-    }
+    // if (!price) {
+    //   alert("Biaya Harus di input!");
+    // }
 
     const productData = {
       productCode: productCode,
       name: name,
-      type: type,
-      price: price,
-      stock: parseInt(stock),
+      price_ecer: priceEcer,
+      price_grosir: priceGrosir,
       status: status,
-      // isDeleted: false,
+      isDeleted: false,
     };
 
     try {
@@ -131,7 +130,7 @@ export const AddItems = () => {
                   />
                 </div>
 
-                <div className="w-full flex flex-col">
+                {/* <div className="w-full flex flex-col">
                   <label
                     htmlFor="Kategori Barang"
                     className="text-base max-md:text-xs font-bold text-slate-700"
@@ -153,7 +152,7 @@ export const AddItems = () => {
                       </option>
                     ))}
                   </select>
-                </div>
+                </div> */}
               </div>
 
               <div className="flex gap-4 mt-6 max-md:flex-col">
@@ -204,7 +203,7 @@ export const AddItems = () => {
                     htmlFor="Harga Barang"
                     className="text-base max-md:text-xs font-bold text-slate-700"
                   >
-                    Harga Barang
+                    Harga Barang Grosir
                   </label>
                   <div className="flex gap-4">
                     <div className="w-14 flex items-center justify-center bg-slate-100 font-bold text-sm rounded max-md:text-xs">
@@ -212,8 +211,29 @@ export const AddItems = () => {
                     </div>
                     <input
                       type="number"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)} // Ensure value is updated
+                      value={priceGrosir}
+                      onChange={(e) => setPriceGrosir(e.target.value)} // Ensure value is updated
+                      className="w-full px-4 py-2 border rounded max-md:text-xs max-md:px-2"
+                      placeholder="Masukkan Harga Barang"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="w-full flex flex-col">
+                  <label
+                    htmlFor="Harga Barang"
+                    className="text-base max-md:text-xs font-bold text-slate-700"
+                  >
+                    Harga Barang Ecer
+                  </label>
+                  <div className="flex gap-4">
+                    <div className="w-14 flex items-center justify-center bg-slate-100 font-bold text-sm rounded max-md:text-xs">
+                      Rp
+                    </div>
+                    <input
+                      type="number"
+                      value={priceEcer}
+                      onChange={(e) => setPriceEcer(e.target.value)} // Ensure value is updated
                       className="w-full px-4 py-2 border rounded max-md:text-xs max-md:px-2"
                       placeholder="Masukkan Harga Barang"
                       required
@@ -221,7 +241,7 @@ export const AddItems = () => {
                   </div>
                 </div>
 
-                <div className="w-full flex flex-col">
+                {/* <div className="w-full flex flex-col">
                   <label
                     htmlFor="Stok Barang"
                     className="text-base max-md:text-xs font-bold text-slate-700"
@@ -236,7 +256,7 @@ export const AddItems = () => {
                     placeholder="Masukkan Jumlah Stok"
                     required
                   />
-                </div>
+                </div> */}
               </div>
 
               <div className="w-full mt-6">

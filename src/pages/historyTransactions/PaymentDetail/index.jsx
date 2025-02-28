@@ -45,6 +45,7 @@ const PaymentPage = () => {
     date,
     customer,
     hutang,
+    discount,
   } = transactionData;
 
   const formatTanggal = (date) => {
@@ -146,23 +147,27 @@ const PaymentPage = () => {
               <span>
                 (x{item.amount}) {item.name}
               </span>
-              <span>{formatCurrency(item.price * item.amount)}</span>
+              <span>{formatCurrency((item.total))}</span>
             </div>
           ))}
         </div>
 
         {/* Total dan Metode Pembayaran */}
+        <div className="flex justify-between text-sm">
+            <p>diskon</p>
+            <p>-{formatCurrency(discount)}</p>
+          </div>
         <div className="flex justify-between text-sm font-semibold my-2">
           <p className="total">Total:</p>
           <p>{formatCurrency(total)}</p>
         </div>
         <div className="flex justify-between text-sm font-semibold my-2">
-          <p className="total">Jumlah Bayar:</p>
-          <p>{formatCurrency(total - hutang)}</p>
-        </div>
-        <div className="flex justify-between text-sm font-semibold my-2">
           <p className="total">Hutang:</p>
           <p className="text-red-600">{formatCurrency(hutang)}</p>
+        </div>
+        <div className="flex justify-between text-sm font-semibold my-2">
+          <p className="total">Total Bayar:</p>
+          <p>{formatCurrency(total - hutang - discount)}</p>
         </div>
         <hr className="my-2" />
 

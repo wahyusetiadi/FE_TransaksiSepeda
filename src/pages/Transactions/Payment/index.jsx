@@ -10,6 +10,7 @@ export const Payment = () => {
   const customer = sessionStorage.getItem("customers");
   const pelanggan = sessionStorage.getItem("pelanggan");
   const hutang = sessionStorage.getItem("hutang");
+  const diskon = sessionStorage.getItem("discount");
 
   console.log("addedItems:", addedItems);
   console.log("total:", total);
@@ -17,6 +18,7 @@ export const Payment = () => {
   console.log("customerName:", customer);
   console.log("customerNonVip:", pelanggan);
   console.log("Hutang:", hutang);
+  console.log("diskon: ", diskon);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -33,7 +35,7 @@ export const Payment = () => {
   const handlePrint = () => {
     const printContents = document.getElementById("print-content").innerHTML;
     const printWindow = window.open("", "", "width=600,height=800");
-    
+
     printWindow.document.write(`
       <html>
         <head>
@@ -78,11 +80,11 @@ export const Payment = () => {
         </body>
       </html>
     `);
-    
-    printWindow.document.close();  // Penting untuk menyelesaikan proses dokumen
-    printWindow.print();           // Melakukan print
+
+    printWindow.document.close(); // Penting untuk menyelesaikan proses dokumen
+    printWindow.print(); // Melakukan print
   };
-  
+
   return (
     <div>
       <div className="w-full flex justify-center">
@@ -142,18 +144,21 @@ export const Payment = () => {
           </div>
 
           <hr className="my-2" />
-
-          <div className="flex justify-between text-sm font-semibold">
+          <div className="flex justify-between text-sm">
+            <p>diskon</p>
+            <p>-{formatCurrency(diskon)}</p>
+          </div>
+          <div className="flex justify-between text-sm">
             <p>Total</p>
             <p>{formatCurrency(total)}</p>
           </div>
-          <div className="flex justify-between text-sm font-semibold">
-            <p>Total Bayar</p>
-            <p>{formatCurrency(total - hutang)}</p>
-          </div>
-          <div className="flex justify-between text-sm font-semibold">
+          <div className="flex justify-between text-sm">
             <p>Hutang</p>
             <p>{formatCurrency(hutang)}</p>
+          </div>
+          <div className="flex justify-between text-sm font-semibold">
+            <p>Total Bayar</p>
+            <p>{formatCurrency(total - hutang - diskon)}</p>
           </div>
 
           <hr className="my-2" />

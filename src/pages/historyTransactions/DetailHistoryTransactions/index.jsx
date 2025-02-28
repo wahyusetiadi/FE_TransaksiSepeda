@@ -126,6 +126,7 @@ export const DetailHistoryTransactions = () => {
       date,
       customer,
       hutang,
+      discount,
     } = transactionsDetail;
 
     console.log("Storing transaction data to sessionStorage:", {
@@ -136,6 +137,7 @@ export const DetailHistoryTransactions = () => {
       date,
       customer,
       hutang,
+      discount,
     });
 
     sessionStorage.setItem(
@@ -148,6 +150,7 @@ export const DetailHistoryTransactions = () => {
         date,
         customer,
         hutang,
+        discount,
       })
     );
 
@@ -300,9 +303,9 @@ export const DetailHistoryTransactions = () => {
                 <TableData
                   data={
                     Array.isArray(transactionsDetail)
-                      ? transactionsDetail.map(({ stock, ...rest }) => rest) // Menghapus kolom "stock"
+                      ? transactionsDetail.map(({ stock, price_ecer, price_grosir, ...rest }) => rest) // Menghapus kolom "stock"
                       : transactionsDetail.items.map(
-                          ({ stock, ...rest }) => rest
+                          ({ stock, price_ecer, price_grosir, ...rest }) => rest
                         )
                   }
                   showPagination={false}
@@ -314,8 +317,10 @@ export const DetailHistoryTransactions = () => {
           </div>
         </div>
       </div>
-      <div className="px-6 pr-36 w-full flex justify-end text-right font-bold pb-4">
-        <p>Total : {formatCurrency(transactionsDetail.total)}</p>
+      <div className="px-6 pr-36 w-full flex flex-col justify-end text-right font-bold pb-4">
+        <p className="font-medium">Discount : {formatCurrency((transactionsDetail.discount))}</p>
+        <p>Total : {formatCurrency((transactionsDetail.total) )}</p>
+
       </div>
 
       {isModalOpen && (

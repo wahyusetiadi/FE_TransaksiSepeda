@@ -14,7 +14,10 @@ import { formatCurrency } from "../../../utils";
 export const AddTransactionsGrosir = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addedItems } = location.state || {};
+  // const { addedItems } = location.state || {};
+  const [addedItems, setAddedItems] = useState(
+    location.state?.addedItems || []
+  );
   const [isOn, setIson] = useState(true);
   const [isOnState, setIsOnState] = useState("Belum Lunas");
   const [statusPembayaran, setStatusPembayaran] = useState("Belum Lunas");
@@ -23,16 +26,32 @@ export const AddTransactionsGrosir = () => {
   const [customers, setCustomers] = useState([]);
   const [hutang, setHutang] = useState(0);
   const [message, setMessage] = useState("");
+  const [discount, setDiscount] = useState(0);
 
   const [transactionCode, setTransactionCode] = useState("");
   const [customerId, setCustomerId] = useState(null); //ubah jadi number
   const [total, setTotal] = useState(0);
   const [item, setItem] = useState("");
   const [descriptions, setDescriptions] = useState("");
+  const [priceItem, setPriceItem] = useState(
+    addedItems.map((item) => item.price_grosir)
+  );
 
-  const handleToggleStatus = () => {
-    setIsOnState((prev) => !prev);
-    setStatusPembayaran((prev) => (prev === true ? false : true));
+  const handlePriceChange = (e, index) => {
+    // Remove 'Rp' and commas from the input, then parse the value
+    const rawValue = e.target.value.replace(/[^\d]/g, "");
+    const newPrice = parseFloat(rawValue) || 0;
+
+    setAddedItems((items) =>
+      items.map((item, i) =>
+        i === index ? { ...item, price_grosir: newPrice } : item
+      )
+    );
+  };
+
+  const formatCurrencyNew = (value) => {
+    // Format the number with a thousands separator and 'Rp' prefix
+    return `Rp ${value.toLocaleString("id-ID")}`;
   };
 
   const filteredItems =
@@ -99,15 +118,18 @@ export const AddTransactionsGrosir = () => {
     const payload = {
       transactionCode: transactionCode,
       customerId: customerId,
-      total: calculateTotal(),
+      // total: calculateTotal() - calculateTotal() * (discount / 100),
+      total:
+        addedItems.reduce(
+          (acc, item) => acc + item.price_grosir * item.quantity,
+          0
+        ) - discount,
       items: addedItems?.map((item) => ({
         product_id: item.id,
         amount: item.quantity,
-        total:
-          item.price * item.quantity ||
-          item.price_grosir * item.quantity ||
-          item.price_ecer * item.quantity,
+        total: item.price_grosir * item.quantity,
       })),
+      discount: discount,
       description: descriptions,
       hutang: hutang,
       lunas: lunas,
@@ -121,45 +143,46 @@ export const AddTransactionsGrosir = () => {
       items: addedItems?.map((item) => ({
         product_id: item.id,
         amount: item.quantity,
-        total:
-          item.price * item.quantity ||
-          item.price_grosir * item.quantity ||
-          item.price_ecer * item.quantity,
+        total: item.price_grosir * item.quantity,
         hutang: hutang,
         keterangan: descriptions,
       })),
+      total:
+        addedItems?.reduce(
+          (acc, item) => acc + item.price_grosir * item.quantity,
+          0
+        ) - discount,
     };
 
     // console.log(JSON.stringify(payloadOutbond, null, 2));
 
     // if (isOn === true) {
-      try {
-        const result = await addTransaction(payload);
-        if (
-          result.data.meta.code === 201 &&
-          result.data.meta.status === "success"
-        ) {
-          setMessage(
-            `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
-          );
-          sessionStorage.setItem("transactionCode", transactionCode);
-          sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
-          sessionStorage.setItem("total", calculateTotal());
-          sessionStorage.setItem("description", descriptions);
-          sessionStorage.setItem("hutang", hutang);
+    try {
+      const result = await addTransaction(payload);
+      if (
+        result.data.meta.code === 201 &&
+        result.data.meta.status === "success"
+      ) {
+        setMessage(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
+        sessionStorage.setItem("transactionCode", transactionCode);
+        sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
+        sessionStorage.setItem("total", calculateTotal());
+        sessionStorage.setItem("description", descriptions);
+        sessionStorage.setItem("hutang", hutang);
+        sessionStorage.setItem("discount", discount);
 
-          setTimeout(() => {
-            window.open("/transaksi/pembayaran");
-            navigate("/dashboard");
-            sessionStorage.clear();
-          }, 100);
-        } else {
-          setMessage("Transaksi gagal dibuat");
-        }
-      } catch (error) {
-        setMessage(`Error: ${error.message}`);
+        setTimeout(() => {
+          window.open("/transaksi/pembayaran");
+          navigate("/dashboard");
+          sessionStorage.clear();
+        }, 100);
+      } else {
+        setMessage("Transaksi gagal dibuat");
       }
-    // } 
+    } catch (error) {
+      setMessage(`Error: ${error.message}`);
+    }
+    // }
     // else if (!isOn) {
     //     try {
     //       //retail
@@ -207,9 +230,8 @@ export const AddTransactionsGrosir = () => {
   const calculateTotal = () => {
     return addedItems?.reduce((total, item) => {
       const price =
-        (item.price || item.price_grosir || item.price_ecer) &&
-        !isNaN(item.price || item.price_grosir || item.price_ecer)
-          ? Number(item.price || item.price_grosir || item.price_ecer)
+        item.price_grosir && !isNaN(item.price_grosir)
+          ? Number(item.price_grosir)
           : 0;
       return total + price * item.quantity;
     }, 0);
@@ -340,6 +362,26 @@ export const AddTransactionsGrosir = () => {
                     disabled
                   />
                 </div>
+                <div className="w-full flex flex-col gap-1">
+                  <label htmlFor="" className="max-md:text-xs font-bold">
+                    Diskon (Rp)
+                  </label>
+                  <input
+                    type="number"
+                    className="px-4 py-2 border-2 rounded max-md:text-xs"
+                    placeholder="Masukkan Kode Transaksi"
+                    value={discount}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Hanya set nilai jika angka valid dan >= 0
+                      if (value >= 0 || value === "") {
+                        setDiscount(value);
+                      }
+                    }}
+                    min="0" // Menjamin nilai minimal adalah 0
+                    step="1" // Menjamin angka hanya bisa input integer
+                  />
+                </div>
 
                 <div className="w-full flex gap-1">
                   <div className="w-full flex flex-col gap-1">
@@ -360,7 +402,7 @@ export const AddTransactionsGrosir = () => {
                       className={`w-full justify-start mt-6 relative inline-flex items-center cursor-pointer gap-3 ${
                         isOnState ? "justify-start" : "justify-start"
                       }`}
-                      onClick={handleToggleStatus}
+                      onClick={() => {}}
                     >
                       <span
                         className={`w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${
@@ -503,13 +545,19 @@ export const AddTransactionsGrosir = () => {
                                 <p className="">
                                   {`(x${item.quantity})`} {item.name}
                                 </p>
-                                <div className="">
-                                  {formatCurrency(
-                                    (item.price ||
-                                      item.price_grosir * item.quantity ||
-                                      item.price_ecer * item.quantity) *
-                                      item.quantity
-                                  )}
+                                <div className="w-fit flex gap-1">
+                                  {/* {formatCurrency(
+                                    item.price_grosir * item.quantity
+                                  )} */}
+                                  <input
+                                    type="text"
+                                    placeholder={item.price}
+                                    value={formatCurrencyNew(item.price_grosir)}
+                                    onChange={(e) =>
+                                      handlePriceChange(e, index)
+                                    }
+                                    className="text-end border rounded"
+                                  />
                                 </div>
                               </div>
                             </li>
@@ -529,23 +577,19 @@ export const AddTransactionsGrosir = () => {
                       {formatCurrency(calculateTotal())}
                     </h1>
                   </div>
-                  {/* <div className="w-full flex justify-between">
-                  <p className="font-normal text-[#334155]">Pengiriman</p>
-                  <h1 className="font-semibold text-[#1E293B]">
-                    {formatCurrency(50000)}
-                  </h1>
-                </div> */}
-                  {/* <div className="w-full flex justify-between">
-                  <p className="font-normal text-[#334155]">Diskon (5%)</p>
-                  <h1 className="font-semibold text-[#1E293B]">
-                    {formatCurrency(-100000)}
-                  </h1>
-                </div> */}
+                  <div className="w-full flex justify-between">
+                    <p className="font-normal text-[#334155]">
+                      Diskon {formatCurrency(discount)}
+                    </p>
+                    <h1 className="font-semibold text-[#1E293B]">
+                      {formatCurrency(discount)}
+                    </h1>
+                  </div>
+
                   <hr className="mt-4" />
                   <div className="w-full flex justify-between text-lg max-md:text-sm font-semibold">
                     <p>Total</p>
-                    <h1>{formatCurrency(calculateTotal())}</h1>{" "}
-                    {/* Total setelah diskon dan pengiriman */}
+                    <h1>{formatCurrency(calculateTotal() - discount)}</h1>{" "}
                   </div>
                 </div>
                 <div className="w-full">

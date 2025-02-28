@@ -15,7 +15,10 @@ import { formatCurrency } from "../../../utils";
 export const AddTransactionsEcer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addedItems } = location.state || {};
+  // const { addedItems = [] } = location.state || {};
+  const [addedItems, setAddedItems] = useState(
+    location.state?.addedItems || []
+  );
   const [isOn, setIson] = useState(false);
   const [isOnState, setIsOnState] = useState("Belum Lunas");
   const [statusPembayaran, setStatusPembayaran] = useState("Belum Lunas");
@@ -24,12 +27,33 @@ export const AddTransactionsEcer = () => {
   const [customers, setCustomers] = useState([]);
   const [hutang, setHutang] = useState(0);
   const [message, setMessage] = useState("");
+  const [discount, setDiscount] = useState(0);
 
   const [transactionCode, setTransactionCode] = useState("");
   const [customerId, setCustomerId] = useState(null); //ubah jadi number
   const [total, setTotal] = useState(0);
   const [item, setItem] = useState("");
   const [descriptions, setDescriptions] = useState("");
+  const [priceItem, setPriceItem] = useState(
+    addedItems.map((item) => item.price_ecer)
+  );
+
+  const handlePriceChange = (e, index) => {
+    // Remove 'Rp' and commas from the input, then parse the value
+    const rawValue = e.target.value.replace(/[^\d]/g, "");
+    const newPrice = parseFloat(rawValue) || 0;
+
+    setAddedItems((items) =>
+      items.map((item, i) =>
+        i === index ? { ...item, price_ecer: newPrice } : item
+      )
+    );
+  };
+
+  const formatCurrencyNew = (value) => {
+    // Format the number with a thousands separator and 'Rp' prefix
+    return `Rp ${value.toLocaleString("id-ID")}`;
+  };
 
   const handleToggleStatus = () => {
     setIsOnState((prev) => !prev);
@@ -38,8 +62,6 @@ export const AddTransactionsEcer = () => {
 
   const filteredItems =
     addedItems?.filter((item) => item.id && item.quantity > 0) || [];
-
-  // console.log("filter data addItems",filteredItems);
 
   const handlePayment = (e) => {
     setDescriptions(e.target.value);
@@ -80,113 +102,77 @@ export const AddTransactionsEcer = () => {
 
     const lunas = isOnState ? true : false;
 
-    const payloadNonVip = {
-      transactionCode: transactionCode,
-      customer: pelanggan,
-      total: calculateTotal(),
-      items: addedItems?.map((item) => ({
-        product_id: item.id,
-        amount: item.quantity,
-        total:
-          item.price * item.quantity ||
-          item.price_grosir * item.quantity ||
-          item.price_ecer * item.quantity,
-      })),
-      description: descriptions,
-      hutang: hutang,
-      lunas: lunas,
-    };
-
-    // const payload = {
+    // const payloadNonVip = {
     //   transactionCode: transactionCode,
-    //   customerId: customerId,
-    //   total: calculateTotal(),
+    //   customer: pelanggan,
+    //   total: calculateTotal() - calculateTotal() * (discount / 100),
     //   items: addedItems?.map((item) => ({
     //     product_id: item.id,
     //     amount: item.quantity,
-    //     total:
-    //       item.price * item.quantity ||
-    //       item.price_grosir * item.quantity ||
-    //       item.price_ecer * item.quantity,
+    //     total: item.price_ecer * item.quantity,
     //   })),
     //   description: descriptions,
     //   hutang: hutang,
     //   lunas: lunas,
     // };
-
-    // console.log(JSON.stringify(payload, null, 2));
+    const payloadNonVip = {
+      transactionCode: transactionCode,
+      customer: pelanggan,
+      total:
+        addedItems.reduce(
+          (acc, item) => acc + item.price_ecer * item.quantity,
+          0
+        ) - discount,
+      items: addedItems.map((item) => ({
+        product_id: item.id,
+        amount: item.quantity,
+        total: item.price_ecer * item.quantity,
+      })),
+      discount: discount,
+      description: descriptions,
+      hutang: hutang,
+      lunas: lunas,
+    };
 
     const payloadOutbond = {
-      customer: pelanggan || customerId, //customer string
+      customer: pelanggan || customerId,
       transactionCode: transactionCode,
       items: addedItems?.map((item) => ({
         product_id: item.id,
         amount: item.quantity,
-        total:
-          item.price * item.quantity ||
-          item.price_grosir * item.quantity ||
-          item.price_ecer * item.quantity,
+        total: item.price_ecer * item.quantity,
         hutang: hutang,
         keterangan: descriptions,
       })),
+      total:
+        addedItems?.reduce(
+          (acc, item) => acc + item.price_ecer * item.quantity,
+          0
+        ) - discount,
     };
-
-    // console.log(JSON.stringify(payloadOutbond, null, 2));
-
-    // if (isOn === true) {
-    //   try {
-    //     const result = await addTransaction(payload);
-    //     if (
-    //       result.data.meta.code === 201 &&
-    //       result.data.meta.status === "success"
-    //     ) {
-    //       setMessage(
-    //         `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
-    //       );
-    //       sessionStorage.setItem("transactionCode", transactionCode);
-    //       sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
-    //       sessionStorage.setItem("total", calculateTotal());
-    //       sessionStorage.setItem("description", descriptions);
-    //       sessionStorage.setItem("hutang", hutang);
-
-    //       setTimeout(() => {
-    //         window.open("/transaksi/pembayaran");
-    //         navigate("/dashboard");
-    //         sessionStorage.clear();
-    //       }, 100);
-    //     } else {
-    //       setMessage("Transaksi gagal dibuat");
-    //     }
-    //   } catch (error) {
-    //     setMessage(`Error: ${error.message}`);
-    //   }
-    // } 
-    // else if (!isOn) {
-      try {
-        //retail
-        const result = await addTransactionNonVip(payloadNonVip);
-        if (
-          result.data.meta.code === 201 &&
-          result.data.meta.status === "success"
-        ) {
-          setMessage(
-            `Transaksi Berhasil dibuat: ${result.data.transactionCode}`
-          );
-          sessionStorage.setItem("transactionCode", transactionCode);
-          sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
-          sessionStorage.setItem("total", calculateTotal());
-          sessionStorage.setItem("description", descriptions);
-          sessionStorage.setItem("hutang", hutang);
-          setTimeout(() => {
-            window.open("/transaksi/pembayaran");
-            navigate("/dashboard");
-          }, 100);
-        } else {
-          setMessage("Transaksi gagal dibuat");
-        }
-      } catch (error) {
-        setMessage(`Error: ${error.message}`);
+    try {
+      const result = await addTransactionNonVip(payloadNonVip);
+      if (
+        result.data.meta.code === 201 &&
+        result.data.meta.status === "success"
+      ) {
+        setMessage(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
+        sessionStorage.setItem("transactionCode", transactionCode);
+        sessionStorage.setItem("addedItems", JSON.stringify(addedItems));
+        sessionStorage.setItem("total", calculateTotal());
+        sessionStorage.setItem("description", descriptions);
+        sessionStorage.setItem("hutang", hutang);
+        sessionStorage.setItem("discount", discount);
+        setTimeout(() => {
+          window.open("/transaksi/pembayaran");
+          navigate("/dashboard");
+        }, 100);
+      } else {
+        setMessage("Transaksi gagal dibuat");
       }
+    } catch (error) {
+      setMessage(`Error: ${error.message}`);
+    }
     // }
 
     try {
@@ -208,9 +194,8 @@ export const AddTransactionsEcer = () => {
   const calculateTotal = () => {
     return addedItems?.reduce((total, item) => {
       const price =
-        (item.price || item.price_grosir || item.price_ecer) &&
-        !isNaN(item.price || item.price_grosir || item.price_ecer)
-          ? Number(item.price || item.price_grosir || item.price_ecer)
+        item.price_ecer && !isNaN(item.price_ecer)
+          ? Number(item.price_ecer)
           : 0;
       return total + price * item.quantity;
     }, 0);
@@ -270,27 +255,7 @@ export const AddTransactionsEcer = () => {
                   <h1 className="text-xl max-md:text-lg  font-bold">
                     Informasi Pelanggan
                   </h1>
-                  {/* <div className="w-full flex text-nowrap max-md:text-xs max-md:text-wrap">
-                    <p>Apakah Pelanggan Sudah Terdaftar</p>
-                    <div
-                      className={`w-full justify-end relative inline-flex items-center cursor-pointer ${
-                        isOn ? "justify-end" : "justify-start"
-                      }`}
-                      onClick={handleToggle}
-                    >
-                      <span
-                        className={`w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${
-                          isOn ? "bg-orange-600" : "bg-gray-300"
-                        }`}
-                      >
-                        <span
-                          className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-all duration-300 ${
-                            isOn ? "translate-x-4" : "translate-x-0"
-                          }`}
-                        />
-                      </span>
-                    </div>
-                  </div> */}
+
                   <div className="flex flex-col">
                     <label className="text-base max-md:text-xs font-bold">
                       {isOn ? "Pilih Pelanggan" : "Nama Pelanggan"}
@@ -341,6 +306,26 @@ export const AddTransactionsEcer = () => {
                     disabled
                   />
                 </div>
+                <div className="w-full flex flex-col gap-1">
+                  <label htmlFor="" className="max-md:text-xs font-bold">
+                    Diskon (Rp)
+                  </label>
+                  <input
+                    type="number"
+                    className="px-4 py-2 border-2 rounded max-md:text-xs"
+                    placeholder="Masukkan Kode Transaksi"
+                    value={discount}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Hanya set nilai jika angka valid dan >= 0
+                      if (value >= 0 || value === "") {
+                        setDiscount(value);
+                      }
+                    }}
+                    min="0" // Menjamin nilai minimal adalah 0
+                    step="1" // Menjamin angka hanya bisa input integer
+                  />
+                </div>
 
                 <div className="w-full flex gap-1">
                   <div className="w-full flex flex-col gap-1">
@@ -383,34 +368,6 @@ export const AddTransactionsEcer = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="w-full flex flex-col gap-6">
-                <h1 className="text-xl font-bold">Informasi Transaksi</h1>
-                <div className="w-full">
-                  <h1>Jenis Transaksi</h1>
-                  <div className="w-full flex gap-4">
-                    <div className="w-full p-4 flex gap-2 items-center justify-start border-2 rounded-lg">
-                      <input
-                        type="radio"
-                        name="transaksi"
-                        value={"Ambil Ditempat"}
-                        className="w-4 h-4 focus:ring-orange-600"
-                      />
-                      <label htmlFor="">Ambil Ditempat</label>
-                    </div>
-
-                    <div className="w-full p-4 flex gap-2 items-center justify-start border-2 rounded-lg">
-                      <input
-                        type="radio"
-                        name="transaksi"
-                        value={"Kirim ke Alamat"}
-                        className="w-4 h-4 focus:ring-orange-600"
-                      />
-                      <label htmlFor="">Kirim ke Alamat</label>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
 
                 <div className="w-full flex flex-col gap-6">
                   <h1 className="text-xl max-md:text-lg font-bold">
@@ -499,18 +456,24 @@ export const AddTransactionsEcer = () => {
                       <ul>
                         {addedItems?.length > 0 ? (
                           addedItems.map((item, index) => (
-                            <li key={index}>
+                            <li key={item.id}>
                               <div className="w-full flex items-center justify-between">
                                 <p className="">
                                   {`(x${item.quantity})`} {item.name}
                                 </p>
-                                <div className="">
-                                  {formatCurrency(
-                                    (item.price ||
-                                      item.price_grosir * item.quantity ||
-                                      item.price_ecer * item.quantity) *
-                                      item.quantity
-                                  )}
+                                <div className="w-fit flex gap-1">
+                                  {/* {formatCurrency(
+                                    item.price_ecer * item.quantity
+                                  )} */}
+                                  <input
+                                    type="text"
+                                    placeholder={item.price}
+                                    value={formatCurrencyNew(item.price_ecer)}
+                                    onChange={(e) =>
+                                      handlePriceChange(e, index)
+                                    }
+                                    className="text-end border rounded"
+                                  />
                                 </div>
                               </div>
                             </li>
@@ -530,22 +493,18 @@ export const AddTransactionsEcer = () => {
                       {formatCurrency(calculateTotal())}
                     </h1>
                   </div>
-                  {/* <div className="w-full flex justify-between">
-                  <p className="font-normal text-[#334155]">Pengiriman</p>
-                  <h1 className="font-semibold text-[#1E293B]">
-                    {formatCurrency(50000)}
-                  </h1>
-                </div> */}
-                  {/* <div className="w-full flex justify-between">
-                  <p className="font-normal text-[#334155]">Diskon (5%)</p>
-                  <h1 className="font-semibold text-[#1E293B]">
-                    {formatCurrency(-100000)}
-                  </h1>
-                </div> */}
+                  <div className="w-full flex justify-between">
+                    <p className="font-normal text-[#334155]">
+                      Diskon {formatCurrency(discount)}
+                    </p>
+                    <h1 className="font-semibold text-[#1E293B]">
+                      {formatCurrency(discount)}
+                    </h1>
+                  </div>
                   <hr className="mt-4" />
                   <div className="w-full flex justify-between text-lg max-md:text-sm font-semibold">
                     <p>Total</p>
-                    <h1>{formatCurrency(calculateTotal())}</h1>{" "}
+                    <h1>{formatCurrency(calculateTotal() - discount)}</h1>{" "}
                     {/* Total setelah diskon dan pengiriman */}
                   </div>
                 </div>
