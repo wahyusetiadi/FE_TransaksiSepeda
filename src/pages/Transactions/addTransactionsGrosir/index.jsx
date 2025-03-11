@@ -27,6 +27,7 @@ export const AddTransactionsGrosir = () => {
   const [hutang, setHutang] = useState(0);
   const [message, setMessage] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [note, setNote] = useState("")
 
   const [transactionCode, setTransactionCode] = useState("");
   const [customerId, setCustomerId] = useState(null); //ubah jadi number
@@ -135,6 +136,7 @@ export const AddTransactionsGrosir = () => {
       description: descriptions,
       hutang: hutang,
       lunas: lunas,
+      note: note,
     };
 
     // console.log(JSON.stringify(payload, null, 2));
@@ -172,6 +174,7 @@ export const AddTransactionsGrosir = () => {
         sessionStorage.setItem("description", descriptions);
         sessionStorage.setItem("hutang", hutang);
         sessionStorage.setItem("discount", discount);
+        sessionStorage.setItem("note", note)
 
         setTimeout(() => {
           setLoading(false);
@@ -426,6 +429,16 @@ export const AddTransactionsGrosir = () => {
                       )}
                     </div>
                   </div>
+                </div>
+                <div className="w-full flex flex-col gap-1">
+                  <label htmlFor="" className="text-base max-md:text-xs font-bold">Note</label>
+                  <input
+                    type="text"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="px-4 py-2 border-2 rounded max-md:text-xs"
+                    placeholder="Masukkan Catatan"
+                  />
                 </div>
 
                 {/* <div className="w-full flex flex-col gap-6">

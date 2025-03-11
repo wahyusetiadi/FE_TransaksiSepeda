@@ -11,6 +11,7 @@ export const Payment = () => {
   const pelanggan = sessionStorage.getItem("pelanggan");
   const hutang = sessionStorage.getItem("hutang");
   const diskon = sessionStorage.getItem("discount");
+  const note = sessionStorage.getItem('note')
 
   console.log("addedItems:", addedItems);
   console.log("total:", total);
@@ -19,6 +20,8 @@ export const Payment = () => {
   console.log("customerNonVip:", pelanggan);
   console.log("Hutang:", hutang);
   console.log("diskon: ", diskon);
+  console.log('note', note);
+  
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -164,10 +167,16 @@ export const Payment = () => {
           <hr className="my-2" />
 
           {/* Metode Pembayaran */}
-          <div className="text-start text-sm flex items-center justify-between">
+          <div className="text-start text-sm flex items-center gap-2">
             <p>Metode Pembayaran:</p>
             <p>
               <b>{description}</b>
+            </p>
+          </div>
+          <div className="italic font-bold text-start text-sm flex items-center justify-between">
+            <p>Note:</p>
+            <p>
+              <b>{note}</b>
             </p>
           </div>
 

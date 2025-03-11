@@ -127,6 +127,7 @@ export const DetailHistoryTransactions = () => {
       customer,
       hutang,
       discount,
+      note,
     } = transactionsDetail;
 
     console.log("Storing transaction data to sessionStorage:", {
@@ -138,6 +139,7 @@ export const DetailHistoryTransactions = () => {
       customer,
       hutang,
       discount,
+      note,
     });
 
     sessionStorage.setItem(
@@ -151,6 +153,7 @@ export const DetailHistoryTransactions = () => {
         customer,
         hutang,
         discount,
+        note,
       })
     );
 
@@ -246,7 +249,7 @@ export const DetailHistoryTransactions = () => {
                   Nama Pelanggan
                 </p>
                 <h1 className="text-base font-bold">
-                  {transactionsDetail.customer || "Wahyu Ansari"}
+                  {transactionsDetail.customer || "undefined"}
                 </h1>
                 <hr />
               </div>
@@ -256,7 +259,7 @@ export const DetailHistoryTransactions = () => {
                   Kode Transaksi
                 </p>
                 <h1 className="text-base font-bold">
-                  {transactionsDetail.transactionCode || "+6281299887766"}
+                  {transactionsDetail.transactionCode || "undefined"}
                 </h1>
                 <hr />
               </div>
@@ -266,7 +269,7 @@ export const DetailHistoryTransactions = () => {
                   Jenis Pembayaran
                 </p>
                 <h1 className="text-base font-bold">
-                  {transactionsDetail.description || "VIP"}
+                  {transactionsDetail.description || "undefined"}
                 </h1>
                 <hr />
               </div>

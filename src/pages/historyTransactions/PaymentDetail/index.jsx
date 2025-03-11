@@ -46,7 +46,11 @@ const PaymentPage = () => {
     customer,
     hutang,
     discount,
+    note,
   } = transactionData;
+
+  console.log('transactions Data', transactionData);
+  
 
   const formatTanggal = (date) => {
     return new Date(date).toLocaleDateString("id-ID", {
@@ -177,6 +181,12 @@ const PaymentPage = () => {
             <b>{metodePembayaran}</b>
           </p>
         </div>
+        <div className="italic font-bold text-start text-sm flex items-center justify-between">
+            <p>Note:</p>
+            <p>
+              <b>{note}</b>
+            </p>
+          </div>
         <hr className="my-2" />
 
         <div className="text-center text-xs text-gray-600">
