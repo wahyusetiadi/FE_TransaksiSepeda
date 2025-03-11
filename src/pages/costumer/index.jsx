@@ -18,6 +18,8 @@ export const CostumerPage = () => {
   const [name, setName] = useState("");
   const [telp, setTelp] = useState("");
   const [type, setType] = useState("");
+  const [nik, setNik] = useState("-");
+  const [npwp, setNpwp] = useState("-");
 
   const handleOpenModalAddCustomer = () => {
     setIsShowAddCustomer(true);
@@ -54,6 +56,8 @@ export const CostumerPage = () => {
       name: name,
       telp: telpValue,
       type: type,
+      nik,
+      npwp,
     };
 
     try {
@@ -64,11 +68,13 @@ export const CostumerPage = () => {
       setName("");
       setTelp("");
       setType("");
+      setNik("");
+      setNpwp("");
     } catch (error) {
       setMessage(`Error: ${error.message}`);
     } finally {
       setTimeout(() => {
-        setMessage("")
+        setMessage("");
       }, 3000);
     }
   };
@@ -93,7 +99,7 @@ export const CostumerPage = () => {
   return (
     <div>
       <ContentLayout>
-      {message && (
+        {message && (
           <>
             <div className="w-full mt-4 p-4 fixed bg-green-100 border-l-4 border-green-500 text-green-700">
               <p>{message}</p>
@@ -195,6 +201,32 @@ export const CostumerPage = () => {
                         <option value="VIP">VIP</option>
                         <option value="Regular">Regular</option>
                       </select>
+                    </div>
+
+                    <div className="w-full flex flex-col gap-2">
+                      <label htmlFor="" className="text-base font-bold">
+                        NIK
+                      </label>
+                      <input
+                        type="text"
+                        value={nik}
+                        onChange={(e) => setNik(e.target.value)}
+                        placeholder="Masukkan Nama Pelanggan"
+                        className="px-4 py-2 border-2 rounded"
+                      />
+                    </div>
+
+                    <div className="w-full flex flex-col gap-2">
+                      <label htmlFor="" className="text-base font-bold">
+                        NPWP
+                      </label>
+                      <input
+                        type="text"
+                        value={npwp}
+                        onChange={(e) => setNpwp(e.target.value)}
+                        placeholder="Masukkan Nama Pelanggan"
+                        className="px-4 py-2 border-2 rounded"
+                      />
                     </div>
 
                     <div className="w-full flex gap-4 items-center justify-between mt-8">

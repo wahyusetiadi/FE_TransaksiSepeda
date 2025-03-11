@@ -81,7 +81,7 @@ export const AddTransactionsEcer = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    setLoading(true);
     const customerName = isOn
       ? customers.find((customer) => Number(customer.id) === Number(customerId))
           ?.name
@@ -134,22 +134,22 @@ export const AddTransactionsEcer = () => {
       lunas: lunas,
     };
 
-    const payloadOutbond = {
-      customer: pelanggan || customerId,
-      transactionCode: transactionCode,
-      items: addedItems?.map((item) => ({
-        product_id: item.id,
-        amount: item.quantity,
-        total: item.price_ecer * item.quantity,
-        hutang: hutang,
-        keterangan: descriptions,
-      })),
-      total:
-        addedItems?.reduce(
-          (acc, item) => acc + item.price_ecer * item.quantity,
-          0
-        ) - discount,
-    };
+    // const payloadOutbond = {
+    //   customer: pelanggan || customerId,
+    //   transactionCode: transactionCode,
+    //   items: addedItems?.map((item) => ({
+    //     product_id: item.id,
+    //     amount: item.quantity,
+    //     total: item.price_ecer * item.quantity,
+    //     hutang: hutang,
+    //     keterangan: descriptions,
+    //   })),
+    //   total:
+    //     addedItems?.reduce(
+    //       (acc, item) => acc + item.price_ecer * item.quantity,
+    //       0
+    //     ) - discount,
+    // };
     try {
       const result = await addTransactionNonVip(payloadNonVip);
       if (
@@ -164,9 +164,10 @@ export const AddTransactionsEcer = () => {
         sessionStorage.setItem("hutang", hutang);
         sessionStorage.setItem("discount", discount);
         setTimeout(() => {
+          setLoading(false);
           window.open("/transaksi/pembayaran");
           navigate("/dashboard");
-        }, 100);
+        }, 2000);
       } else {
         setMessage("Transaksi gagal dibuat");
       }
@@ -175,20 +176,20 @@ export const AddTransactionsEcer = () => {
     }
     // }
 
-    try {
-      const result = await addOutbond(payloadOutbond);
-      if (
-        result.data.meta.code === 201 &&
-        result.data.meta.status === "success"
-      ) {
-        setMessage(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
-      } else {
-        setMessage("Transaksi gagal dibuat");
-      }
-    } catch (error) {
-      setMessage(`Error: ${error.message}`);
-      console.error("Error during transaction process:", error);
-    }
+    // try {
+    //   const result = await addOutbond(payloadOutbond);
+    //   if (
+    //     result.data.meta.code === 201 &&
+    //     result.data.meta.status === "success"
+    //   ) {
+    //     setMessage(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
+    //   } else {
+    //     setMessage("Transaksi gagal dibuat");
+    //   }
+    // } catch (error) {
+    //   setMessage(`Error: ${error.message}`);
+    //   console.error("Error during transaction process:", error);
+    // }
   };
 
   const calculateTotal = () => {
@@ -512,9 +513,12 @@ export const AddTransactionsEcer = () => {
                   {/* <Link to="/transaksi/pembayaran"> */}
                   <button
                     type="submit"
-                    className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base max-md:text-xs text-white"
+                    className={`w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base max-md:text-xs text-white ${
+                      loading ? "cursor-not-allowed opacity-50" : ""
+                    }`}
+                    disabled={loading}
                   >
-                    Cetak Struk
+                    {loading ? "Memproses..." : "Cetak Struk"}
                   </button>
                   {/* </Link> */}
                 </div>

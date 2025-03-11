@@ -30,6 +30,7 @@ export const ReportOutbond = () => {
 
   const handleExport = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const filteredTransactions = outbond.filter(
       (outbond) => outbond.createdAt >= fromDate && outbond.createdAt <= toDate
@@ -42,6 +43,9 @@ export const ReportOutbond = () => {
       await exportOutbond(fromDate, toDate);
       setFromDate("");
       setToDate("");
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
     } catch (err) {
       setError("Terjadi kesalahan saat mengekspor data.");
       console.error("Error exporting data:", err);
@@ -97,8 +101,12 @@ export const ReportOutbond = () => {
                 </div>
               </div>
               <div className="mb-12">
-                <button className="w-full py-2 px-6 border-2 rounded-full bg-orange-600 text-white hover:bg-orange-700">
-                  Export
+                <button
+                  className={`w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base max-md:text-xs text-white ${
+                    isLoading ? "cursor-not-allowed opacity-50" : ""
+                  }`}
+                >
+                  {isLoading ? 'Downloading...' : 'Export'}
                 </button>
               </div>
             </form>

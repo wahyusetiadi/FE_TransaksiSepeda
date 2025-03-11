@@ -67,8 +67,9 @@ export const AddTransactionsGrosir = () => {
     setIson(!isOn);
   };
 
-  const handleToggleState = () => {
-    setIsOnState(!isOnState);
+  const handleToggleStatus = () => {
+    setIsOnState((prev) => !prev);
+    setStatusPembayaran((prev) => (prev === true ? false : true));
   };
 
   const handleCustomer = (e) => {
@@ -77,6 +78,7 @@ export const AddTransactionsGrosir = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
     const customerName = isOn
       ? customers.find((customer) => Number(customer.id) === Number(customerId))
@@ -137,22 +139,22 @@ export const AddTransactionsGrosir = () => {
 
     // console.log(JSON.stringify(payload, null, 2));
 
-    const payloadOutbond = {
-      customer: pelanggan || customerId, //customer string
-      transactionCode: transactionCode,
-      items: addedItems?.map((item) => ({
-        product_id: item.id,
-        amount: item.quantity,
-        total: item.price_grosir * item.quantity,
-        hutang: hutang,
-        keterangan: descriptions,
-      })),
-      total:
-        addedItems?.reduce(
-          (acc, item) => acc + item.price_grosir * item.quantity,
-          0
-        ) - discount,
-    };
+    // const payloadOutbond = {
+    //   customer: pelanggan || customerId, //customer string
+    //   transactionCode: transactionCode,
+    //   items: addedItems?.map((item) => ({
+    //     product_id: item.id,
+    //     amount: item.quantity,
+    //     total: item.price_grosir * item.quantity,
+    //     hutang: hutang,
+    //     keterangan: descriptions,
+    //   })),
+    //   total:
+    //     addedItems?.reduce(
+    //       (acc, item) => acc + item.price_grosir * item.quantity,
+    //       0
+    //     ) - discount,
+    // };
 
     // console.log(JSON.stringify(payloadOutbond, null, 2));
 
@@ -172,10 +174,11 @@ export const AddTransactionsGrosir = () => {
         sessionStorage.setItem("discount", discount);
 
         setTimeout(() => {
+          setLoading(false);
           window.open("/transaksi/pembayaran");
           navigate("/dashboard");
           sessionStorage.clear();
-        }, 100);
+        }, 2000);
       } else {
         setMessage("Transaksi gagal dibuat");
       }
@@ -211,20 +214,20 @@ export const AddTransactionsGrosir = () => {
     //     }
     // }
 
-    try {
-      const result = await addOutbond(payloadOutbond);
-      if (
-        result.data.meta.code === 201 &&
-        result.data.meta.status === "success"
-      ) {
-        setMessage(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
-      } else {
-        setMessage("Transaksi gagal dibuat");
-      }
-    } catch (error) {
-      setMessage(`Error: ${error.message}`);
-      console.error("Error during transaction process:", error);
-    }
+    // try {
+    //   const result = await addOutbond(payloadOutbond);
+    //   if (
+    //     result.data.meta.code === 201 &&
+    //     result.data.meta.status === "success"
+    //   ) {
+    //     setMessage(`Transaksi Berhasil dibuat: ${result.data.transactionCode}`);
+    //   } else {
+    //     setMessage("Transaksi gagal dibuat");
+    //   }
+    // } catch (error) {
+    //   setMessage(`Error: ${error.message}`);
+    //   console.error("Error during transaction process:", error);
+    // }
   };
 
   const calculateTotal = () => {
@@ -395,14 +398,14 @@ export const AddTransactionsGrosir = () => {
                         onChange={(e) => setHutang(e.target.value)}
                         className="px-4 py-2 border-2 rounded max-md:text-xs"
                         placeholder="Masukkan Hutang"
-                        disabled={isOnState} // Disable the input when 'Lunas' (isOnState is true)
+                        disabled={isOnState}
                       />
                     </div>
                     <div
                       className={`w-full justify-start mt-6 relative inline-flex items-center cursor-pointer gap-3 ${
                         isOnState ? "justify-start" : "justify-start"
                       }`}
-                      onClick={() => {}}
+                      onClick={handleToggleStatus}
                     >
                       <span
                         className={`w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${
@@ -596,9 +599,12 @@ export const AddTransactionsGrosir = () => {
                   {/* <Link to="/transaksi/pembayaran"> */}
                   <button
                     type="submit"
-                    className="w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base max-md:text-xs text-white"
+                    className={`w-full rounded-full bg-orange-600 py-4 px-10 font-semibold text-base max-md:text-xs text-white ${
+                      loading ? "cursor-not-allowed opacity-50" : ""
+                    }`}
+                    disabled={loading}
                   >
-                    Cetak Struk
+                    {loading ? "Memproses..." : "Cetak Struk"}
                   </button>
                   {/* </Link> */}
                 </div>

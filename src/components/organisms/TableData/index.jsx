@@ -397,6 +397,7 @@ export const TableData = ({
                     </td>
                   )}
                   {columns.map((col) => {
+                    const value = item[col] || "-";
                     if (col === "date") {
                       return (
                         <td key={col} className="py-2 px-6 text-left">
@@ -731,10 +732,13 @@ export const TableData = ({
                       );
                     }
                     return (
+                      // <td key={col} className="py-2 px-6 text-left">
+                      //   {col === "price"
+                      //     ? formatCurrency(item[col])
+                      //     : item[col]}
+                      // </td>
                       <td key={col} className="py-2 px-6 text-left">
-                        {col === "price"
-                          ? formatCurrency(item[col])
-                          : item[col]}
+                        {value}
                       </td>
                     );
                   })}
