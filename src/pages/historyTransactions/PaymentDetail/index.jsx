@@ -12,7 +12,7 @@ const PaymentPage = () => {
   useEffect(() => {
     // Ambil data dari sessionStorage
     const storedData = sessionStorage.getItem("transactionData");
-    console.log("storedData", storedData);
+    // console.log("storedData", storedData);
 
     if (storedData) {
       setTransactionData(JSON.parse(storedData));
@@ -49,8 +49,7 @@ const PaymentPage = () => {
     note,
   } = transactionData;
 
-  console.log('transactions Data', transactionData);
-  
+  console.log("transactions Data", transactionData);
 
   const formatTanggal = (date) => {
     return new Date(date).toLocaleDateString("id-ID", {
@@ -66,7 +65,7 @@ const PaymentPage = () => {
   const handlePrint = () => {
     const printContents = document.getElementById("print-content").innerHTML;
     const printWindow = window.open("", "", "width=600,height=800");
-    
+
     printWindow.document.write(`
       <html>
         <head>
@@ -111,14 +110,17 @@ const PaymentPage = () => {
         </body>
       </html>
     `);
-    
-    printWindow.document.close();  // Penting untuk menyelesaikan proses dokumen
-    printWindow.print();           // Melakukan print
+
+    printWindow.document.close(); // Penting untuk menyelesaikan proses dokumen
+    printWindow.print(); // Melakukan print
   };
 
   return (
     <div className="w-full h-screen flex flex-col text-center items-center justify-center">
-      <div className="w-[375px] h-auto bg-white rounded-lg p-4 text-xs font-mono border border-gray-300" id="print-content">
+      <div
+        className="w-[375px] h-auto bg-white rounded-lg p-4 text-xs font-mono border border-gray-300"
+        id="print-content"
+      >
         {/* Header struk */}
         <div className="text-center">
           <h1 className="font-bold">GMJ Bike Shop</h1>
@@ -148,19 +150,22 @@ const PaymentPage = () => {
         <div className="w-full flex flex-col gap-2">
           {items.map((item, index) => (
             <div key={index} className="w-full flex justify-between text-xs">
-              <span>
-                (x{item.amount}) {item.name}
-              </span>
-              <span>{formatCurrency((item.total))}</span>
+              <div className="w-full items-start justify-start flex flex-col">
+                <span>
+                  (x{item.amount}) {item.name}
+                </span>
+                <p>{formatCurrency((item.total)/(item.amount))}</p>
+              </div>
+              <span>{formatCurrency(item.total)}</span>
             </div>
           ))}
         </div>
 
         {/* Total dan Metode Pembayaran */}
         <div className="flex justify-between text-sm">
-            <p>diskon</p>
-            <p>-{formatCurrency(discount)}</p>
-          </div>
+          <p>diskon</p>
+          <p>-{formatCurrency(discount)}</p>
+        </div>
         <div className="flex justify-between text-sm font-semibold my-2">
           <p className="total">Total:</p>
           <p>{formatCurrency(total)}</p>
@@ -182,11 +187,11 @@ const PaymentPage = () => {
           </p>
         </div>
         <div className="italic font-bold text-start text-sm flex items-center justify-between">
-            <p>Note:</p>
-            <p>
-              <b>{note}</b>
-            </p>
-          </div>
+          <p>Note:</p>
+          <p>
+            <b>{note}</b>
+          </p>
+        </div>
         <hr className="my-2" />
 
         <div className="text-center text-xs text-gray-600">

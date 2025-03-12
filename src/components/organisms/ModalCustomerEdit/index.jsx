@@ -8,13 +8,20 @@ export const ModalCustomerEdit = ({
   name,
   telp,
   type,
+  nik, 
+  npwp,
   onUpdate,
 }) => {
   const [formData, setFormData] = useState({
     name,
     telp,
     type,
+    nik,
+    npwp,
   });
+
+  console.log(' form data ', formData);
+  
 
   const customerType = ["VIP", "Reguler"];
 
@@ -33,6 +40,8 @@ export const ModalCustomerEdit = ({
       name: formData.name,
       telp: formData.telp,
       type: formData.type,
+      nik: formData.nik,
+      npwp: formData.npwp,
     };
 
     try {
@@ -125,6 +134,38 @@ export const ModalCustomerEdit = ({
                   )}
                 </select>
               </div>
+            </div>
+            <div className="w-full flex flex-col mt-4">
+              <label
+                htmlFor="nik"
+                className="text-base max-md:text-xs font-bold text-slate-700"
+              >
+                NIK
+              </label>
+              <input
+                type="text"
+                name="nik"
+                className="w-full px-4 py-2 border rounded max-md:text-xs"
+                placeholder="Masukkan NIK"
+                value={formData.nik}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="w-full flex flex-col mt-4">
+              <label
+                htmlFor="npwp"
+                className="text-base max-md:text-xs font-bold text-slate-700"
+              >
+                NPWP
+              </label>
+              <input
+                type="text"
+                name="npwp"
+                className="w-full px-4 py-2 border rounded max-md:text-xs"
+                placeholder="Masukkan NPW"
+                value={formData.npwp}
+                onChange={handleInputChange}
+              />
             </div>
             <button
               type="submit"

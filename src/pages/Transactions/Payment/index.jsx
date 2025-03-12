@@ -11,7 +11,7 @@ export const Payment = () => {
   const pelanggan = sessionStorage.getItem("pelanggan");
   const hutang = sessionStorage.getItem("hutang");
   const diskon = sessionStorage.getItem("discount");
-  const note = sessionStorage.getItem('note')
+  const note = sessionStorage.getItem("note");
 
   console.log("addedItems:", addedItems);
   console.log("total:", total);
@@ -20,8 +20,7 @@ export const Payment = () => {
   console.log("customerNonVip:", pelanggan);
   console.log("Hutang:", hutang);
   console.log("diskon: ", diskon);
-  console.log('note', note);
-  
+  console.log("note", note);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -133,9 +132,13 @@ export const Payment = () => {
           <div className="w-full flex flex-col gap-2">
             {addedItems.map((item, index) => (
               <div key={index} className="flex justify-between text-xs">
-                <span>
-                  (x{item.quantity}) {item.name}
-                </span>
+                <div className=""></div>
+                <div className="w-full items-start justify-start flex flex-col">
+                  <span>
+                    (x{item.quantity}) {item.name}
+                  </span>
+                  <p>{formatCurrency(item.price_ecer || item.price_grosir)}</p>
+                </div>
                 <span>
                   {formatCurrency(
                     (item.price || item.price_ecer || item.price_grosir) *

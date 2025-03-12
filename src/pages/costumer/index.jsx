@@ -56,8 +56,8 @@ export const CostumerPage = () => {
       name: name,
       telp: telpValue,
       type: type,
-      nik,
-      npwp,
+      nik: nik,
+      npwp: npwp,
     };
 
     try {

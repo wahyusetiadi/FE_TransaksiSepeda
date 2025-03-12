@@ -79,6 +79,8 @@ export const TableData = ({
     name: "",
     telp: "",
     type: "",
+    nik: "",
+    npwp: "",
   });
 
   // const handleAddClick = (item) => {
@@ -277,6 +279,8 @@ export const TableData = ({
       name: item.name,
       telp: item.telp,
       type: item.type,
+      nik: item.nik || "-",
+      npwp: item.npwp || "-"
     });
     openEditCustomerModal();
   };
@@ -518,6 +522,8 @@ export const TableData = ({
                                       name={selcetedCustomer.name}
                                       telp={selcetedCustomer.telp}
                                       type={selcetedCustomer.type}
+                                      nik={selcetedCustomer.nik}
+                                      npwp={selcetedCustomer.npwp}
                                       onClick={closeEditCustomerModal}
                                       onUpdate={onUpdate}
                                     />
