@@ -320,6 +320,9 @@ export const DetailHistoryTransactions = () => {
           </div>
         </div>
       </div>
+      <div className="w-full text-left px-6 text-sm">
+        <p><b>Catatan: </b> {transactionsDetail.note || "tidak ada catatan"}</p>
+      </div>
       <div className="px-6 pr-36 w-full flex flex-col justify-end text-right font-bold pb-4">
         <p className="font-medium">Discount : {formatCurrency((transactionsDetail.discount))}</p>
         <p>Total : {formatCurrency((transactionsDetail.total) )}</p>
