@@ -21,6 +21,7 @@ import { TransactionsEceran } from "./pages/Transactions/Eceran";
 import { TransactionsGrosir } from "./pages/Transactions/Grosir";
 import { AddTransactionsGrosir } from "./pages/Transactions/addTransactionsGrosir";
 import { AddTransactionsEcer } from "./pages/Transactions/addTransactionsEcer";
+import { UploadData } from "./pages/UploadData";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route element={<ProtectedLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/barang" element={<ItemsPage />} />
+            <Route path="/import-data" element={<UploadData />} />
             <Route path="/barang/tambah-barang" element={<AddItems />} />
             <Route
               path="/barang/edit-barang/:idBarang"

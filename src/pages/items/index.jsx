@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { ArrowUpOnSquareIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { ButtonIcon } from "../../components/molecules/ButtonIcon";
 import { ContentLayout } from "../../components/organisms/ContentLayout";
 import { TableData } from "../../components/organisms/TableData";
@@ -99,6 +99,14 @@ export const ItemsPage = () => {
     }
   };
 
+  const handleMessage = () => {
+    setMessage("Fitur sedang dalam pengerjaan...");
+
+    setTimeout(() => {
+      setMessage("");
+    }, 3000);
+  };
+
   return (
     <div className="">
       <ContentLayout>
@@ -122,12 +130,19 @@ export const ItemsPage = () => {
             </div>
             {/* Button */}
             <div className="w-full flex items-center justify-end gap-2">
-              {/* <ButtonIcon
-              icon={<ArrowUpOnSquareIcon className="size-5 text-slate-400" />}
-              showArrow={false}
-              title="Import"
-              classNameBtn="border-2 rounded-lg px-2 py-1"
-            />
+              {isAdminBesar && (
+                <ButtonIcon
+                  icon={
+                    <ArrowUpOnSquareIcon className="size-5 text-slate-400" />
+                  }
+                  showArrow={false}
+                  title="Import"
+                  classNameBtn="border-2 rounded-lg px-2 py-1"
+                  // linkTo={"/import-data"}
+                  onClick={handleMessage}
+                />
+              )}
+              {/* 
             <ButtonIcon
               icon={<DocumentTextIcon className="size-5 text-slate-400" />}
               showArrow={false}
