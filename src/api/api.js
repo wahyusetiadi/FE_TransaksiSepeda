@@ -467,7 +467,7 @@ export const updateCustomerData = async (id, data) => {
 
 export const deleteCustomerData = async (id) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/customers/delete/${id}`)
+    const response = await axios.delete(`${BASE_URL}/customers/delete/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error DELETE API", error);
@@ -606,6 +606,17 @@ export const exportOutbond = async (fromDate, toDate) => {
     throw error;
   }
 };
+
+// IMPORT DATA KE DATABASE
+
+export const uploadFile = (formData) => {
+  return axios.post(`${BASE_URL}/products/import-product`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-datad",
+    },
+  });
+};
+
 // GET TRANSACTIONS BY CODE
 export const getTransactionByCode = async (codeTransaction) => {
   try {

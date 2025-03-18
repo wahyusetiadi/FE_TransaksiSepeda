@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { ContentLayout } from "../../components/organisms/ContentLayout";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
+import { uploadFile } from "../../api/api";
 
 export const UploadData = () => {
   const [fileName, setFileName] = useState("");
+  const [uploadStatus, setUploadStatus] = useState("");
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setFileName(file.name);
+      uploadFileHandler(file);
     }
   };
 
@@ -17,11 +20,31 @@ export const UploadData = () => {
     const file = event.dataTransfer.files[0];
     if (file) {
       setFileName(file.name);
+      uploadFileHandler(file);
     }
   };
 
   const handleDragOver = (event) => {
     event.preventDefault();
+  };
+
+  const uploadFileHandler = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setUploadStatus("Uploading...");
+
+      const response = await uploadFile(formData);
+
+      if (response.status === 200) {
+        setUploadStatus(`Upload Successful: ${response.data.message}`);
+      } else {
+        setUploadStatus(`Upload Failed.`);
+      }
+    } catch (error) {
+      setUploadStatus(`Upload Failed: ${error.message}`);
+    }
   };
 
   return (
@@ -72,6 +95,12 @@ export const UploadData = () => {
               <div className="mt-4 text-sm text-gray-700">
                 <strong>Uploaded File: </strong>
                 {fileName}
+              </div>
+            )}
+            {uploadStatus && (
+              <div className="mt-4 text-sm text-gray-700">
+                <strong>Status: </strong>
+                {uploadStatus}
               </div>
             )}
           </div>

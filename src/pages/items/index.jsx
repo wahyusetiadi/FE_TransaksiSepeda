@@ -138,7 +138,7 @@ export const ItemsPage = () => {
                   showArrow={false}
                   title="Import"
                   classNameBtn="border-2 rounded-lg px-2 py-1"
-                  // linkTo={"/import-data"}
+                  linkTo={"/import-data"}
                   onClick={handleMessage}
                 />
               )}
