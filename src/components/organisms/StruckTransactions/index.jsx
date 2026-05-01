@@ -16,7 +16,7 @@ export const StruckTransactions = () => {
         <div className="w-[300px] my-6 flex flex-col bg-white rounded-lg p-4 text-xs font-mono border border-gray-300">
           {/* Header */}
           <div className="text-center">
-            <h1 className="font-bold">GMJ Bike Shop</h1>
+            <h1 className="font-bold">E-Bike Management</h1>
             <p>Jl. Veteran No. 123</p>
             <p>Telp: 0812-3456-7890</p>
           </div>
@@ -83,9 +83,9 @@ export const StruckTransactions = () => {
           {/* Footer */}
           <div className="text-center text-xs text-gray-600">
             <p>
-              Terima kasih telah berbelanja di <br /> GMJ Bike Shop
+              Terima kasih telah berbelanja di <br /> E-Bike Management
             </p>
-            <p>www.gmjbikeshop.com</p>
+            <p>www.e-bikemanagement.com</p>
             <p>Pastikan untuk menyimpan struk ini sebagai bukti transaksi.</p>
           </div>
 

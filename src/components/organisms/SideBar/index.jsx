@@ -71,7 +71,7 @@ export const SideBar = ({ users, role, loggedInfo = false }) => {
         >
           <img src={Logo} alt="" className="size-8" />
           <p className="text-orange-500 font-bold text-3xl hidden lg:block">
-            GMJ
+            E-Bike
           </p>
         </button>
         {/* <button className="lg:hidden" onClick={toggleSidebar}>

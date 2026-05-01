@@ -123,7 +123,7 @@ const PaymentPage = () => {
       >
         {/* Header struk */}
         <div className="text-center">
-          <h1 className="font-bold">GMJ Bike Shop</h1>
+          <h1 className="font-bold">E-Bike Management</h1>
           <p>Jl. Veteran No. 123</p>
           <p>Telp: 0812-3456-7890</p>
         </div>
@@ -196,9 +196,9 @@ const PaymentPage = () => {
 
         <div className="text-center text-xs text-gray-600">
           <p>
-            Terima kasih telah berbelanja di <br /> GMJ Bike Shop
+            Terima kasih telah berbelanja di <br /> E-Bike Management
           </p>
-          <p>www.gmjbikeshop.com</p>
+          <p>www.ebikemanagement.com</p>
           <p>Pastikan untuk menyimpan struk ini sebagai bukti transaksi.</p>
           {/* <p>Admin {userData.username}</p> */}
         </div>
