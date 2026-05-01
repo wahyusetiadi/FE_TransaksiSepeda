@@ -9,7 +9,6 @@ import {
   addTransactionNonVip,
   getAllCustomerTransactions,
 } from "../../../api/api";
-import { use } from "react";
 import { formatCurrency } from "../../../utils";
 
 export const AddTransactions = () => {

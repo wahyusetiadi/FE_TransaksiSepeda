@@ -28,11 +28,18 @@ export const EditItems = ({ showButtonChange = false }) => {
     const fetchData = async () => {
       try {
         const data = await getProductData(idBarang); // Ambil data barang berdasarkan idBarang
-        console.log("Data barang:", data);  // Log data barang
         if (!data) {
           throw new Error("Data barang tidak ditemukan.");
         }
-        setBarang(data);  // Set data barang ke state
+
+        // Normalisasi bentuk data (beberapa endpoint lama pakai `price`)
+        const normalized = {
+          ...data,
+          price_ecer: data.price_ecer ?? data.price ?? 0,
+          price_grosir: data.price_grosir ?? 0,
+          stock: data.stock ?? 0,
+        };
+        setBarang(normalized); // Set data barang ke state
       } catch (error) {
         setMessage({
           type: "error",
@@ -48,7 +55,14 @@ export const EditItems = ({ showButtonChange = false }) => {
     event.preventDefault();
   
     // Pastikan barang tidak null dan memiliki properti yang valid
-    if (!barang || !barang.name || !barang.type || !barang.price || !barang.status) {
+    if (
+      !barang ||
+      !barang.name ||
+      !barang.type ||
+      barang.price_ecer === undefined ||
+      barang.price_grosir === undefined ||
+      !barang.status
+    ) {
       setMessage({
         type: "error",
         text: "Semua field harus diisi dengan benar sebelum disubmit.",
@@ -57,7 +71,12 @@ export const EditItems = ({ showButtonChange = false }) => {
     }
   
     const productData = {
-      C
+      name: barang.name,
+      type: barang.type,
+      status: barang.status,
+      price_ecer: Number(barang.price_ecer) || 0,
+      price_grosir: Number(barang.price_grosir) || 0,
+      stock: Number(barang.stock) || 0,
     };
   
     try {
@@ -155,9 +174,7 @@ export const EditItems = ({ showButtonChange = false }) => {
                       </option>
                     ))}
                   {barang?.type && (
-                    <option value={barang.type} selected>
-                      {barang.type}
-                    </option>
+                    <option value={barang.type}>{barang.type}</option>
                   )}
                 </select>
               </div>
@@ -190,9 +207,7 @@ export const EditItems = ({ showButtonChange = false }) => {
                       </option>
                     ))}
                   {barang?.status && (
-                    <option value={barang.status} selected>
-                      {barang.status}
-                    </option>
+                    <option value={barang.status}>{barang.status}</option>
                   )}
                 </select>
               </div>
@@ -204,22 +219,65 @@ export const EditItems = ({ showButtonChange = false }) => {
                   htmlFor="Harga Barang"
                   className="text-base font-bold text-slate-700"
                 >
-                  Harga Barang
+                  Harga Barang Grosir
                 </label>
                 <div className="flex gap-4">
                   <div className="w-14 flex items-center justify-center bg-slate-100 font-bold text-sm rounded">
                     Rp
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     className="w-full px-4 py-2 border rounded"
                     placeholder="Masukkan Harga Barang"
-                    value={barang?.price || ""}
+                    value={barang?.price_grosir ?? ""}
                     onChange={(e) =>
-                      setBarang({ ...barang, price: e.target.value })
+                      setBarang({ ...barang, price_grosir: e.target.value })
                     }
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4 mt-6">
+              <div className="w-full flex flex-col">
+                <label
+                  htmlFor="Harga Barang Ecer"
+                  className="text-base font-bold text-slate-700"
+                >
+                  Harga Barang Ecer
+                </label>
+                <div className="flex gap-4">
+                  <div className="w-14 flex items-center justify-center bg-slate-100 font-bold text-sm rounded">
+                    Rp
+                  </div>
+                  <input
+                    type="number"
+                    className="w-full px-4 py-2 border rounded"
+                    placeholder="Masukkan Harga Barang"
+                    value={barang?.price_ecer ?? ""}
+                    onChange={(e) =>
+                      setBarang({ ...barang, price_ecer: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4 mt-6">
+              <div className="w-full flex flex-col">
+                <label
+                  htmlFor="Stock Barang"
+                  className="text-base font-bold text-slate-700"
+                >
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  className="w-full px-4 py-2 border rounded"
+                  placeholder="Masukkan jumlah stock"
+                  value={barang?.stock ?? ""}
+                  onChange={(e) => setBarang({ ...barang, stock: e.target.value })}
+                />
               </div>
             </div>
 

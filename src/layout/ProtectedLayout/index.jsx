@@ -5,9 +5,9 @@ import Cookies from "js-cookie"; // Uncomment if you're using cookies
 const ProtectedLayout = () => {
   const token = localStorage.getItem("token"); // or Cookies.get("token") if using cookies
 
-  if (!token || !isTokenValid(token)) {
-    return <Navigate to="/" />;
-  }
+  // if (!token || !isTokenValid(token)) {
+  //   return <Navigate to="/" />;
+  // }
 
   return <Outlet />;
 };

@@ -67,7 +67,7 @@ export const UploadData = () => {
             >
               <input
                 type="file"
-                accept=".xlsx, .xls"
+                accept=".xlsx"
                 onChange={handleFileChange} // Handling file select
                 className="hidden"
                 id="upload-input"
@@ -78,7 +78,7 @@ export const UploadData = () => {
               >
                 <ArrowUpTrayIcon className="text-gray-500 w-12 h-12" />
                 <span className="text-sm text-gray-500 mt-2">
-                  Click or Drag and Drop to Upload
+                  Upload file Excel (.xlsx)
                 </span>
               </label>
             </div>

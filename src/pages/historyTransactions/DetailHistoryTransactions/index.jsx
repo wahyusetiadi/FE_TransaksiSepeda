@@ -94,11 +94,8 @@ export const DetailHistoryTransactions = () => {
       const result = await updatePaid(id, payload);
 
       setTimeout(() => {
-        if (result.error.meta.status) {
-          setMessage(`Update detail transaksi berhasil`);
-        } else {
-          setMessage("Gagal Update detail transaksi");
-        }
+        if (result?.success) setMessage("Update detail transaksi berhasil");
+        else setMessage("Gagal Update detail transaksi");
         setTimeout(() => {
           setMessage("");
         }, 2000);

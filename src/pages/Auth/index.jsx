@@ -43,7 +43,7 @@ export const Auth = () => {
   };
 
   return (
-    <div className="w-full bg-white h-dvh flex items-center justify-center">
+    <div className="w-full h-dvh bg-[url('/authBg.jpg')] bg-cover bg-center bg-no-repeat flex items-center justify-center">
       {/* <div className="w-[40%] bg-cyan-600 h-dvh">
         <img src={ImageSide} />
       </div> */}
