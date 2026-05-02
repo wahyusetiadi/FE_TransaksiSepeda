@@ -1,9 +1,25 @@
-import React, { useState } from "react";
-import ImageSide from "../../assets/image/1213.png";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/api";
 import logo from "../../assets/logo.svg";
-import Cookies from "js-cookie";
+
+const shouldShowDemoAccount = () => {
+  const demoFlag = import.meta.env.VITE_SHOW_DEMO_CREDENTIALS;
+  if (demoFlag === "true") return true;
+  if (demoFlag === "false") return false;
+
+  const flag = import.meta.env.VITE_USE_MOCK;
+  if (flag === "true") return true;
+  if (flag === "false") return false;
+
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  return !baseUrl;
+};
+
+const DEMO_ACCOUNTS = [
+  { label: "Owner", username: "owner", password: "owner" },
+  { label: "Admin", username: "admin", password: "admin" },
+];
 
 export const Auth = () => {
   const [username, setUsername] = useState("");
@@ -13,26 +29,19 @@ export const Auth = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const doLogin = async (u, p) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await loginUser(username, password);
+      const response = await loginUser(u, p);
 
       if (response && response.data) {
         localStorage.setItem("token", response.data);
-        // console.log(response.data);
-
-        // Cookies.set("token", response.data);
         navigate("/dashboard");
-        // navigate("/");
-        // console.log("response", response.data);
       }
     } catch (err) {
-      if (err.response.data.message) {
+      if (err?.response?.data?.message) {
         setError(err.response.data.message);
       } else {
         setError("Username atau password salah");
@@ -40,6 +49,22 @@ export const Auth = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await doLogin(username, password);
+  };
+
+  const handleDemoLogin = async (account) => {
+    setUsername(account.username);
+    setPassword(account.password);
+    await doLogin(account.username, account.password);
+  };
+
+  const handleUseDemo = (account) => {
+    setUsername(account.username);
+    setPassword(account.password);
   };
 
   return (
@@ -100,12 +125,35 @@ export const Auth = () => {
 
           {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
+          {shouldShowDemoAccount() && (
+            <div className="mt-6 mb-4 p-3 rounded border border-orange-200 bg-orange-50 text-sm">
+              <p className="font-semibold text-orange-700">Akun demo</p>
+
+              <div className="mt-3 grid gap-2">
+                {DEMO_ACCOUNTS.map((acc) => (
+                  <div
+                    key={acc.username}
+                    className="flex items-center justify-between gap-2 rounded bg-white/60 px-3 py-2 border border-orange-100"
+                  >
+                    <div className="leading-tight">
+                      <p className="text-xs font-semibold text-orange-800">
+                        {acc.label}
+                      </p>
+                      <p className="text-[11px] text-orange-800/80">{`${acc.username} / ${acc.password}`}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="w-full flex justify-center text-base max-md:text-sm text-white mt-8">
             <button
               type="submit"
+              disabled={loading}
               className="p-2 w-full bg-orange-600 hover:bg-orange-700 rounded-full"
             >
-              Login
+              {loading ? "Loading..." : "Login"}
             </button>
           </div>
 

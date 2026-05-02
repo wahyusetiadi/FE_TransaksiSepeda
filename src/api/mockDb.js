@@ -34,6 +34,46 @@ const normalizeProductStatus = (stock, status) => {
   return "Tersedia";
 };
 
+const DEMO_USERS = [
+  {
+    username: "owner",
+    password: "owner",
+    name: "Owner Demo",
+    email: "owner@demo.local",
+    role: "owner",
+  },
+  {
+    username: "admin",
+    password: "admin",
+    name: "Admin Demo",
+    email: "admin@demo.local",
+    role: "admin",
+  },
+];
+
+const ensureDemoUsers = (seed) => {
+  const users = Array.isArray(seed?.users) ? seed.users : [];
+  const existingUsernames = new Set(
+    users.map((u) => String(u?.username || "").toLowerCase())
+  );
+  const existingIds = new Set(users.map((u) => Number(u?.id)));
+  let nextId = users.reduce((acc, u) => Math.max(acc, Number(u?.id) || 0), 0) + 1;
+
+  for (const demo of DEMO_USERS) {
+    const uname = String(demo.username).toLowerCase();
+    if (existingUsernames.has(uname)) continue;
+
+    while (existingIds.has(nextId)) nextId += 1;
+    users.push({ id: nextId, ...demo });
+    existingUsernames.add(uname);
+    existingIds.add(nextId);
+    nextId += 1;
+  }
+
+  seed.users = users;
+  return seed;
+};
+
 const defaultSeed = () => ({
   version: 1,
   users: [
@@ -138,6 +178,8 @@ const seedFromPublicDataJson = async () => {
       }));
     }
 
+    ensureDemoUsers(seed);
+
     if (Array.isArray(json?.stokBarang) && json.stokBarang.length > 0) {
       seed.products = json.stokBarang.map((item, index) => {
         const stock = Number(item.stock ?? item.stok ?? 0);
@@ -176,7 +218,15 @@ export const loadDb = async () => {
   const raw = storage.getItem(STORAGE_KEY);
   if (raw) {
     const parsed = safeJsonParse(raw, null);
-    if (parsed?.version === 1) return parsed;
+    if (parsed?.version === 1) {
+      const before = Array.isArray(parsed?.users) ? parsed.users.length : 0;
+      ensureDemoUsers(parsed);
+      const after = Array.isArray(parsed?.users) ? parsed.users.length : 0;
+      if (after !== before) {
+        storage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      }
+      return parsed;
+    }
   }
 
   const seeded = (await seedFromPublicDataJson()) || defaultSeed();
@@ -195,4 +245,3 @@ export const clearDb = () => {
   if (!storage) return;
   storage.removeItem(STORAGE_KEY);
 };
-
