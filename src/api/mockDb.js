@@ -40,7 +40,7 @@ const defaultSeed = () => ({
     {
       id: 1,
       username: "owner",
-      password: "owner123",
+      password: "owner",
       name: "Owner Demo",
       email: "owner@demo.local",
       role: "owner",
@@ -48,7 +48,7 @@ const defaultSeed = () => ({
     {
       id: 2,
       username: "admin",
-      password: "admin123",
+      password: "admin",
       name: "Admin Demo",
       email: "admin@demo.local",
       role: "admin",

@@ -52,8 +52,8 @@ export const Auth = () => {
         <div className="mb-6 w-full flex gap-4 items-center justify-center">
           <img src={logo} className="w-32 max-md:w-40" />
           <div className="w-fit flex flex-col items-start justify-stretch text-start text-5xl font-bold text-orange-500">
-            <p>E-</p>
-            <p>Bike Management</p>
+            <p>E-Bike</p>
+            <p>Management</p>
           </div>
         </div>
         <form action="" onSubmit={handleSubmit}>
